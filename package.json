@@ -1,0 +1,51 @@
+{
+  "name": "api-whatsapp",
+  "version": "1.0.0",
+  "description": "API REST - WhatsApp",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest --colors --noStackTrace --passWithNoTests --runInBand",
+    "test:watch": "jest --watch --colors --noStackTrace --passWithNoTests --runInBand",
+    "test:unit": "npm test -- --watch -c jest-unit-config.js",
+    "test:integration": "npm test -- --watch -c jest-integration-config.js",
+    "test:staged": "npm test -- --findRelatedTests --silent",
+    "test:ci": "npm test -- --coverage --silent"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
+  "author": "Dynamic System e Vish! Internet e Sistemas LTDA",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "aws-sdk": "^2.1147.0",
+    "axios": "0.26.1",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "fast-glob": "^3.2.11",
+    "moment": "^2.29.3",
+    "mongodb": "^4.5.0",
+    "mongoose": "^6.3.0",
+    "serverless-http": "^2.7.0"
+  },
+  "devDependencies": {
+    "husky": "^7.0.4",
+    "jest": "^27.5.1",
+    "lint-staged": "^12.3.7",
+    "nodemon": "^2.0.15",
+    "standard": "^16.0.4",
+    "supertest": "^6.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dynamic-system-vish/api-whatsapp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dynamic-system-vish/api-whatsapp/issues"
+  },
+  "homepage": "https://github.com/dynamic-system-vish/api-whatsapp#readme",
+  "keywords": []
+}
