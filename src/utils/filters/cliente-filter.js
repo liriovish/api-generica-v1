@@ -32,7 +32,6 @@ module.exports = class ClienteFilter {
      */
     async dadosCliente(sToken) {
         try {
-            console.log(sToken)
             /**
              * Busca os dados do cliente
              *
