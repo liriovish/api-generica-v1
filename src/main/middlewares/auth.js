@@ -34,8 +34,7 @@ module.exports = async(req, res, next) => {
             /**
              * Adiciona as configurações do cliente
              */
-            res.set('chaveAplicativo', '')
-            res.set('token', 'Bearer eyJraWQiOiJHZHM1a1NqVlwvVFpUblNsTU1PbW9cL1F1UEdkc05CSVZ6NUJxbjdwbDZ1Ylk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLnNpbXBsZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5uYXR1cmV6YXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5zaXR1YWNvZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5yZWdpc3Ryb3MgZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLmxvdGUiLCJhdXRoX3RpbWUiOjE2NjYyOTYzMTMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5zYS1lYXN0LTEuYW1hem9uYXdzLmNvbVwvc2EtZWFzdC0xX05jaFpCUXFsbiIsImV4cCI6MTY2NjI5OTkxMywiaWF0IjoxNjY2Mjk2MzEzLCJ2ZXJzaW9uIjoyLCJqdGkiOiI5OTIzMGRkOC0yYTBjLTQyOGYtOWQ3Yy1mODcwYzAyMDY4YWEiLCJjbGllbnRfaWQiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSJ9.ppcC3Z021OXdXE4OZnevTBtjDS37U9UD37VLs4HLhVehdsefgaRLKpkuuEyXbK2TAQQDytWN_nXYAQbBbksSLGsV9lJTf7oLTarnpDxAIrWG3P82KBR-GalrUG2BNP-B_nheLfzemqUEFNuccT2Po7wTeI1YDrqOSV4LfgsLz3viDqZFW9PnajEDET0bn_o-SfS_z2sev6xNuBaUy-XF-lyfmstpWCK7cGmlEvsrcdX-9ATdU-FJ7z-itsku4SDUOXQ6-rnvOJtl9uF9ID89NCR4gXbwdcj1EmEm2V_hdUj6YicdxNkgoLHB0h7Udagy66XACJvAQMmpxGm2vQJhZg')
+            res.set('chaveAplicativo', '4mck610vlskgf4ub6t4s3i88tq')
         }else{
             /**
              * Carrega variáveis
@@ -106,7 +105,6 @@ module.exports = async(req, res, next) => {
              * Adiciona as configurações do cliente
              */
             res.set('chaveAplicativo', idClienteApiRest)
-            res.set('token', authToken)
         }
      
         next()

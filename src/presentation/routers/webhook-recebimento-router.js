@@ -54,7 +54,7 @@ module.exports = class WebhookRecebimentoRouter {
              *
              * @UsaFuncao dadosCliente
              */
-            const oCliente = await this.clienteFilter.dadosCliente(sToken, sIp)
+            const oCliente = await this.clienteFilter.dadosCliente(sToken)
 
             // Verifica se existe o cliente
             if(oCliente.statusCode != 200){

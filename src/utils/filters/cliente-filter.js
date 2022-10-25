@@ -30,14 +30,15 @@ module.exports = class ClienteFilter {
      * 
      * @returns {HttpResponse}
      */
-    async dadosCliente(sToken, sIp) {
+    async dadosCliente(sToken) {
         try {
+            console.log(sToken)
             /**
              * Busca os dados do cliente
              *
              * @var {oDadosCliente}
              */
-            const oDadosCliente = await AxiosClient.get(process.env.ENDPOINT_API_CLIENTE, {}, sIp, sToken)
+            const oDadosCliente = await AxiosClient.get(process.env.ENDPOINT_API_CLIENTE, {}, {'x-api-token': sToken})
 
             /**
              * Retorna dados
