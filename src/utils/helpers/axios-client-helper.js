@@ -25,7 +25,7 @@ require('dotenv').config()
  */
 module.exports = class AxiosClient {
     /**
-     * Função para buscar os dados do token
+     * Função para realizar requisições GET
      * 
      * @async
      * @function get
@@ -74,7 +74,7 @@ module.exports = class AxiosClient {
     }
 
     /**
-     * Função para buscar os dados do token
+     * Função para realizar requisições POST
      * 
      * @async
      * @function post

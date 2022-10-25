@@ -52,7 +52,7 @@ const schema = new mongoose.Schema(
             type: String
         },
         tentativasEntregaCliente: {
-            type: Date
+            type: Number
         }
     },
     {
