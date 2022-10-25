@@ -15,9 +15,10 @@
 /**
  * Configurações globais
  */
-const AxiosClient = require('./axiosClient')
-const CryptString = require('./crypt-string')
+const AxiosClient = require('./axios-client-helper')
+const ZenviaClient = require('./zenvia-client-helper')
 const LogAWSCloudWatch = require('./aws-cloudwatch-helper')
+const AWSSNS = require('./aws-sns-helper')
 const AWSParameters = require('./aws-parameters-helper')
 
 /**
@@ -25,7 +26,8 @@ const AWSParameters = require('./aws-parameters-helper')
  */
 module.exports = {
     AxiosClient,
-    CryptString,
+    ZenviaClient,
     LogAWSCloudWatch,
+    AWSSNS,
     AWSParameters
 }

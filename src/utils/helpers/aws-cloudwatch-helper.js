@@ -34,7 +34,7 @@ module.exports = class LogAWSCloudWatch {
      * Função para gravar o log
      * 
      * @async
-     * @function gravarlog
+     * @function gravarLog
      * 
      * @param string sToken Token da requisição
      * @param string sRota Rota da requisição
@@ -44,7 +44,12 @@ module.exports = class LogAWSCloudWatch {
      * 
      * @return object Retorna os dados da solicitação ou null
      */
-    static async gravarlog(sToken, sRota, sParametros, sRetorno, sIp) {
+    static async gravarLog(sToken, sRota, sParametros, sRetorno, sIp) {
+        // Retorna true se for ambiente de desenvolvimento
+        if(process.env.APP_ENV == 'development'){
+            return true
+        }
+        
         try {
             /**
              * Variáveis padrões Log

@@ -29,16 +29,19 @@ require('dotenv').config()
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-    nomeCompleto: {
+    numero: {
         type: String
+    },
+    idCliente: {
+        type: mongoose.ObjectId
     }
 })
 
 
-let Clientes = null
+let Contatos = null
 
 module.exports = async () => {
     await env()
-    Clientes = mongoose.model(`${process.env.sigla_db}clientes`, schema)
-    return Clientes
+    Contatos = mongoose.model(`${process.env.sigla_db}contatos`, schema)
+    return Contatos
 }

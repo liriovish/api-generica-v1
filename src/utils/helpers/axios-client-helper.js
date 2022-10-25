@@ -28,14 +28,14 @@ module.exports = class AxiosClient {
      * Função para buscar os dados do token
      * 
      * @async
-     * @function getToken_V2
+     * @function get
      * 
      * @param string sHash
      * @param string sIp
      * 
      * @return object Retorna os dados do token ou erro
      */
-    static async get(sEndpoint, oDados, sIp) {
+    static async get(sEndpoint, oDados, sIp, sToken) {
         /**
          * Realiza a requisição com o axios para a API REST
          * 
@@ -44,16 +44,71 @@ module.exports = class AxiosClient {
         return axios.get(sEndpoint, {
             data: oDados,
             headers: {
-                'x-forwarded-for': sIp
+                'x-forwarded-for': sIp,
+                'Authorization': sToken,
+                'X-API-TOKEN': sToken
             }
         })
         .then((response) => {
             /**
              * Se não houver erro, retorna os dados do token
              */
-            return response
+            return response.data
         })
         .catch((error) => {
+            /**
+             * Monta o objeto de retorno para erro
+             * 
+             * @var object oError
+             */
+            const oError = {
+                statusCode: error.response.status,
+                error: error.response.data
+            }
+            
+            /**
+             * Retorna o erro
+             */
+            return oError
+        })
+    }
+
+    /**
+     * Função para buscar os dados do token
+     * 
+     * @async
+     * @function post
+     * 
+     * @param string sHash
+     * @param string sIp
+     * 
+     * @return object Retorna os dados do token ou erro
+     */
+    static async post(sEndpoint, oDados, sIp, sToken) {
+        /**
+         * Realiza a requisição com o axios para a API REST
+         * 
+         * @param object oDados
+         */
+        return axios.post(
+            sEndpoint, 
+            oDados,
+            {
+                headers: {
+                    'x-forwarded-for': sIp,
+                    'Authorization': sToken,
+                    'X-API-TOKEN': sToken
+                }
+            }
+        )
+        .then((response) => {
+            /**
+             * Se não houver erro, retorna os dados do token
+             */
+            return response.data
+        })
+        .catch((error) => {
+            console.log(error)
             /**
              * Monta o objeto de retorno para erro
              * 

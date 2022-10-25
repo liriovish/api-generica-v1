@@ -15,11 +15,15 @@
 /**
  * Configurações globais
  */
-const Cliente = require('./clientes')
+const Contatos = require('./contatos')
+const MensagensEnviadas = require('./mensagens-enviadas')
+const MensagensRecebidas = require('./mensagens-recebidas')
 
 /**
  * Realiza o export das classes de geração dos erros
  */
 module.exports = {
-    Cliente
+    Contatos,
+    MensagensEnviadas,
+    MensagensRecebidas
 }
