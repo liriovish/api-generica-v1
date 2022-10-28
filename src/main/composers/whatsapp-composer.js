@@ -245,6 +245,13 @@ module.exports = class WhatsappComposer {
         const whatsappValidator = new WhatsappValidator({
             whatsappRepository
         })
+
+        /**
+         * Chama a classe de filtro do cliente.
+         *
+         * @var {ClienteFilter} clienteFilter
+         */
+        const clienteFilter = new ClienteFilter()
         
         /**
          * Chama a classe do caso de uso que é responsável pela consulta no
@@ -255,15 +262,9 @@ module.exports = class WhatsappComposer {
          * @param {WhatsappRepository} whatsappRepository
          */
         const whatsappUseCase = new WhatsappUseCase({
-            whatsappRepository
+            whatsappRepository,
+            clienteFilter
         })
-
-        /**
-         * Chama a classe de filtro do cliente.
-         *
-         * @var {ClienteFilter} clienteFilter
-         */
-        const clienteFilter = new ClienteFilter()
 
         /**
          * Chama a classe da rota para montar e responder ao usuário com os

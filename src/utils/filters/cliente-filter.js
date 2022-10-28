@@ -30,14 +30,25 @@ module.exports = class ClienteFilter {
      * 
      * @returns {HttpResponse}
      */
-    async dadosCliente(sToken) {
+    async dadosCliente(sToken, sIdCliente = '') {
         try {
+            /**
+             * Define a URL
+             *
+             * @var {sUrl}
+             */
+            let sUrl = process.env.ENDPOINT_API_CLIENTE
+
+            if (sIdCliente != '') {
+                sUrl = `${sUrl}/${sIdCliente}`
+            }
+
             /**
              * Busca os dados do cliente
              *
              * @var {oDadosCliente}
              */
-            const oDadosCliente = await AxiosClient.get(process.env.ENDPOINT_API_CLIENTE, {}, {'X-API-TOKEN': sToken})
+            const oDadosCliente = await AxiosClient.get(sUrl, {}, {'X-API-TOKEN': sToken})
 
             /**
              * Retorna dados

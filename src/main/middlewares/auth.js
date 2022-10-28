@@ -34,7 +34,7 @@ module.exports = async(req, res, next) => {
             /**
              * Adiciona as configurações do cliente
              */
-            res.set('chaveAplicativo', '4mck610vlskgf4ub6t4s3i88tq')
+            res.set('chaveAplicativo', 'TOKEN')
         }else{
             /**
              * Carrega variáveis
@@ -115,7 +115,7 @@ module.exports = async(req, res, next) => {
              */
             res.set('chaveAplicativo', idClienteApiRest)
         }
-        
+
         next()
     } catch (error) {
         console.error(error)

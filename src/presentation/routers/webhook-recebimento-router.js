@@ -48,22 +48,6 @@ module.exports = class WebhookRecebimentoRouter {
     async route(oBody, sIp, sToken) {
         try {
             /**
-             * Busca os dados do cliente
-             *
-             * @var {obejct} oCliente
-             *
-             * @UsaFuncao dadosCliente
-             */
-            const oCliente = await this.clienteFilter.dadosCliente(sToken)
-
-            // Verifica se existe o cliente
-            if(oCliente.statusCode != 200){
-                return HttpResponse.badRequest(
-                    new CustomError('Cliente não localizado', 2)
-                )
-            }
-
-            /**
              * Valida a requisição
              *
              * @var {object} oValidacao
@@ -84,7 +68,13 @@ module.exports = class WebhookRecebimentoRouter {
              *
              * @UsaFuncao webhookRecebimento
              */
-            const oDadosWebhookRecebimento = await this.whatsappUseCase.webhookRecebimento(oBody.message, oCliente.body)
+            const oDadosWebhookRecebimento = await this.whatsappUseCase.webhookRecebimento(oBody.message, sToken)
+            console.log(1,oDadosWebhookRecebimento)
+            console.log(2,sToken)
+            // Verifica se houve erro
+            if(oDadosWebhookRecebimento.statusCode != 201){
+                return oDadosWebhookRecebimento
+            }
 
             /**
              * Retorna dados
