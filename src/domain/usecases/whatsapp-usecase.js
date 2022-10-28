@@ -100,6 +100,98 @@ module.exports = class WhatsappUseCase {
     }
 
     /**
+     * Função responsável pelo envio da mensagem
+     *
+     * @param {object} oDados
+     * @param {object} oDadosCliente
+     *
+     * @returns {object}
+     */
+    async historicoMensagens(oParams, oDados, oDadosCliente) {
+        /**
+         * Define as funcões para buscar todas as mensagens para cada tipo de mensagem
+         *
+         * @var {object} oFuncoesTodasMensagensEnviadas
+         */
+        const oFuncoesTodasMensagensEnviadas = {
+            enviada: this.whatsappRepository.buscaMensagensEnviadas(oDados.filtros, oDados.ordem, oDados.pagina, oDadosCliente._id, true),
+            recebida: this.whatsappRepository.buscaMensagensRecebidas(oDados.filtros, oDados.ordem, oDados.pagina, oDadosCliente._id, true)
+        }
+
+        /**
+         * Define as funcões para buscar as mensagens para cada tipo de mensagem
+         *
+         * @var {object} oFuncoesDadosMensagensEnviadas
+         */
+        const oFuncoesDadosMensagensEnviadas = {
+            enviada: this.whatsappRepository.buscaMensagensEnviadas(oDados.filtros, oDados.ordem, oDados.pagina, oDadosCliente._id),
+            recebida: this.whatsappRepository.buscaMensagensRecebidas(oDados.filtros, oDados.ordem, oDados.pagina, oDadosCliente._id)
+        }
+
+        /**
+         * Busca todas as mensagens enviadas
+         *
+         * @var {object} oDadosMensagensEnviadas
+         */
+        const oTodasMensagensEnviadas = await oFuncoesTodasMensagensEnviadas[oParams.tipoMensagem]
+
+        /**
+         * Busca as mensagens enviadas
+         *
+         * @var {object} oDadosMensagensEnviadas
+         */
+        const oDadosMensagensEnviadas = await oFuncoesDadosMensagensEnviadas[oParams.tipoMensagem]
+
+        /**
+         * Define o total de mensagens
+         *
+         * @var {int} iResultados
+         */
+        const iResultados = oTodasMensagensEnviadas.length
+
+        /**
+         * Define o total de paginas
+         *
+         * @var {int} iPaginas
+         */
+        const iPaginas = Math.ceil(iResultados/100)
+        
+        /**
+         * Define o retorno
+         *
+         * @var {object} oRetorno
+         */
+        const oRetorno = {}
+
+        // Define as informações das mensagens
+        oRetorno.data = oDadosMensagensEnviadas.map(oMensagem => 
+            (
+                { 
+                    id: oMensagem._id, 
+                    idContato: oMensagem.idContato,
+                    numeroRemetente: oMensagem.numeroRemetente,
+                    numeroDestinatario: oMensagem.numeroDestinatario,
+                    mensagem: oMensagem.mensagem,
+                    idMensagem: oMensagem.idMensagem,
+                    idCliente: oMensagem.idCliente,
+                    dataCadastro: oMensagem.dataCadastro,
+                    dataAtualizacao: oMensagem.dataAtualizacao,
+                    status: oMensagem.status ??  oMensagem.statusEntregaCliente,
+                    tentativasEntregaCliente: oMensagem.tentativasEntregaCliente ?? 0,
+                    idConversa: oMensagem.idConversa ?? ''
+                }
+            )
+        );
+        
+        // Define as informações da busca
+        oRetorno.resultados = iResultados
+        oRetorno.paginas = iPaginas
+        oRetorno.paginaAtual = oDados.pagina ?? 1
+
+        return oRetorno
+    }
+
+    /**
      * Função responsável pelo webhook de status
      *
      * @param {object} oDados
@@ -116,6 +208,22 @@ module.exports = class WhatsappUseCase {
 
         // Verifica se não houve cadastro
         if(oAtualizaMensagem == null){
+            return HttpResponse.serverError()
+        }
+
+        /**
+         * Notifica via SNS
+         *
+         * @var {object} oSNS
+         */
+        const oSNS = await helpers.AWSSNS.notificar(oDados.messageId, 'status')
+
+        // Verifica se houve erro
+        if(oSNS == null){
+            /**
+             * Caso gere algum erro
+             * Retorna o erro
+             */
             return HttpResponse.serverError()
         }
 
@@ -194,7 +302,7 @@ module.exports = class WhatsappUseCase {
          *
          * @var {object} oSNS
          */
-        const oSNS = await helpers.AWSSNS.notificar(oDados.id)
+        const oSNS = await helpers.AWSSNS.notificar(oDados.id, 'recebimento')
 
         // Verifica se houve erro
         if(oSNS == null){

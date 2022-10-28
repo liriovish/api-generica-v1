@@ -15,7 +15,7 @@
 /**
  * Configurações globais
  */
-const { CustomError, NotFoundError, InvalidRequestError } = require('../../utils/errors/')
+const { CustomError, NotFoundError, InvalidRequestError, InvalidParamError } = require('../../utils/errors/')
 const HttpResponse = require('../../presentation/helpers/http-response')
 
 /**
@@ -78,7 +78,7 @@ module.exports = class WhatsappValidator {
          */
         if (typeof oDados.mensagem !== 'object') {
             return HttpResponse.badRequest(
-                new CustomError('Mensagem inválida1', 6)
+                new CustomError('Mensagem inválida', 6)
             )
         }
 
@@ -88,7 +88,7 @@ module.exports = class WhatsappValidator {
              */
             if (!oMensagem.type || !oMensagem.text) {
                 return HttpResponse.badRequest(
-                    new CustomError('Mensagem inválida2', 6)
+                    new CustomError('Mensagem inválida', 6)
                 )
             }
         }
@@ -104,6 +104,160 @@ module.exports = class WhatsappValidator {
         if(oDadosCliente.whatsapp.limiteMensagens >= oDadosCliente._id){
             return HttpResponse.badRequest(
                 new CustomError('Limite de envio de mensagens atingido', 7)
+            )
+        }
+
+        return null;
+    }
+
+    /**
+     * Função responsável por fazer a validação
+     *
+     * @function validarHistoricoMensagens
+     *
+     * @param  {object} oDados
+     * @param  {object} oDadosCliente
+     *
+     * @return {object|null}  Retorna a resposta de erro ou null no caso de OK
+     */
+    async validarHistoricoMensagens(oParams, oDados, oDadosCliente){
+        /**
+         * Validação dos dados
+         */
+        if (oParams.tipoMensagem != 'recebida' && oParams.tipoMensagem != 'enviada') {
+            return HttpResponse.badRequest(
+                new InvalidParamError('tipoMensagem')
+            )
+        }
+
+        /**
+         * Validação dos dados
+         */
+        if (oDados.pagina && oDados.pagina < 1) {
+            return HttpResponse.badRequest(
+                new InvalidParamError('pagina')
+            )
+        }
+
+        /**
+         * Faz um parse no json de filtros, caso exista no body
+         * 
+         * @var {object} oFiltros
+         */
+        let oFiltros = []
+        if ('filtros' in oDados){
+            oFiltros = oDados.filtros
+        }
+
+        /**
+         * Realiza um parse no json de ordem, caso exista no body
+         * 
+         * @var {object} oOrdem
+         */
+        let oOrdem = []
+        if ('ordem' in oDados){
+            oOrdem = oDados.ordem
+        }
+
+        /**
+         * Campos permitidos
+         * @var {array} aCamposPermitidos
+         */
+        const aCamposPermitidos = ['statusMensagem', 'dataCadastro', 'numeroDestinatario', 'statusEntregaCliente']
+
+        /**
+         * Campos permitidos para operações ao realizar o filtro dos dados
+         * @var {array} aCamposFiltrosOperacoesPermitidos
+         */
+        const aCamposFiltrosOperacoesPermitidos = [
+            '=',
+            '!=',
+            'in',
+            '&&'
+        ]
+
+        /**
+         * Campos permitidos para operações ao realizar o filtro dos dados
+         * @var {array} aCamposOrdemOperacoesPermitidos
+         */
+        const aCamposOrdemOperacoesPermitidos = [
+            'asc',
+            'desc',
+            'ASC',
+            'DESC'
+        ]
+
+        /**
+         * Array com a definição da ordenação, seguindo o padrão do sequelize
+         * 
+         * @var {Array} aOrdemArr
+         */
+        const aOrdemArr = []
+
+        /**
+         * Valida se existem campos para ordenar, e se é um dos campos permitidos
+         */
+        if (oOrdem.campo &&
+            oOrdem.ordem &&
+            aCamposPermitidos.indexOf(oOrdem.campo) >= 0 &&
+            aCamposOrdemOperacoesPermitidos.indexOf(oOrdem.ordem) >= 0) {
+            aOrdemArr.push(oOrdem.campo)
+            aOrdemArr.push(oOrdem.ordem)
+        } else if (oOrdem.campo &&
+            oOrdem.ordem
+        ) {
+            return HttpResponse.badRequest(
+                new InvalidParamError(`ordem`)
+            )
+        }
+
+        /**
+         * Total de filtro inválido
+         * serve para verificar se exibe mensagem de erro
+         * ou não
+         * 
+         * @var {int} iFiltroInvalido
+         */
+        let iFiltroInvalido = 0;
+
+        /**
+         * Filtra os itens passados como o filter na requisição.
+         * Permite somente os filtros que estão liberados em aCamposPermitidos
+         * 
+         * @var {Array} aFiltroArr
+         */
+        const aFiltroArr = oFiltros.filter((oFilter) => {
+            /**
+             * Verifica se o filtro não tem campo, operação ou valor, e ignora caso
+             *     não tenha pelo menos um dos 3 itens
+             */
+            if (!oFilter.campo || !oFilter.operacao || !oFilter.valor) {
+                iFiltroInvalido = iFiltroInvalido + 1
+                return false
+            }
+            /**
+             * Verifica se as operações recebidas no filtro são permitidas pela api.
+             *     Caso não seja, ignora o filtro
+             */
+            if (aCamposFiltrosOperacoesPermitidos.indexOf(oFilter.operacao) < 0) {
+                iFiltroInvalido = iFiltroInvalido + 1
+                return false
+            }
+            /**
+             * Verifica se o campo é um dos permitidos pelo filtro. Caso não seja,
+             *     ignora o filtro
+             */
+            if (aCamposPermitidos.indexOf(oFilter.campo) < 0) {
+                iFiltroInvalido = iFiltroInvalido + 1
+                return false
+            }
+
+            return true
+        })
+
+        if (iFiltroInvalido > 0) {
+            return HttpResponse.badRequest(
+                new InvalidParamError(`filtros`)
             )
         }
 

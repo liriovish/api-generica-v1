@@ -1,13 +1,13 @@
 /**
- * Classe para cria√ß√£o da rota de retorno para o usu√°rio
+ * Classe para criaÁ„o da rota de retorno para o usu·rio
  * 
- * Esse arquivo √© respons√°vel pelas valida√ß√µes b√°sicas dos dados recebidos
+ * Esse arquivo È respons·vel pelas validaÁıes b·sicas dos dados recebidos
  *
  * NodeJS version 16.x
  *
  * @category  JavaScript
  * @package   WhatsApp
- * @author    Equipe Webcart√≥rios <contato@webcartorios.com.br>
+ * @author    Equipe WebcartÛrios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/api-whatsapp
@@ -15,16 +15,16 @@
  */
 
 /**
- * Configura√ß√µes globais
+ * ConfiguraÁıes globais
  */
-const { CustomError } = require('../../utils/errors')
+const { CustomError, InvalidParamError } = require('../../utils/errors')
 const HttpResponse = require('../helpers/http-response')
 
 /**
- * Classe EnviarMensagemRouter
+ * Classe HistoricoMensagensRouter
  * @package  src\presentation\routers
  */
-module.exports = class EnviarMensagemRouter {
+module.exports = class HistoricoMensagensRouter {
     /**
      * Construtor
      * @param {whatsappUseCase}
@@ -38,14 +38,14 @@ module.exports = class EnviarMensagemRouter {
     }
 
     /**
-     * Fun√ß√£o para cria√ß√£o da rota
+     * FunÁ„o para criaÁ„o da rota
      *
      * @param {object} oBody
      * @param {string} sChave
      * 
      * @returns {HttpResponse}
      */
-    async route(oBody, sIp, sToken) {
+    async route(oBody, sIp, sToken, oParams) {
         try {
             /**
              * Busca os dados do cliente
@@ -59,7 +59,7 @@ module.exports = class EnviarMensagemRouter {
             // Verifica se existe o cliente
             if(oCliente.statusCode != 200){
                 return HttpResponse.badRequest(
-                    new CustomError('Cliente n√£o localizado', 2)
+                    new CustomError('Cliente n„o localizado', 2)
                 )
             }
 
@@ -73,30 +73,38 @@ module.exports = class EnviarMensagemRouter {
             /**
              * Valida os dados
              *
-             * @var {object} bValidaEnviarMensagem
+             * @var {object} bValidaHistoricoMensagens
              *
-             * @UsaFuncao validarEnviarMensagem
+             * @UsaFuncao validarHistoricoMensagens
              */
-            const bValidaEnviarMensagem = await this.whatsappValidator.validarEnviarMensagem(oBody, oDadosCliente)
+            const bValidaHistoricoMensagens = await this.whatsappValidator.validarHistoricoMensagens(oParams, oBody, oDadosCliente)
 
             // Verifica se retornou erro
-            if(bValidaEnviarMensagem != null){
-                return bValidaEnviarMensagem
+            if(bValidaHistoricoMensagens != null){
+                return bValidaHistoricoMensagens
             }
 
             /**
              * Envia a mensagem
              *
-             * @var {object} oDadosEnviarMensagem
+             * @var {object} oDadosHistoricoMensagens
              *
-             * @UsaFuncao enviarMensagem
+             * @UsaFuncao historicoMensagens
              */
-            const oDadosEnviarMensagem = await this.whatsappUseCase.enviarMensagem(oBody, oDadosCliente)
+            const oDadosHistoricoMensagens = await this.whatsappUseCase.historicoMensagens(oParams, oBody, oDadosCliente)
+
+            
+
+            if(oBody.pagina && oDadosHistoricoMensagens.paginas < oBody.pagina){
+                return HttpResponse.badRequest(
+                    new InvalidParamError('pagina')
+                )
+            }
 
             /**
              * Retorna dados
              */
-            return HttpResponse.ok(oDadosEnviarMensagem)
+            return HttpResponse.ok(oDadosHistoricoMensagens)
         } catch (error) {
             console.log(error)
             /**

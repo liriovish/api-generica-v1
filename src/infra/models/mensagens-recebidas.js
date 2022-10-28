@@ -53,12 +53,14 @@ const schema = new mongoose.Schema(
         },
         tentativasEntregaCliente: {
             type: Number
-        }
-    },
-    {
-        timestamps: { 
-            createdAt: 'dataCadastro', 
-            updatedAt: 'dataAtualizacao' 
+        },
+        dataCadastro: {
+            type: Date,
+            default: Date()
+        },
+        dataAtualizacao: {
+            type: Date,
+            default: Date()
         }
     }
 )

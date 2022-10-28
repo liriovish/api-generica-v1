@@ -37,7 +37,7 @@ module.exports = class ClienteFilter {
              *
              * @var {oDadosCliente}
              */
-            const oDadosCliente = await AxiosClient.get(process.env.ENDPOINT_API_CLIENTE, {}, {'x-api-token': sToken})
+            const oDadosCliente = await AxiosClient.get(process.env.ENDPOINT_API_CLIENTE, {}, {'X-API-TOKEN': sToken})
 
             /**
              * Retorna dados
