@@ -22,7 +22,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"numeroDestinatario\": 5599999999999,\r\n    \"mensagem\": [{\"type\":\"text\",\"text\":\"Teste\"}]\r\n}",
+					"raw": "{\"numeroDestinatario\":\"5547991798864\",\"mensagem\":[{\"type\":\"text\",\"text\":\"teste\"}]}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -30,7 +30,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3001/v1/enviarMensagem",
+					"raw": "http://localhost:3001/v1/whatsapp/enviarMensagem",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -38,6 +38,7 @@
 					"port": "3001",
 					"path": [
 						"v1",
+						"whatsapp",
 						"enviarMensagem"
 					]
 				}
@@ -48,10 +49,16 @@
 			"name": "Webhook Status",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"id\": \"32b0d42b-32d6-4184-a9df-c111c16a71ab\",\r\n  \"timestamp\": \"2022-10-24T21:10:53.510Z\",\r\n  \"type\": \"MESSAGE_STATUS\",\r\n  \"subscriptionId\": \"e23965fc-864c-4807-8b33-3ce966151c4f\",\r\n  \"channel\": \"whatsapp\",\r\n  \"messageId\": \"103099d7-f0d6-436c-b9db-9602e304589c\",\r\n  \"messageStatus\": {\r\n    \"timestamp\": \"2022-10-24T21:10:53+00:00\",\r\n    \"code\": \"DELETED\",\r\n    \"description\": \"The message has been deleted by the contact\"\r\n  },\r\n  \"contentIndex\": 0\r\n}",
+					"raw": "{\r\n  \"id\": \"261eda6d-3787-4eb2-bb3b-26b0ff7d05ac\",\r\n  \"timestamp\": \"2022-10-27T19:04:41.221Z\",\r\n  \"type\": \"MESSAGE_STATUS\",\r\n  \"subscriptionId\": \"e23965fc-864c-4807-8b33-3ce966151c4f\",\r\n  \"channel\": \"whatsapp\",\r\n  \"messageId\": \"6c276f28-fceb-4a5d-b910-f0cd66fff795\",\r\n  \"messageStatus\": {\r\n    \"timestamp\": \"2022-10-27T19:04:40+00:00\",\r\n    \"code\": \"DELIVERED\",\r\n    \"description\": \"The message has been delivered by the provider\"\r\n  },\r\n  \"contentIndex\": 0\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -59,7 +66,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3001/v1/webhookStatus",
+					"raw": "http://localhost:3001/v1/whatsapp/webhookStatus",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -67,6 +74,7 @@
 					"port": "3001",
 					"path": [
 						"v1",
+						"whatsapp",
 						"webhookStatus"
 					]
 				}
@@ -77,10 +85,16 @@
 			"name": "Webhook Recebimento",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "x-api-token",
+						"value": "4mck610vlskgf4ub6t4s3i88tq",
+						"type": "default"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"id\": \"67a8c8b3-7d06-4256-b6cb-69cac74f38da\",\r\n  \"timestamp\": \"2022-10-24T21:41:14.718Z\",\r\n  \"type\": \"MESSAGE\",\r\n  \"subscriptionId\": \"f21881b0-7ad4-4ea4-a6f2-8f412f86a0d5\",\r\n  \"channel\": \"whatsapp\",\r\n  \"direction\": \"IN\",\r\n  \"message\": {\r\n    \"id\": \"ea6456e2-92d7-4758-ad24-9773d0b8d6fb\",\r\n    \"from\": \"5547991798864\",\r\n    \"to\": \"ordinary-thought\",\r\n    \"direction\": \"IN\",\r\n    \"channel\": \"whatsapp\",\r\n    \"visitor\": {\r\n      \"name\": \"André\",\r\n      \"firstName\": \"André\",\r\n      \"lastName\": \"\"\r\n    },\r\n    \"contents\": [\r\n      {\r\n        \"type\": \"text\",\r\n        \"text\": \"Teste de ação\"\r\n      }\r\n    ],\r\n    \"timestamp\": \"2022-10-24T21:41:14+00:00\"\r\n  }\r\n}",
+					"raw": "{\r\n  \"id\": \"d7740f27-67b8-445a-b981-023812e40664\",\r\n  \"timestamp\": \"2022-10-26T20:44:01.930Z\",\r\n  \"type\": \"MESSAGE\",\r\n  \"subscriptionId\": \"f21881b0-7ad4-4ea4-a6f2-8f412f86a0d5\",\r\n  \"channel\": \"whatsapp\",\r\n  \"direction\": \"IN\",\r\n  \"message\": {\r\n    \"id\": \"bd4ad3dc-d8f3-4692-b9ef-48ba74078f0a\",\r\n    \"from\": \"5547991798864\",\r\n    \"to\": \"ordinary-thought\",\r\n    \"direction\": \"IN\",\r\n    \"channel\": \"whatsapp\",\r\n    \"visitor\": {\r\n      \"name\": \"André\",\r\n      \"firstName\": \"André\",\r\n      \"lastName\": \"\"\r\n    },\r\n    \"contents\": [\r\n      {\r\n        \"type\": \"text\",\r\n        \"text\": \"Alo\"\r\n      }\r\n    ],\r\n    \"timestamp\": \"2022-10-26T20:44:01+00:00\"\r\n  }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -88,7 +102,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3001/v1/webhookRecebimento",
+					"raw": "http://localhost:3001/v1/whatsapp/webhookRecebimento",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -96,7 +110,49 @@
 					"port": "3001",
 					"path": [
 						"v1",
+						"whatsapp",
 						"webhookRecebimento"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Historico mensagens",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJraWQiOiJHZHM1a1NqVlwvVFpUblNsTU1PbW9cL1F1UEdkc05CSVZ6NUJxbjdwbDZ1Ylk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLnNpbXBsZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5uYXR1cmV6YXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5zaXR1YWNvZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5yZWdpc3Ryb3MgZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLmxvdGUiLCJhdXRoX3RpbWUiOjE2NjYyOTYzMTMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5zYS1lYXN0LTEuYW1hem9uYXdzLmNvbVwvc2EtZWFzdC0xX05jaFpCUXFsbiIsImV4cCI6MTY2NjI5OTkxMywiaWF0IjoxNjY2Mjk2MzEzLCJ2ZXJzaW9uIjoyLCJqdGkiOiI5OTIzMGRkOC0yYTBjLTQyOGYtOWQ3Yy1mODcwYzAyMDY4YWEiLCJjbGllbnRfaWQiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSJ9.ppcC3Z021OXdXE4OZnevTBtjDS37U9UD37VLs4HLhVehdsefgaRLKpkuuEyXbK2TAQQDytWN_nXYAQbBbksSLGsV9lJTf7oLTarnpDxAIrWG3P82KBR-GalrUG2BNP-B_nheLfzemqUEFNuccT2Po7wTeI1YDrqOSV4LfgsLz3viDqZFW9PnajEDET0bn_o-SfS_z2sev6xNuBaUy-XF-lyfmstpWCK7cGmlEvsrcdX-9ATdU-FJ7z-itsku4SDUOXQ6-rnvOJtl9uF9ID89NCR4gXbwdcj1EmEm2V_hdUj6YicdxNkgoLHB0h7Udagy66XACJvAQMmpxGm2vQJhZg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"filtros\": [\r\n    {\r\n      \"campo\": \"statusEntregaCliente\",\r\n      \"operacao\": \"=\",\r\n      \"valor\": \"DELETED\"\r\n    }\r\n  ],\r\n  \"ordem\": {\r\n    \"campo\": \"dataCadastro\",\r\n    \"ordem\": \"desc\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/v1/whatsapp/historicoMensagens/enviada",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"whatsapp",
+						"historicoMensagens",
+						"enviada"
 					]
 				}
 			},

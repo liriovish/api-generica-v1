@@ -53,7 +53,7 @@ module.exports = class ExpressRouterAdapter {
              * 
              * @param string sRota
              */
-            const sParametros = JSON.stringify(req.query)+JSON.stringify(req.body)
+            const sParametros = JSON.stringify(req.query)+JSON.stringify(req.body)+JSON.stringify(req.params)
 
             /**
              * Pega o IP do usuario pela requisição
@@ -70,7 +70,7 @@ module.exports = class ExpressRouterAdapter {
              * 
              * @var object oHttpResponse Realiza as operações da rota e retorna
              */
-            const oHttpResponse = await rRouter.route(req.body, sIp, res.get('chaveAplicativo'))
+            const oHttpResponse = await rRouter.route(req.body, sIp, res.get('chaveAplicativo'), req.params)
 
             res.status(oHttpResponse.statusCode).json(oHttpResponse.body)
 

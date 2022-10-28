@@ -39,10 +39,25 @@ module.exports = class AWSSNS {
      * 
      * @return object Retorna os dados
      */
-    static async notificar(sId) {
+    static async notificar(sId, sTipoNotificacao) {
         // Retorna true se for ambiente de desenvolvimento
         if(process.env.APP_ENV == 'development'){
             return true
+        }
+
+        /**
+         * Define o TopicArn da AWS
+         * 
+         * @var string sTopicArn
+         */
+         let sTopicArn = ''
+
+        if(sTipoNotificacao == 'status'){
+            sTopicArn = process.env.TOPIC_ARN_NOTIFICACAO_STATUS
+        }
+
+        if(sTipoNotificacao == 'recebimento'){
+            sTopicArn = process.env.TOPIC_ARN_NOTIFICACAO
         }
 
         try {
@@ -53,7 +68,7 @@ module.exports = class AWSSNS {
              */
             const oDadosSNS = {
                 Message: `{"id": "${sId}"}`,
-                TopicArn: process.env.TOPIC_ARN_NOTIFICACAO
+                TopicArn: sTopicArn
             }
 
             /**

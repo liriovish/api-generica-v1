@@ -1,11 +1,11 @@
 /**
- * Arquivo do composer para montar a comunica��o entre a rota, db e outros
+ * Arquivo do composer para montar a comunicação entre a rota, db e outros
  *
  * NodeJS version 16.x
  *
  * @category  JavaScript
  * @package   WhatsApp
- * @author    Equipe Webcart�rios <contato@webcartorios.com.br>
+ * @author    Equipe Webcartórios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/api-whatsapp
@@ -13,7 +13,7 @@
  */
 
 /**
- * Configura��es globais
+ * Configurações globais
  */
 const moment = require('moment')
 const db = require('../models')
@@ -25,7 +25,15 @@ const db = require('../models')
  */
 module.exports = class WhatsappRepository {
     /**
-     * Fun��o para inserir o contato no banco de dados
+     * Construtor
+     * @param {consultaFilter}
+     */
+    constructor({ consultaFilter = '' } = {}) {
+        this.consultaFilter = consultaFilter
+    }
+
+    /**
+     * Função para inserir o contato no banco de dados
      * 
      * @async
      * @function insereContato
@@ -73,7 +81,7 @@ module.exports = class WhatsappRepository {
     }
 
     /**
-     * Fun��o para buscar o cliente no banco de dados
+     * Função para buscar o cliente no banco de dados
      * 
      * @async
      * @function buscaContato
@@ -116,7 +124,7 @@ module.exports = class WhatsappRepository {
     }
 
     /**
-     * Fun��o para buscar a mensagem enviada no banco de dados
+     * Função para buscar a mensagem enviada no banco de dados
      * 
      * @async
      * @function buscaMensagemEnviada
@@ -158,7 +166,7 @@ module.exports = class WhatsappRepository {
     }
 
     /**
-     * Fun��o para contar mensagens
+     * Função para contar mensagens
      * 
      * @async
      * @function contarMensagens
@@ -194,7 +202,7 @@ module.exports = class WhatsappRepository {
     }
 
     /**
-     * Fun��o para inserir a mensagem enviada no banco de dados
+     * Função para inserir a mensagem enviada no banco de dados
      * 
      * @async
      * @function insereMensagemEnviada
@@ -223,7 +231,7 @@ module.exports = class WhatsappRepository {
                     idContato: oDadosContato._id,
                     numeroRemetente: oDadosMensagem.from,
                     numeroDestinatario: oDadosMensagem.to,
-                    mensagem: oDadosMensagem.contents,
+                    mensagem: oDadosMensagem,
                     idMensagem: oDadosMensagem.id,
                     idCliente: oDadosContato.idCliente,
                     dataEnvio: moment().format()
@@ -237,7 +245,7 @@ module.exports = class WhatsappRepository {
     }
 
     /**
-     * Fun��o para atualizar a mensagem no banco de dados
+     * Função para atualizar a mensagem no banco de dados
      * 
      * @async
      * @function atualizaMensagem
@@ -279,7 +287,7 @@ module.exports = class WhatsappRepository {
     }
 
     /**
-     * Fun��o para inserir a mensagem recebida no banco de dados
+     * Função para inserir a mensagem recebida no banco de dados
      * 
      * @async
      * @function insereMensagemRecebida
@@ -308,13 +316,149 @@ module.exports = class WhatsappRepository {
                     idContato: oDadosContato._id,
                     numeroRemetente: oDadosMensagem.from,
                     numeroDestinatario: oDadosMensagem.to,
-                    mensagem: oDadosMensagem.contents,
+                    mensagem: oDadosMensagem,
                     idMensagem: oDadosMensagem.id,
                     idCliente: oDadosContato.idCliente
                 }
             )
 
             return oInsereMensagensRecebidas
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para buscar as mensagens enviadas no banco de dados
+     * 
+     * @async
+     * @function buscaMensagensEnviadas
+     * 
+     * @param object oFiltros
+     * @param object oOrdem
+     * @param int iPagina
+     * @param string sIdCliente
+     * @param bool bBuscaTodos
+     * 
+     * @return object Retorna os dados da mensagem enviada ou null
+     */
+    async buscaMensagensEnviadas(oFiltros, oOrdem, iPagina, sIdCliente, bBuscaTodos = false) {
+        try {  
+            /**
+             * Define o model
+             * 
+             * @var {mongoose} dbMensagensEnviadas
+             */ 
+            const dbMensagensEnviadas = await db.MensagensEnviadas()
+
+            // Verifica se existe campo da ordenação
+            if(!oOrdem.campo){
+                oOrdem.campo = 'dataCadastro'
+            }
+
+            // Verifica se existe tipo da ordenação
+            if(!oOrdem.ordem){
+                oOrdem.ordem = 'DESC'
+            }
+
+            /**
+             * Define os tipos da ordenação
+             * 
+             * @var {object} oOrdenacao
+             */ 
+            const oOrdenacao = {
+                'asc': 1,
+                'ASC': 1,
+                'desc': -1,
+                'DESC': -1,
+            }
+
+            /**
+             * Criação de objeto com os dados para salvar
+             * @var {object} dadosTratados
+             */
+            const oDadosWhere = await this.consultaFilter.filtrosConsulta(oFiltros, sIdCliente)
+
+            /**
+             * Busca no banco de dados
+             * 
+             * @var object oBuscaMensagemEnviada
+             */
+            const oBuscaMensagemEnviada = await dbMensagensEnviadas.find(
+                oDadosWhere
+            ).sort({[oOrdem.campo]: oOrdenacao[oOrdem.ordem]})
+             .skip( iPagina > 0 && bBuscaTodos == false ? ( ( iPagina - 1 ) * 100 ) : 0 )
+             .limit(bBuscaTodos == true ? null : 100)
+
+            return oBuscaMensagemEnviada
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para buscar as mensagens enviadas no banco de dados
+     * 
+     * @async
+     * @function buscaMensagensRecebidas
+     * 
+     * @param object oFiltros
+     * @param object oOrdem
+     * @param int iPagina
+     * @param string sIdCliente
+     * @param bool bBuscaTodos
+     * 
+     * @return object Retorna os dados da mensagem enviada ou null
+     */
+    async buscaMensagensRecebidas(oFiltros, oOrdem, iPagina, sIdCliente, bBuscaTodos = false) {
+        try {  
+            /**
+             * Define o model
+             * 
+             * @var {mongoose} dbMensagensRecebidas
+             */ 
+            const dbMensagensRecebidas = await db.MensagensRecebidas()
+
+            // Verifica se existe campo da ordenação
+            if(!oOrdem.campo){
+                oOrdem.campo = 'dataCadastro'
+            }
+
+            // Verifica se existe tipo da ordenação
+            if(!oOrdem.ordem){
+                oOrdem.ordem = 'DESC'
+            }
+
+            /**
+             * Define os tipos da ordenação
+             * 
+             * @var {object} oOrdenacao
+             */ 
+            const oOrdenacao = {
+                'asc': 1,
+                'ASC': 1,
+                'desc': -1,
+                'DESC': -1,
+            }
+
+            /**
+             * Criação de objeto com os dados para salvar
+             * @var {object} dadosTratados
+             */
+            const oDadosWhere = await this.consultaFilter.filtrosConsulta(oFiltros, sIdCliente)
+
+            /**
+             * Busca no banco de dados
+             * 
+             * @var object oBuscaMensagemEnviada
+             */
+            const oBuscaMensagemEnviada = await dbMensagensRecebidas.find(
+                oDadosWhere
+            ).sort({[oOrdem.campo]: oOrdenacao[oOrdem.ordem]})
+             .skip( iPagina > 0 && bBuscaTodos == false ? ( ( iPagina - 1 ) * 100 ) : 0 )
+             .limit(bBuscaTodos == true ? null : 100)
+
+            return oBuscaMensagemEnviada
         } catch (error) {
             console.log(error)
         }

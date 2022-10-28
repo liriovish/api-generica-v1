@@ -1,12 +1,12 @@
 /**
- * Esse arquivo é responsável pelas validações e tratamentos antes de enviar
+ * Esse arquivo Ã© responsÃ¡vel pelas validaÃ§Ãµes e tratamentos antes de enviar
  * a consulta ou cadastro ao banco de dados
  *
  * NodeJS version 16.x
  *
  * @category  JavaScript
  * @package   WhatsApp
- * @author    Equipe Webcartórios <contato@webcartorios.com.br>
+ * @author    Equipe WebcartÃ³rios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/api-whatsapp
@@ -14,10 +14,11 @@
  */
 
 /**
- * Configurações globais
+ * ConfiguraÃ§Ãµes globais
  */
 const HttpResponse = require('../../presentation/helpers/http-response')
 const helpers = require('../../utils/helpers')
+const { CustomError } = require('../../utils/errors/')
 
 /**
  * Classe WhatsappUseCase
@@ -30,10 +31,11 @@ module.exports = class WhatsappUseCase {
      */
     constructor({ whatsappRepository, clienteFilter } = {}) {
         this.whatsappRepository = whatsappRepository
+        this.clienteFilter = clienteFilter
     }
 
     /**
-     * Função responsável pelo envio da mensagem
+     * FunÃ§Ã£o responsÃ¡vel pelo envio da mensagem
      *
      * @param {object} oDados
      * @param {object} oDadosCliente
@@ -48,7 +50,7 @@ module.exports = class WhatsappUseCase {
          */
         const oDadosContato = await this.whatsappRepository.insereContato(oDadosCliente._id, oDados.numeroDestinatario)
 
-        // Verifica se não houve cadastro
+        // Verifica se nÃ£o houve cadastro
         if(oDadosContato == null){
             return HttpResponse.serverError()
         }
@@ -58,9 +60,9 @@ module.exports = class WhatsappUseCase {
          *
          * @var {object} oEnviaMensagem
          */
-        const oEnviaMensagem = await helpers.ZenviaClient.enviarMensagem(oDados, oDadosCliente.whatsapp)
+        const oEnviaMensagem = await helpers.ZenviaClient.enviarMensagem(oDados, oDadosCliente)
 
-        // Verifica se não houve cadastro
+        // Verifica se nÃ£o houve cadastro
         if(oEnviaMensagem.statusCode != null && oEnviaMensagem.statusCode != 200){
             /**
              * Caso gere algum erro
@@ -76,7 +78,7 @@ module.exports = class WhatsappUseCase {
          */
         const oDadosMensagemEnviada = await this.whatsappRepository.insereMensagemEnviada(oDadosContato, oEnviaMensagem)
 
-        // Verifica se não houve cadastro
+        // Verifica se nÃ£o houve cadastro
         if(oDadosMensagemEnviada == null){
             return HttpResponse.serverError()
         }
@@ -100,7 +102,99 @@ module.exports = class WhatsappUseCase {
     }
 
     /**
-     * Função responsável pelo webhook de status
+     * FunÃ§Ã£o responsÃ¡vel pelo envio da mensagem
+     *
+     * @param {object} oDados
+     * @param {object} oDadosCliente
+     *
+     * @returns {object}
+     */
+    async historicoMensagens(oParams, oDados, oDadosCliente) {
+        /**
+         * Define as funcÃµes para buscar todas as mensagens para cada tipo de mensagem
+         *
+         * @var {object} oFuncoesTodasMensagensEnviadas
+         */
+        const oFuncoesTodasMensagensEnviadas = {
+            enviada: this.whatsappRepository.buscaMensagensEnviadas(oDados.filtros, oDados.ordem, oDados.pagina, oDadosCliente._id, true),
+            recebida: this.whatsappRepository.buscaMensagensRecebidas(oDados.filtros, oDados.ordem, oDados.pagina, oDadosCliente._id, true)
+        }
+
+        /**
+         * Define as funcÃµes para buscar as mensagens para cada tipo de mensagem
+         *
+         * @var {object} oFuncoesDadosMensagensEnviadas
+         */
+        const oFuncoesDadosMensagensEnviadas = {
+            enviada: this.whatsappRepository.buscaMensagensEnviadas(oDados.filtros, oDados.ordem, oDados.pagina, oDadosCliente._id),
+            recebida: this.whatsappRepository.buscaMensagensRecebidas(oDados.filtros, oDados.ordem, oDados.pagina, oDadosCliente._id)
+        }
+
+        /**
+         * Busca todas as mensagens enviadas
+         *
+         * @var {object} oDadosMensagensEnviadas
+         */
+        const oTodasMensagensEnviadas = await oFuncoesTodasMensagensEnviadas[oParams.tipoMensagem]
+
+        /**
+         * Busca as mensagens enviadas
+         *
+         * @var {object} oDadosMensagensEnviadas
+         */
+        const oDadosMensagensEnviadas = await oFuncoesDadosMensagensEnviadas[oParams.tipoMensagem]
+
+        /**
+         * Define o total de mensagens
+         *
+         * @var {int} iResultados
+         */
+        const iResultados = oTodasMensagensEnviadas.length
+
+        /**
+         * Define o total de paginas
+         *
+         * @var {int} iPaginas
+         */
+        const iPaginas = Math.ceil(iResultados/100)
+        
+        /**
+         * Define o retorno
+         *
+         * @var {object} oRetorno
+         */
+        const oRetorno = {}
+
+        // Define as informaÃ§Ãµes das mensagens
+        oRetorno.data = oDadosMensagensEnviadas.map(oMensagem => 
+            (
+                { 
+                    id: oMensagem._id, 
+                    idContato: oMensagem.idContato,
+                    numeroRemetente: oMensagem.numeroRemetente,
+                    numeroDestinatario: oMensagem.numeroDestinatario,
+                    mensagem: oMensagem.mensagem,
+                    idMensagem: oMensagem.idMensagem,
+                    idCliente: oMensagem.idCliente,
+                    dataCadastro: oMensagem.dataCadastro,
+                    dataAtualizacao: oMensagem.dataAtualizacao,
+                    status: oMensagem.status ??  oMensagem.statusEntregaCliente,
+                    tentativasEntregaCliente: oMensagem.tentativasEntregaCliente ?? 0,
+                    idConversa: oMensagem.idConversa ?? ''
+                }
+            )
+        );
+        
+        // Define as informaÃ§Ãµes da busca
+        oRetorno.resultados = iResultados
+        oRetorno.paginas = iPaginas
+        oRetorno.paginaAtual = oDados.pagina ?? 1
+
+        return oRetorno
+    }
+
+    /**
+     * FunÃ§Ã£o responsÃ¡vel pelo webhook de status
      *
      * @param {object} oDados
      *
@@ -114,8 +208,24 @@ module.exports = class WhatsappUseCase {
          */
         const oAtualizaMensagem = await this.whatsappRepository.atualizaMensagem(oDados.messageId, oDados.messageStatus.code)
 
-        // Verifica se não houve cadastro
+        // Verifica se nÃ£o houve cadastro
         if(oAtualizaMensagem == null){
+            return HttpResponse.serverError()
+        }
+
+        /**
+         * Notifica via SNS
+         *
+         * @var {object} oSNS
+         */
+        const oSNS = await helpers.AWSSNS.notificar(oDados.messageId, 'status')
+
+        // Verifica se houve erro
+        if(oSNS == null){
+            /**
+             * Caso gere algum erro
+             * Retorna o erro
+             */
             return HttpResponse.serverError()
         }
 
@@ -123,14 +233,14 @@ module.exports = class WhatsappUseCase {
     }
 
     /**
-     * Função responsável pelo webhook de recebimento
+     * FunÃ§Ã£o responsÃ¡vel pelo webhook de recebimento
      *
      * @param {object} oDados
-     * @param {object} oCliente
+     * @param {string} sToken
      *
      * @returns {object}
      */
-    async webhookRecebimento(oDados, oCliente) {
+    async webhookRecebimento(oDados, sToken) {
         /**
          * Busca os dados do contato na mensagem enviada
          *
@@ -138,10 +248,33 @@ module.exports = class WhatsappUseCase {
          */
         const oDadosContato = await this.whatsappRepository.buscaMensagemEnviada(oDados.from, oDados.to)
 
-        // Verifica se não houve contato
+        // Verifica se nÃ£o houve contato
         if(oDadosContato == null){
             return HttpResponse.serverError()
         }
+
+        /**
+         * Busca os dados do cliente
+         *
+         * @var {obejct} oCliente
+         *
+         * @UsaFuncao dadosCliente
+         */
+        const oCliente = await this.clienteFilter.dadosCliente(sToken, oDadosContato.idCliente)
+
+        // Verifica se existe o cliente
+        if(oCliente.statusCode != 200){
+            return HttpResponse.badRequest(
+                new CustomError('Cliente nÃ£o localizado', 2)
+            )
+        }
+
+        /**
+         * Busca os dados do cliente
+         *
+         * @var {obejct} oDadosCliente
+         */
+        const oDadosCliente = oCliente.body
 
         /**
          * Insere a mensagem
@@ -150,13 +283,13 @@ module.exports = class WhatsappUseCase {
          */
         const oInsereMensagem = await this.whatsappRepository.insereMensagemRecebida(oDadosContato, oDados)
 
-        // Verifica se não houve cadastro
+        // Verifica se nÃ£o houve cadastro
         if(oInsereMensagem == null){
             return HttpResponse.serverError()
         }
 
-        // Verifica se o cliente tem mensagem de retorno padrão
-        if(oCliente.whatsapp.mensagemRetornoPadrao && oCliente.whatsapp.mensagemRetornoPadrao.toString().length > 0){
+        // Verifica se o cliente tem mensagem de retorno padrÃ£o
+        if(oDadosCliente.whatsapp.mensagemRetornoPadrao && oDadosCliente.whatsapp.mensagemRetornoPadrao.toString().length > 0){
             /**
              * Dados da mensagem
              *
@@ -167,7 +300,7 @@ module.exports = class WhatsappUseCase {
                 mensagem: [
                     {
                         type: "text",
-                        text: oCliente.whatsapp.mensagemRetornoPadrao
+                        text: oDadosCliente.whatsapp.mensagemRetornoPadrao
                     }
                 ]
             }
@@ -177,7 +310,7 @@ module.exports = class WhatsappUseCase {
              *
              * @var {object} oEnviaMensagem
              */
-            const oEnviaMensagem = await this.enviarMensagem(oDadosMensagem, oCliente)
+            const oEnviaMensagem = await this.enviarMensagem(oDadosMensagem, oDadosCliente)
 
             // Verifica se houve erro
             if(oEnviaMensagem.statusCode != 201){
@@ -194,7 +327,7 @@ module.exports = class WhatsappUseCase {
          *
          * @var {object} oSNS
          */
-        const oSNS = await helpers.AWSSNS.notificar(oDados.id)
+        const oSNS = await helpers.AWSSNS.notificar(oDados.id, 'recebimento')
 
         // Verifica se houve erro
         if(oSNS == null){

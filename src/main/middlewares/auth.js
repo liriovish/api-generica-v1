@@ -12,7 +12,7 @@
  * @CriadoEm  20/10/2022
  */
 
-const envFile = require('../config/env')
+require('dotenv').config()
 
 /**
  * Captura o token de autorização
@@ -34,79 +34,83 @@ module.exports = async(req, res, next) => {
             /**
              * Adiciona as configurações do cliente
              */
-            res.set('chaveAplicativo', '4mck610vlskgf4ub6t4s3i88tq')
+            res.set('chaveAplicativo', process.env.TOKEN_API_CLIENTE)
         }else{
-            /**
-             * Carrega variáveis
-             */
-            const env = await envFile()
-
             /**
              * Token de autorização recebido via header
              *
              * @var {string} authToken
              */
             const authToken = req.headers['authorization']
+            const apiToken =  req.headers['x-api-token']
+
+            /**
+             * Inicia a chave do cliente para utilização da api rest como vazia
+             *
+             * @var {string} idClienteApiRest
+             */
+            let idClienteApiRest = ''
 
             /**
              * Verifica se o token não foi informado, e retorna um erro
              */
-            if (!authToken)
+            if (!authToken && !apiToken)
                 return res.status(401).json({
                     message: 'Não foi informado um token de autenticação'
                 })
 
-            /**
-             * Verifica se o token não começa com Bearer, e retorna um erro
-             */
-            if (!authToken.toString().startsWith('Bearer '))
-                return res.status(401).json({
-                    message: 'Token de autenticação inválido'
-                })
+            if(authToken){
+                /**
+                 * Verifica se o token não começa com Bearer, e retorna um erro
+                 */
+                if (!authToken.toString().startsWith('Bearer ') && !apiToken)
+                    return res.status(401).json({
+                        message: 'Token de autenticação inválido'
+                    })
 
-            /**
-             * Transforma o token JWT em um array, quebrando pelo caractere ponto (.)
-             *
-             * @var {string} header
-             * @var {string} payload
-             * @var {string} signature
-             */
-            const [header, payload, signature] = authToken
-                .toString()
-                .split('.')
+                /**
+                 * Transforma o token JWT em um array, quebrando pelo caractere ponto (.)
+                 *
+                 * @var {string} header
+                 * @var {string} payload
+                 * @var {string} signature
+                 */
+                const [header, payload, signature] = authToken
+                    .toString()
+                    .split('.')
 
-            /**
-             * Transforma o dado em base64 para string legível
-             *
-             * @var {Object} decryptedPayload
-             */
-            const decryptedPayload = JSON.parse(
-                (new Buffer.from(payload, 'base64'))
-                .toString('ascii')
-            )
+                /**
+                 * Transforma o dado em base64 para string legível
+                 *
+                 * @var {Object} decryptedPayload
+                 */
+                const decryptedPayload = JSON.parse(
+                    (new Buffer.from(payload, 'base64'))
+                    .toString('ascii')
+                )
 
-            /**
-             * Verifica se o object de payload não tem a chave client_id, para retornar
-             *      um erro
-             */
-            if (!decryptedPayload.client_id)
-                return res.status(401).json({
-                    message: 'Token de autenticação não apresenta a chave de cliente'
-                })
+                /**
+                 * Verifica se o object de payload não tem a chave client_id, para retornar
+                 *      um erro
+                 */
+                if (!decryptedPayload.client_id)
+                    return res.status(401).json({
+                        message: 'Token de autenticação não apresenta a chave de cliente'
+                    })
 
-            /**
-             * Captura a chave do cliente para utilização da api rest
-             *
-             * @var {string} idClienteApiRest
-             */
-            const idClienteApiRest = decryptedPayload.client_id
+                idClienteApiRest = decryptedPayload.client_id
+            }
+
+            if(apiToken){
+                idClienteApiRest = apiToken
+            }
 
             /**
              * Adiciona as configurações do cliente
              */
             res.set('chaveAplicativo', idClienteApiRest)
         }
-     
+
         next()
     } catch (error) {
         console.error(error)

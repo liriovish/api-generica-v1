@@ -16,6 +16,7 @@
  * Configurações globais
  */
 const EnviarMensagem = require('./enviar-mensagem-router')
+const HistoricoMensagens = require('./historico-mensagens-router')
 const WebhookStatus = require('./webhook-status-router')
 const WebhookRecebimento = require('./webhook-recebimento-router')
 
@@ -24,6 +25,7 @@ const WebhookRecebimento = require('./webhook-recebimento-router')
  */
 module.exports = {
     EnviarMensagem,
+    HistoricoMensagens,
     WebhookStatus,
     WebhookRecebimento
 }

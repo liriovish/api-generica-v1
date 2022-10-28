@@ -29,7 +29,16 @@ module.exports = router => {
      * @UsaFuncao WhatsappRouteComposer.enviarMensagem
      * @return {object}
      */
-    router.post('/v1/enviarMensagem', adapt(WhatsappRouteComposer.enviarMensagem()))
+    router.post('/v1/whatsapp/enviarMensagem', adapt(WhatsappRouteComposer.enviarMensagem()))
+
+    /**
+     * Rota POST para o envio da mensagem
+     *
+     * @UsaFuncao adapt
+     * @UsaFuncao WhatsappRouteComposer.historicoMensagens
+     * @return {object}
+     */
+    router.post('/v1/whatsapp/historicoMensagens/:tipoMensagem', adapt(WhatsappRouteComposer.historicoMensagens()))
 
     /**
      * Rota POST para o webhook de status
@@ -38,7 +47,7 @@ module.exports = router => {
      * @UsaFuncao WhatsappRouteComposer.webhookStatus
      * @return {object}
      */
-    router.post('/v1/webhookStatus', adapt(WhatsappRouteComposer.webhookStatus()))
+    router.post('/v1/whatsapp/webhookStatus', adapt(WhatsappRouteComposer.webhookStatus()))
 
     /**
      * Rota POST para o webhook de recebimento
@@ -47,5 +56,5 @@ module.exports = router => {
      * @UsaFuncao WhatsappRouteComposer.webhookStatus
      * @return {object}
      */
-    router.post('/v1/webhookRecebimento', adapt(WhatsappRouteComposer.webhookRecebimento()))
+    router.post('/v1/whatsapp/webhookRecebimento', adapt(WhatsappRouteComposer.webhookRecebimento()))
 }
