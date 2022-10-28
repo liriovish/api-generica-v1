@@ -45,7 +45,7 @@ module.exports = class EnviarMensagemRouter {
      * 
      * @returns {HttpResponse}
      */
-    async route(oBody, sIp, sToken) {
+    async route(oBody, sIp, sToken, oParams, sTokenJwt) {
         try {
             /**
              * Busca os dados do cliente
@@ -54,7 +54,7 @@ module.exports = class EnviarMensagemRouter {
              *
              * @UsaFuncao dadosCliente
              */
-            const oCliente = await this.clienteFilter.dadosCliente(sToken)
+            const oCliente = await this.clienteFilter.dadosCliente(sToken, '', sTokenJwt)
 
             // Verifica se existe o cliente
             if(oCliente.statusCode != 200){
