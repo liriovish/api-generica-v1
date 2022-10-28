@@ -69,8 +69,7 @@ module.exports = class WebhookRecebimentoRouter {
              * @UsaFuncao webhookRecebimento
              */
             const oDadosWebhookRecebimento = await this.whatsappUseCase.webhookRecebimento(oBody.message, sToken)
-            console.log(1,oDadosWebhookRecebimento)
-            console.log(2,sToken)
+
             // Verifica se houve erro
             if(oDadosWebhookRecebimento.statusCode != 201){
                 return oDadosWebhookRecebimento

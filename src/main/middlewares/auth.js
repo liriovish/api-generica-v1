@@ -12,7 +12,7 @@
  * @CriadoEm  20/10/2022
  */
 
-const envFile = require('../config/env')
+require('dotenv').config()
 
 /**
  * Captura o token de autorização
@@ -34,13 +34,8 @@ module.exports = async(req, res, next) => {
             /**
              * Adiciona as configurações do cliente
              */
-            res.set('chaveAplicativo', 'TOKEN')
+            res.set('chaveAplicativo', process.env.TOKEN_API_CLIENTE)
         }else{
-            /**
-             * Carrega variáveis
-             */
-            const env = await envFile();
-
             /**
              * Token de autorização recebido via header
              *

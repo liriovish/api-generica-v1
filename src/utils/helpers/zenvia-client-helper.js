@@ -17,6 +17,7 @@
  */
 const HttpResponse = require('../../presentation/helpers/http-response')
 const AxiosClient = require('./axios-client-helper')
+const Crypto = require('./crypto-helper')
 
 /**
  * Classe ZenviaClient
@@ -31,12 +32,19 @@ module.exports = class ZenviaClient {
      * @function enviarMensagem
      * 
      * @param object oDados
-     * @param object oWhatsapp
+     * @param object oCliente
      * 
      * @return object Retorna os dados da api ou erro
      */
-    static async enviarMensagem(oDados, oWhatsapp) {
+    static async enviarMensagem(oDados, oCliente) {
         try {
+            /**
+             * Descriptografa o token
+             *
+             * @var {string} sTokenDecrypted
+             */
+            const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.tokenIntegracao, oCliente._id)
+
             /**
              * Busca os dados do cliente
              *
@@ -45,12 +53,12 @@ module.exports = class ZenviaClient {
             const oDadosCliente = await AxiosClient.post(
                 'https://api.zenvia.com/v2/channels/whatsapp/messages', 
                 {
-                    from: oWhatsapp.numero,
+                    from: oCliente.whatsapp.numero,
                     to: oDados.numeroDestinatario.toString(),
                     contents: oDados.mensagem
                 }, 
                 '', 
-                oWhatsapp.tokenIntegracao
+                sTokenDecrypted
             )
 
             /**
