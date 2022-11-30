@@ -82,17 +82,6 @@ module.exports = class WhatsappValidator {
             )
         }
 
-        for (let [ iChave, oMensagem ] of Object.entries(oDados.mensagem)) {
-            /**
-             * Valida se a estrutura da mensagem é valida
-             */
-            if (!oMensagem.type || !oMensagem.text) {
-                return HttpResponse.badRequest(
-                    new CustomError('Mensagem inválida', 6)
-                )
-            }
-        }
-
         /**
          * Faz a contagem das mensagens enviadas
          *
