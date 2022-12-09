@@ -68,7 +68,7 @@ module.exports = class ConsultaFilter {
             }
 
             /**
-             * Verifica se o array com os valores tem conte�do
+             * Verifica se o array com os valores tem conteudo
              */
             if (oValues.length) {
                 if (campo == 'dataCadastro') {

@@ -1,11 +1,11 @@
 /**
- * Helper para gravaÁ„o dos logs no AWS CloudWatch
+ * Helper para grava√ß√£o dos logs no AWS CloudWatch
  *
  * NodeJS version 16.x
  *
  * @category  JavaScript
  * @package   Cartoon
- * @author    Equipe WebcartÛrios <contato@webcartorios.com.br>
+ * @author    Equipe Webcart√≥rios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/visualizacao-matricula-getimagem/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/visualizacao-matricula-getimagem
@@ -13,14 +13,14 @@
  */
 
 /**
- * ConfiguraÁıes globais
+ * Configura√ß√µes globais
  */
 //const env = require('../../main/config/env')
 const AWS = require('aws-sdk')
 require('dotenv').config()
 
 /**
- * ConfiguraÁıes AWS
+ * Configura√ß√µes AWS
  */
 AWS.config.update({region: process.env.REGION_AWS})
 
@@ -31,18 +31,18 @@ AWS.config.update({region: process.env.REGION_AWS})
  */
 module.exports = class LogAWSCloudWatch {
     /**
-     * FunÁ„o para gravar o log
+     * Fun√ß√£o para gravar o log
      * 
      * @async
      * @function gravarLog
      * 
-     * @param string sToken Token da requisiÁ„o
-     * @param string sRota Rota da requisiÁ„o
-     * @param string sParametros Parametros da requisiÁ„o
-     * @param string sRetorno Retorno da requisiÁ„o
+     * @param string sToken Token da requisi√ß√£o
+     * @param string sRota Rota da requisi√ß√£o
+     * @param string sParametros Parametros da requisi√ß√£o
+     * @param string sRetorno Retorno da requisi√ß√£o
      * @param string sIp IP do usuario
      * 
-     * @return object Retorna os dados da solicitaÁ„o ou null
+     * @return object Retorna os dados da solicita√ß√£o ou null
      */
     static async gravarLog(sToken, sRota, sParametros, sRetorno, sIp) {
         // Retorna true se for ambiente de desenvolvimento
@@ -52,12 +52,12 @@ module.exports = class LogAWSCloudWatch {
         
         try {
             /**
-             * Vari·veis padrıes Log
+             * Vari√°veis padr√µes Log
              *
              * @var bool bCreateLogGroup        Se o grupo de log encontra-se criado
-             * @var object oDescribeLogGroups   Retorno da verificaÁ„o se j· existe o grupo de log
-             * @var oCreateLogGroup             Retorno da criaÁ„o do grupo de log
-             * @var sSequenciaToken             Proximo log de sequeÍncia
+             * @var object oDescribeLogGroups   Retorno da verifica√ß√£o se j√° existe o grupo de log
+             * @var oCreateLogGroup             Retorno da cria√ß√£o do grupo de log
+             * @var sSequenciaToken             Proximo log de seque√™ncia
              */
             let bCreateLogGroup = false
             let oDescribeLogGroups = null
@@ -65,7 +65,7 @@ module.exports = class LogAWSCloudWatch {
             let sSequenciaToken = null
 
             /**
-             * InÌcia o CloudWatch
+             * In√≠cia o CloudWatch
              *
              * @var mix  mCloudWatchLogs
              */
@@ -81,7 +81,7 @@ module.exports = class LogAWSCloudWatch {
             }).promise()
 
             /**
-             * Se n„o existir, cria o grupo de log
+             * Se n√£o existir, cria o grupo de log
              */
             if (oDescribeLogGroups.logGroups.length === 0) {
                 oCreateLogGroup = await mCloudWatchLogs.createLogGroup({
@@ -94,24 +94,24 @@ module.exports = class LogAWSCloudWatch {
                 bCreateLogGroup = true
             } else {
                 /**
-                 * Se j· existir o grupo criado, define como grupo existente
+                 * Se j√° existir o grupo criado, define como grupo existente
                  */
                 bCreateLogGroup = true
             }
 
             /**
-             * Vari·veis padrıes Stream
+             * Vari√°veis padr√µes Stream
              *
              * @var bool bCreateStream          Se o stream de log encontra-se criado
-             * @var object oDescribeLogStreams  Retorno da verificaÁ„o se j· existe o stream de log
-             * @var oCreateLogStreams           Retorno da criaÁ„o do stream de log
+             * @var object oDescribeLogStreams  Retorno da verifica√ß√£o se j√° existe o stream de log
+             * @var oCreateLogStreams           Retorno da cria√ß√£o do stream de log
              */
             let bCreateStream = false
             let oDescribeLogStreams = null
             let oCreateLogStreams = null
 
             /**
-             * Se o grupo j· existir, segue o processo para criaÁ„o do Stream
+             * Se o grupo j√° existir, segue o processo para cria√ß√£o do Stream
              */
             if (bCreateLogGroup) {
 
@@ -127,7 +127,7 @@ module.exports = class LogAWSCloudWatch {
                 }).promise()
 
                 /**
-                 * Se n„o existir, cria o grupo de log
+                 * Se n√£o existir, cria o grupo de log
                  */
                 if (oDescribeLogStreams.logStreams.length === 0) {
                     oCreateLogStreams = await mCloudWatchLogs.createLogStream({
@@ -141,7 +141,7 @@ module.exports = class LogAWSCloudWatch {
                     bCreateStream = true
                 } else {
                     /**
-                     * Se j· existir o stram criado, define como stream existente
+                     * Se j√° existir o stram criado, define como stream existente
                      */
                     bCreateStream = true
                 }
@@ -158,11 +158,11 @@ module.exports = class LogAWSCloudWatch {
             }
 
             /**
-             * Se o grupo estream de log existirem, grava o log, caso contr·rio, gera erro
+             * Se o grupo estream de log existirem, grava o log, caso contr√°rio, gera erro
              */
             if (bCreateLogGroup && bCreateStream) {
                 /**
-                 * Monta JSON do log para a gravaÁ„o
+                 * Monta JSON do log para a grava√ß√£o
                  *
                  * @var object oDadosLog
                  */
@@ -175,7 +175,7 @@ module.exports = class LogAWSCloudWatch {
                 }
 
                 /**
-                 * Monta os par‚metros para o log
+                 * Monta os par√¢metros para o log
                  *
                  * @var object oParametrosCloudWatchLogs
                  */
@@ -186,7 +186,7 @@ module.exports = class LogAWSCloudWatch {
                 }
 
                 /**
-                 * Verifica se existe o token sequÍncia, se existir, adiciona
+                 * Verifica se existe o token sequ√™ncia, se existir, adiciona
                  */
                 if (typeof sSequenciaToken !== 'undefined') {
                     oParametrosCloudWatchLogs = {
@@ -201,7 +201,7 @@ module.exports = class LogAWSCloudWatch {
                 const oResultadoCloudWatchLogs = await mCloudWatchLogs.putLogEvents(oParametrosCloudWatchLogs).promise()
 
                 /**
-                 * Verifica se o log foi gravado e gerou o prÛximo token
+                 * Verifica se o log foi gravado e gerou o pr√≥ximo token
                  */
                 if (typeof oResultadoCloudWatchLogs.nextSequenceToken === 'undefined'
                     || !oResultadoCloudWatchLogs.nextSequenceToken

@@ -49,7 +49,14 @@ module.exports = class Webhook {
              * @UsaFuncao webhookStatus
              */
             const oDadosWebhookStatus = await this.whatsappUseCase.webhookStatus(oBody)
-            console.log(oDadosWebhookStatus)
+
+            if(oDadosWebhookStatus.statusCode == 201){
+                /**
+                 * Retorna dados
+                 */
+                return HttpResponse.ok(oDadosWebhookStatus)
+            }
+            
             /**
              * Dispara o webhook de recebimento
              *
@@ -58,12 +65,19 @@ module.exports = class Webhook {
              * @UsaFuncao webhookRecebimento
              */
             const oDadosWebhookRecebimento = await this.whatsappUseCase.webhookRecebimento(oBody, sToken)
-            console.log(oDadosWebhookRecebimento)
+            
+            if(oDadosWebhookRecebimento.statusCode == 201){
+                /**
+                 * Retorna dados
+                 */
+                return HttpResponse.ok(oDadosWebhookRecebimento)
+            }
 
             /**
-             * Retorna dados
+             * Caso gere algum erro
+             * Retorna erro
              */
-            return HttpResponse.ok({status: 'sucesso'})
+             return HttpResponse.serverError()
         } catch (error) {
             console.log(error)
             /**
