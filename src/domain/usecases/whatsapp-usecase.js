@@ -362,7 +362,7 @@ module.exports = class WhatsappUseCase {
     /**
      * Função responsável pelo webhook de recebimento
      *
-     * @param {object} oDados
+     * @param {object} oBody
      * @param {string} sToken
      *
      * @returns {object}
@@ -388,7 +388,10 @@ module.exports = class WhatsappUseCase {
             oDados.id = oBody.entry[0].changes[0].value.messages[0].id
             oDados.to = oBody.entry[0].changes[0].value.metadata.phone_number_id
             // Atualiza o numero do remetente pois a meta envia sem o digito 9
-            oDados.from = `${oDados.from.slice(0,4)}9${oDados.from.slice(4)}`
+
+            if(oDados.from.slice(0,2) == '55' && oDados.from.length == 12){
+                oDados.from = `${oDados.from.slice(0,4)}9${oDados.from.slice(4)}`
+            }
         }
 
         // Verifica se encontrou algum integrador, senão, gera erro

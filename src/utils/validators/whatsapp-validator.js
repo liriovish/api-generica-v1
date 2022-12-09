@@ -59,9 +59,9 @@ module.exports = class WhatsappValidator {
         if (!oDados.tipo ||
             oDados.tipo.length < 1
         ) {
-            return HttpResponse.badRequest(
-                new CustomError('Tipo não informado', 5)
-            )
+            // return HttpResponse.badRequest(
+            //     new CustomError('Tipo não informado', 5)
+            // )
         }
 
         /**
@@ -70,9 +70,9 @@ module.exports = class WhatsappValidator {
         if (oDados.template &&
             oDados.template.length < 1
         ) {
-            return HttpResponse.badRequest(
-                new CustomError('Template não informado', 6)
-            )
+            // return HttpResponse.badRequest(
+            //     new CustomError('Template não informado', 6)
+            // )
         }
 
         /**
