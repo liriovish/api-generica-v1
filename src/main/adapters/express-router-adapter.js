@@ -70,7 +70,14 @@ module.exports = class ExpressRouterAdapter {
              * 
              * @var object oHttpResponse Realiza as operações da rota e retorna
              */
-            const oHttpResponse = await rRouter.route(req.body, sIp, res.get('chaveAplicativo'), req.params, req.query)
+            const oHttpResponse = await rRouter.route(
+                req.body,
+                sIp,
+                res.get('chaveAplicativo'),
+                req.params,
+                sToken,
+                req.query
+            )
 
             if(oHttpResponse.body && oHttpResponse.body.retorno){
                 res.status(oHttpResponse.statusCode).send(oHttpResponse.body.retorno)

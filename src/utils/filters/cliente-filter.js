@@ -30,7 +30,7 @@ module.exports = class ClienteFilter {
      * 
      * @returns {HttpResponse}
      */
-    async dadosCliente(sToken, sIdCliente = '') {
+    async dadosCliente(sToken, sIdCliente = '', sTokenJwt = '') {
         try {
             /**
              * Define a URL
@@ -48,7 +48,7 @@ module.exports = class ClienteFilter {
              *
              * @var {oDadosCliente}
              */
-            const oDadosCliente = await AxiosClient.get(sUrl, {}, {'X-API-TOKEN': sToken})
+            const oDadosCliente = await AxiosClient.get(sUrl, {}, {'X-API-TOKEN': sToken, 'Authorization': sTokenJwt})
 
             /**
              * Retorna dados

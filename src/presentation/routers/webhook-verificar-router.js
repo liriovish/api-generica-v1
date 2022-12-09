@@ -35,7 +35,7 @@ module.exports = class WebhookVerificarRouter {
      * 
      * @returns {HttpResponse}
      */
-    async route(oBody = null, sIp = null, sChave = null, oParams = null, oQuery) {
+    async route(oBody = null, sIp = null, sChave = null, oParams = null, sToken = null, oQuery) {
         try {
             /**
              * Variaveis para a verificação
