@@ -109,6 +109,93 @@ module.exports = class WhatsappUseCase {
      *
      * @returns {object}
      */
+    async enviarMensagemV2(oDados, oDadosCliente) {
+        /**
+         * Insere o contato
+         *
+         * @var {object} oDadosContato
+         */
+        const oDadosContato = await this.whatsappRepository.insereContato(oDadosCliente._id, oDados.numeroDestinatario)
+
+        // Verifica se não houve cadastro
+        if(oDadosContato == null){
+            return HttpResponse.serverError()
+        }
+
+        /**
+         * Insere o contato
+         *
+         * @var {object} oEnviaMensagem
+         */
+        let oEnviaMensagem = {}
+
+        if(oDadosCliente.whatsapp.integrador == 'ZENVIA'){
+            oEnviaMensagem = await helpers.ZenviaClient.enviarMensagemV2(oDados, oDadosCliente)
+
+            // Verifica se não houve cadastro
+            if(oEnviaMensagem.statusCode != null && oEnviaMensagem.statusCode != 200){
+                /**
+                 * Caso gere algum erro
+                 * Retorna o erro
+                 */
+                return HttpResponse.serverError()
+            }
+        }else if(oDadosCliente.whatsapp.integrador == 'META'){
+            oEnviaMensagem = await helpers.MetaClient.enviarMensagem(oDados, oDadosCliente)
+
+            // Verifica se não houve cadastro
+            if(oEnviaMensagem.statusCode != null && oEnviaMensagem.statusCode != 200){
+                /**
+                 * Caso gere algum erro
+                 * Retorna o erro
+                 */
+                return HttpResponse.serverError()
+            }
+
+            // Atualiza o objeto recebido para salvar no banco
+            oEnviaMensagem.id = oEnviaMensagem.messages[0].id
+            oEnviaMensagem.from = oDadosCliente.whatsapp.metaIdNumeroTelefone
+            oEnviaMensagem.to = oEnviaMensagem.contacts[0].input
+        }        
+
+        /**
+         * Insere a mensagem enviada
+         *
+         * @var {object} oDadosMensagemEnviada
+         */
+        const oDadosMensagemEnviada = await this.whatsappRepository.insereMensagemEnviada(oDadosContato, oEnviaMensagem)
+
+        // Verifica se não houve cadastro
+        if(oDadosMensagemEnviada == null){
+            return HttpResponse.serverError()
+        }
+
+        /**
+         * Define o retorno
+         *
+         * @var {object} oRetorno
+         */
+        const oRetorno = {
+            _id: oDadosMensagemEnviada._id,
+            idContato: oDadosMensagemEnviada.idContato,
+            numeroDestinatario: oDadosMensagemEnviada.numeroDestinatario,
+            mensagem: oDadosMensagemEnviada.mensagem,
+            idMensagem: oDadosMensagemEnviada.idMensagem,
+            dataCadastro: oDadosMensagemEnviada.dataCadastro,
+            dataAtualizacao: oDadosMensagemEnviada.dataAtualizacao
+        }
+
+        return HttpResponse.created(oRetorno)
+    }
+
+    /**
+     * Função responsável pelo envio da mensagem
+     *
+     * @param {object} oDados
+     * @param {object} oDadosCliente
+     *
+     * @returns {object}
+     */
     async historicoMensagens(oParams, oDados, oDadosCliente) {
         /**
          * Define as funcões para buscar todas as mensagens para cada tipo de mensagem
@@ -202,12 +289,52 @@ module.exports = class WhatsappUseCase {
      */
     async webhookStatus(oDados) {
         /**
+         * Status da mensagem e id da mensagem
+         *
+         * @var {string} sStatus
+         * @var {string} sIdMensagem
+         */
+        let sStatus = ''
+        let sIdMensagem = ''
+
+        // Verifica se o corpo do webhook foi enviado pela ZENVIA
+        if(oDados.messageStatus && oDados.messageStatus.code){
+            sStatus = oDados.messageStatus.code
+            sIdMensagem = oDados.messageId
+        }
+
+        // Verifica se o corpo do webhook foi enviado pela META
+        if(oDados.entry && oDados.entry[0].changes[0].value.statuses){
+            sStatus = oDados.entry[0].changes[0].value.statuses[0].status
+            sIdMensagem = oDados.entry[0].changes[0].value.statuses[0].id
+
+            // Atualiza o status para deixar no padrão
+            if(sStatus == 'sent'){
+                sStatus = 'send'
+            }
+
+            // Atualiza o status para deixar no padrão
+            if(sStatus == 'failed'){
+                sStatus = 'not_delivered'
+            }
+        }
+
+        // Verifica se encontrou algum integrador, senão, gera erro
+        if(sStatus == ''){
+            /**
+             * Caso gere algum erro
+             * Retorna o erro
+             */
+             return HttpResponse.serverError()
+        }
+
+        /**
          * Atualiza a mensagem
          *
          * @var {object} oAtualizaMensagem
          */
-        const oAtualizaMensagem = await this.whatsappRepository.atualizaMensagem(oDados.messageId, oDados.messageStatus.code)
-
+        const oAtualizaMensagem = await this.whatsappRepository.atualizaMensagem(sIdMensagem, sStatus.toUpperCase())
+        
         // Verifica se não houve cadastro
         if(oAtualizaMensagem == null){
             return HttpResponse.serverError()
@@ -240,7 +367,35 @@ module.exports = class WhatsappUseCase {
      *
      * @returns {object}
      */
-    async webhookRecebimento(oDados, sToken) {
+    async webhookRecebimento(oBody, sToken) {
+        /**
+         * Status da mensagem e id da mensagem
+         *
+         * @var {object} sStatus
+         */
+        let oDados = null
+
+        // Verifica se o corpo do webhook foi enviado pela ZENVIA
+        if(oBody.message){
+            oDados = oBody.message
+        }
+
+        // Verifica se o corpo do webhook foi enviado pela META
+        if(oBody.object && oBody.entry[0].changes[0].value.messages){
+            oDados = oBody.entry[0].changes[0].value.messages[0]
+
+            // Atualiza o objeto para deixar no padrão
+            oDados.id = oBody.entry[0].changes[0].value.messages[0].id
+            oDados.to = oBody.entry[0].changes[0].value.metadata.phone_number_id
+            // Atualiza o numero do remetente pois a meta envia sem o digito 9
+            oDados.from = `${oDados.from.slice(0,4)}9${oDados.from.slice(4)}`
+        }
+
+        // Verifica se encontrou algum integrador, senão, gera erro
+        if(oDados == null){
+            return HttpResponse.serverError()
+        }
+
         /**
          * Busca os dados do contato na mensagem enviada
          *
@@ -261,7 +416,7 @@ module.exports = class WhatsappUseCase {
          * @UsaFuncao dadosCliente
          */
         const oCliente = await this.clienteFilter.dadosCliente(sToken, oDadosContato.idCliente)
-
+        
         // Verifica se existe o cliente
         if(oCliente.statusCode != 200){
             return HttpResponse.badRequest(
@@ -297,12 +452,10 @@ module.exports = class WhatsappUseCase {
              */
             const oDadosMensagem = {
                 numeroDestinatario: oDados.from,
-                mensagem: [
-                    {
-                        type: "text",
-                        text: oDadosCliente.whatsapp.mensagemRetornoPadrao
-                    }
-                ]
+                tipo: 'texto',
+                parametros: {
+                    conteudo: oDadosCliente.whatsapp.mensagemRetornoPadrao
+                }
             }
 
             /**
@@ -310,7 +463,7 @@ module.exports = class WhatsappUseCase {
              *
              * @var {object} oEnviaMensagem
              */
-            const oEnviaMensagem = await this.enviarMensagem(oDadosMensagem, oDadosCliente)
+            const oEnviaMensagem = await this.enviarMensagemV2(oDadosMensagem, oDadosCliente)
 
             // Verifica se houve erro
             if(oEnviaMensagem.statusCode != 201){

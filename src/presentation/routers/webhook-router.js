@@ -17,68 +17,53 @@
 /**
  * Configurações globais
  */
-const { CustomError } = require('../../utils/errors')
 const HttpResponse = require('../helpers/http-response')
 
 /**
- * Classe WebhookRecebimentoRouter
+ * Classe EnviarMensagemRouter
  * @package  src\presentation\routers
  */
-module.exports = class WebhookRecebimentoRouter {
+module.exports = class Webhook {
     /**
      * Construtor
      * @param {whatsappUseCase}
-     * @param {whatsappValidator}
-     * @param {clienteFilter}
      */
-    constructor({ whatsappUseCase, whatsappValidator, clienteFilter } = {}) {
+    constructor({ whatsappUseCase } = {}) {
         this.whatsappUseCase = whatsappUseCase
-        this.whatsappValidator = whatsappValidator
-        this.clienteFilter = clienteFilter
     }
-
+    
     /**
      * Função para criação da rota
      *
      * @param {object} oBody
-     * @param {string} sChave
      * 
      * @returns {HttpResponse}
      */
     async route(oBody, sIp, sToken) {
         try {
             /**
-             * Valida a requisição
+             * Dispara o webhook de status
              *
-             * @var {object} oValidacao
+             * @var {object} oDadosWebhookStatus
              *
-             * @UsaFuncao validarWebhookRecebimento
+             * @UsaFuncao webhookStatus
              */
-            const oValidacao = await this.whatsappValidator.validarWebhookRecebimento(oBody)
-
-            // Verifica se existe a requisição é valida
-            if(oValidacao != null){
-                return oValidacao
-            }
-
+            const oDadosWebhookStatus = await this.whatsappUseCase.webhookStatus(oBody)
+            console.log(oDadosWebhookStatus)
             /**
-             * Altera o status da mensagem
+             * Dispara o webhook de recebimento
              *
              * @var {object} oDadosWebhookRecebimento
              *
              * @UsaFuncao webhookRecebimento
              */
             const oDadosWebhookRecebimento = await this.whatsappUseCase.webhookRecebimento(oBody, sToken)
-
-            // Verifica se houve erro
-            if(oDadosWebhookRecebimento.statusCode != 201){
-                return oDadosWebhookRecebimento
-            }
+            console.log(oDadosWebhookRecebimento)
 
             /**
              * Retorna dados
              */
-            return HttpResponse.ok(oDadosWebhookRecebimento)
+            return HttpResponse.ok({status: 'sucesso'})
         } catch (error) {
             console.log(error)
             /**

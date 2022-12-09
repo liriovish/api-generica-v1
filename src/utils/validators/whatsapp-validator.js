@@ -54,13 +54,24 @@ module.exports = class WhatsappValidator {
         }
 
         /**
-         * Valida se existe a mensagem
+         * Valida se existe o tipo da mensagem
          */
-        if (!oDados.mensagem ||
-            oDados.mensagem.length < 1
+        if (!oDados.tipo ||
+            oDados.tipo.length < 1
         ) {
             return HttpResponse.badRequest(
-                new CustomError('Mensagem não informada', 5)
+                new CustomError('Tipo não informado', 5)
+            )
+        }
+
+        /**
+         * Valida se existe o template se necessario
+         */
+        if (oDados.template &&
+            oDados.template.length < 1
+        ) {
+            return HttpResponse.badRequest(
+                new CustomError('Template não informado', 6)
             )
         }
 
@@ -74,15 +85,6 @@ module.exports = class WhatsappValidator {
         }
 
         /**
-         * Valida se a estrutura da mensagem é valida
-         */
-        if (typeof oDados.mensagem !== 'object') {
-            return HttpResponse.badRequest(
-                new CustomError('Mensagem inválida', 6)
-            )
-        }
-
-        /**
          * Faz a contagem das mensagens enviadas
          *
          * @var int iContadorMensagens
@@ -90,7 +92,7 @@ module.exports = class WhatsappValidator {
         const iContadorMensagens = await this.whatsappRepository.contarMensagens(oDadosCliente._id)
 
         // Verifica o limite de mensagens
-        if(oDadosCliente.whatsapp.limiteMensagens >= oDadosCliente._id){
+        if(oDadosCliente.whatsapp.limiteMensagens > 0 && oDadosCliente.whatsapp.limiteMensagens < iContadorMensagens){
             return HttpResponse.badRequest(
                 new CustomError('Limite de envio de mensagens atingido', 7)
             )
@@ -264,12 +266,21 @@ module.exports = class WhatsappValidator {
      */
     async validarWebhookStatus(oDados) {
         /**
-         * Valida se existe o numero do destinatario
+         * Valida se existe o status
          */
-        if (!oDados.type 
-            || oDados.type != 'MESSAGE_STATUS'
-            || !oDados.messageStatus
+        if (oDados.type 
+            && (oDados.type != 'MESSAGE_STATUS'
+            || !oDados.messageStatus)
         ) {
+            return HttpResponse.badRequest(
+                new CustomError('Request inválido', 1)
+            )
+        }
+
+        /**
+         * Valida se existe o status
+         */
+        if (oDados.entry && !oDados.entry[0].changes[0].value.statuses) {
             return HttpResponse.badRequest(
                 new CustomError('Request inválido', 1)
             )

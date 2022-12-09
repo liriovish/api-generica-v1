@@ -104,7 +104,7 @@ module.exports = class AxiosClient {
             return response.data
         })
         .catch((error) => {
-            console.log(error)
+            console.log(error.response)
             /**
              * Monta o objeto de retorno para erro
              * 

@@ -1,7 +1,7 @@
 /**
- * Classe para criação da rota de retorno para o usuario
+ * Classe para criação da rota de retorno para o usuário
  * 
- * Esse arquivo é responsavel pelas validações basicas dos dados recebidos
+ * Esse arquivo é responsável pelas validações básicas dos dados recebidos
  *
  * NodeJS version 16.x
  *
@@ -17,14 +17,14 @@
 /**
  * Configurações globais
  */
-const { CustomError, InvalidParamError } = require('../../utils/errors')
+const { CustomError } = require('../../utils/errors')
 const HttpResponse = require('../helpers/http-response')
 
 /**
- * Classe HistoricoMensagensRouter
+ * Classe EnviarMensagemRouter
  * @package  src\presentation\routers
  */
-module.exports = class HistoricoMensagensRouter {
+module.exports = class EnviarMensagemRouter {
     /**
      * Construtor
      * @param {whatsappUseCase}
@@ -45,7 +45,7 @@ module.exports = class HistoricoMensagensRouter {
      * 
      * @returns {HttpResponse}
      */
-    async route(oBody, sIp, sToken, oParams) {
+    async route(oBody, sIp, sToken, oParams, sTokenJwt) {
         try {
             /**
              * Busca os dados do cliente
@@ -54,8 +54,8 @@ module.exports = class HistoricoMensagensRouter {
              *
              * @UsaFuncao dadosCliente
              */
-            const oCliente = await this.clienteFilter.dadosCliente(sToken)
-
+            const oCliente = await this.clienteFilter.dadosCliente(sToken, '', sTokenJwt)
+            
             // Verifica se existe o cliente
             if(oCliente.statusCode != 200){
                 return HttpResponse.badRequest(
@@ -73,38 +73,30 @@ module.exports = class HistoricoMensagensRouter {
             /**
              * Valida os dados
              *
-             * @var {object} bValidaHistoricoMensagens
+             * @var {object} bValidaEnviarMensagem
              *
-             * @UsaFuncao validarHistoricoMensagens
+             * @UsaFuncao validarEnviarMensagem
              */
-            const bValidaHistoricoMensagens = await this.whatsappValidator.validarHistoricoMensagens(oParams, oBody, oDadosCliente)
+            const bValidaEnviarMensagem = await this.whatsappValidator.validarEnviarMensagem(oBody, oDadosCliente)
 
             // Verifica se retornou erro
-            if(bValidaHistoricoMensagens != null){
-                return bValidaHistoricoMensagens
+            if(bValidaEnviarMensagem != null){
+                return bValidaEnviarMensagem
             }
 
             /**
              * Envia a mensagem
              *
-             * @var {object} oDadosHistoricoMensagens
+             * @var {object} oDadosEnviarMensagem
              *
-             * @UsaFuncao historicoMensagens
+             * @UsaFuncao enviarMensagem
              */
-            const oDadosHistoricoMensagens = await this.whatsappUseCase.historicoMensagens(oParams, oBody, oDadosCliente)
-
-            
-
-            if(oBody.pagina && oDadosHistoricoMensagens.paginas < oBody.pagina){
-                return HttpResponse.badRequest(
-                    new InvalidParamError('pagina')
-                )
-            }
+            const oDadosEnviarMensagem = await this.whatsappUseCase.enviarMensagemV2(oBody, oDadosCliente)
 
             /**
              * Retorna dados
              */
-            return HttpResponse.ok(oDadosHistoricoMensagens)
+            return HttpResponse.ok(oDadosEnviarMensagem)
         } catch (error) {
             console.log(error)
             /**

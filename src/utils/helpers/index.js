@@ -17,6 +17,7 @@
  */
 const AxiosClient = require('./axios-client-helper')
 const ZenviaClient = require('./zenvia-client-helper')
+const MetaClient = require('./meta-client-helper')
 const LogAWSCloudWatch = require('./aws-cloudwatch-helper')
 const AWSSNS = require('./aws-sns-helper')
 const AWSParameters = require('./aws-parameters-helper')
@@ -27,6 +28,7 @@ const AWSParameters = require('./aws-parameters-helper')
 module.exports = {
     AxiosClient,
     ZenviaClient,
+    MetaClient,
     LogAWSCloudWatch,
     AWSSNS,
     AWSParameters

@@ -64,15 +64,19 @@ module.exports = class ExpressRouterAdapter {
                         req.connection.remoteAddress ||
                         req.socket.remoteAddress ||
                         (req.connection.socket ? req.connection.socket.remoteAddress : null)
-
+            
             /**
              * Função de adaptador do express
              * 
              * @var object oHttpResponse Realiza as operações da rota e retorna
              */
-            const oHttpResponse = await rRouter.route(req.body, sIp, res.get('chaveAplicativo'), req.params)
+            const oHttpResponse = await rRouter.route(req.body, sIp, res.get('chaveAplicativo'), req.params, req.query)
 
-            res.status(oHttpResponse.statusCode).json(oHttpResponse.body)
+            if(oHttpResponse.body && oHttpResponse.body.retorno){
+                res.status(oHttpResponse.statusCode).send(oHttpResponse.body.retorno)
+            }else{
+                res.status(oHttpResponse.statusCode).json(oHttpResponse.body)
+            }
 
             /**
              * Grava o log na AWS CloudWatch

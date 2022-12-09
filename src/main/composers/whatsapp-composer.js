@@ -96,6 +96,71 @@ module.exports = class WhatsappComposer {
      *
      * @returns
      */
+     static enviarMensagemV2() {
+        /**
+         * Chama a classe do respositório que é resposável pela comunicação com
+         * o banco de dados.
+         *
+         * @var {WhatsappRepository} whatsappRepository
+         */
+        const whatsappRepository = new WhatsappRepository()
+
+        /**
+         * Chama a classe de filtro do cliente.
+         *
+         * @var {ClienteFilter} clienteFilter
+         */
+        const clienteFilter = new ClienteFilter()
+
+        /**
+         * Chama a classe do respositório que é resposável pela comunicação com
+         * o banco de dados.
+         *
+         * @param {WhatsappValidator} whatsappValidator
+         * 
+         * @var {WhatsappRepository} whatsappRepository
+         */
+        const whatsappValidator = new WhatsappValidator({
+            whatsappRepository,
+            clienteFilter
+        })
+        
+        /**
+         * Chama a classe do caso de uso que é responsável pela consulta no
+         * banco de dados
+         *
+         * @var {WhatsappUseCase} whatsappUseCase
+         *
+         * @param {WhatsappRepository} whatsappRepository
+         */
+        const whatsappUseCase = new WhatsappUseCase({
+            whatsappRepository
+        })
+
+        /**
+         * Chama a classe da rota para montar e responder ao usuário com os
+         * dados consultados no banco de dados
+         *
+         * @var {EnviarMensagemV2}
+         *
+         * @param {WhatsappUseCase} whatsappUseCase
+         * @param {WhatsappValidator} whatsappValidator
+         * @param {ClienteFilter} clienteFilter
+         *
+         * @return {object}
+         */
+        return new WhatsappRouter.EnviarMensagemV2({
+            whatsappUseCase,
+            whatsappValidator,
+            clienteFilter
+        })
+    }
+
+    /**
+     * Função resposável por montar a chamada das classes do whatsapp
+     *
+     * @returns
+     */
     static historicoMensagens() {
         /**
          * Chama a classe de filtro do cliente.
@@ -282,6 +347,72 @@ module.exports = class WhatsappComposer {
             whatsappUseCase,
             whatsappValidator,
             clienteFilter
+        })
+    }
+
+    /**
+     * Função resposável por montar a chamada as classes do whatsapp
+     *
+     * @returns
+     */
+     static webhookVerificar() {
+        /**
+         * Chama a classe da rota para montar e responder ao usuário com os
+         * dados consultados no banco de dados
+         *
+         * @var {WebhookVerificar}
+         *
+         * @return {object}
+         */
+        return new WhatsappRouter.WebhookVerificar()
+    }
+
+    /**
+     * Função resposável por montar a chamada as classes do whatsapp
+     *
+     * @returns
+     */
+     static webhook() {
+        /**
+         * Chama a classe do respositório que é resposável pela comunicação com
+         * o banco de dados.
+         *
+         * @var {WhatsappRepository} whatsappRepository
+         */
+        const whatsappRepository = new WhatsappRepository()
+
+        /**
+         * Chama a classe de filtro do cliente.
+         *
+         * @var {ClienteFilter} clienteFilter
+         */
+        const clienteFilter = new ClienteFilter()
+        
+        /**
+         * Chama a classe do caso de uso que é responsável pela consulta no
+         * banco de dados
+         *
+         * @var {WhatsappUseCase} whatsappUseCase
+         *
+         * @param {WhatsappRepository} whatsappRepository
+         */
+        const whatsappUseCase = new WhatsappUseCase({
+            whatsappRepository,
+            clienteFilter
+        })
+
+        /**
+         * Chama a classe da rota para montar e responder ao usuário com os
+         * dados consultados no banco de dados
+         *
+         * @var {Webhook}
+         *
+         * @param {WhatsappUseCase} whatsappUseCase
+         *
+         * @return {object}
+         */
+        return new WhatsappRouter.Webhook({
+            whatsappUseCase
         })
     }
 }

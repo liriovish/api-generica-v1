@@ -1,13 +1,13 @@
 /**
- * Classe para criaÁ„o da rota de retorno para o usu·rio
+ * Classe para cria√ß√£o da rota de retorno para o usu√°rio
  * 
- * Esse arquivo È respons·vel pelas validaÁıes b·sicas dos dados recebidos
+ * Esse arquivo √© respons√°vel pelas valida√ß√µes b√°sicas dos dados recebidos
  *
  * NodeJS version 16.x
  *
  * @category  JavaScript
  * @package   WhatsApp
- * @author    Equipe WebcartÛrios <contato@webcartorios.com.br>
+ * @author    Equipe Webcart√≥rios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/api-whatsapp
@@ -15,71 +15,71 @@
  */
 
 /**
- * ConfiguraÁıes globais
+ * Configura√ß√µes globais
  */
-const { CustomError } = require('../../utils/errors')
-const HttpResponse = require('../helpers/http-response')
-
-/**
- * Classe WebhookStatusRouter
- * @package  src\presentation\routers
- */
-module.exports = class WebhookStatusRouter {
-    /**
-     * Construtor
-     * @param {whatsappUseCase}
-     * @param {whatsappValidator}
-     * @param {clienteFilter}
-     */
-    constructor({ whatsappUseCase, whatsappValidator } = {}) {
-        this.whatsappUseCase = whatsappUseCase
-        this.whatsappValidator = whatsappValidator
-    }
-
-    /**
-     * FunÁ„o para criaÁ„o da rota
-     *
-     * @param {object} oBody
-     * @param {string} sChave
-     * 
-     * @returns {HttpResponse}
-     */
-    async route(oBody, sIp, sToken) {
-        try {
-            /**
-             * Valida a requisiÁ„o
-             *
-             * @var {object} oValidacao
-             *
-             * @UsaFuncao validarWebhookStatus
-             */
-            const oValidacao = await this.whatsappValidator.validarWebhookStatus(oBody)
-
-            // Verifica se existe a requisiÁ„o È valida
-            if(oValidacao != null){
-                return oValidacao
-            }
-
-            /**
-             * Altera o status da mensagem
-             *
-             * @var {object} oDadosWebhookStatus
-             *
-             * @UsaFuncao webhookStatus
-             */
-            const oDadosWebhookStatus = await this.whatsappUseCase.webhookStatus(oBody)
-
-            /**
-             * Retorna dados
-             */
-            return HttpResponse.ok(oDadosWebhookStatus)
-        } catch (error) {
-            console.log(error)
-            /**
-             * Caso gere algum erro
-             * Retorna o erro
-             */
-            return HttpResponse.serverError()
-        }
-    }
-}
+ const { CustomError } = require('../../utils/errors')
+ const HttpResponse = require('../helpers/http-response')
+ 
+ /**
+  * Classe WebhookStatusRouter
+  * @package  src\presentation\routers
+  */
+ module.exports = class WebhookStatusRouter {
+     /**
+      * Construtor
+      * @param {whatsappUseCase}
+      * @param {whatsappValidator}
+      * @param {clienteFilter}
+      */
+     constructor({ whatsappUseCase, whatsappValidator } = {}) {
+         this.whatsappUseCase = whatsappUseCase
+         this.whatsappValidator = whatsappValidator
+     }
+ 
+     /**
+      * Fun√ß√£o para cria√ß√£o da rota
+      *
+      * @param {object} oBody
+      * @param {string} sChave
+      * 
+      * @returns {HttpResponse}
+      */
+     async route(oBody, sIp, sToken) {
+         try {
+             /**
+              * Valida a requisi√ß√£o
+              *
+              * @var {object} oValidacao
+              *
+              * @UsaFuncao validarWebhookStatus
+              */
+             const oValidacao = await this.whatsappValidator.validarWebhookStatus(oBody)
+ 
+             // Verifica se existe a requisi√ß√£o √© valida
+             if(oValidacao != null){
+                 return oValidacao
+             }
+ 
+             /**
+              * Altera o status da mensagem
+              *
+              * @var {object} oDadosWebhookStatus
+              *
+              * @UsaFuncao webhookStatus
+              */
+             const oDadosWebhookStatus = await this.whatsappUseCase.webhookStatus(oBody)
+ 
+             /**
+              * Retorna dados
+              */
+             return HttpResponse.ok(oDadosWebhookStatus)
+         } catch (error) {
+             console.log(error)
+             /**
+              * Caso gere algum erro
+              * Retorna o erro
+              */
+             return HttpResponse.serverError()
+         }
+     }
+ }
