@@ -446,6 +446,22 @@ module.exports = class WhatsappUseCase {
             return HttpResponse.serverError()
         }
 
+        /**
+         * Notifica via SNS
+         *
+         * @var {object} oSNS
+         */
+        const oSNS = await helpers.AWSSNS.notificar(oDados.id, 'recebimento')
+
+        // Verifica se houve erro
+        if(oSNS == null){
+            /**
+             * Caso gere algum erro
+             * Retorna o erro
+             */
+            return HttpResponse.serverError()
+        }
+
         // Verifica se o cliente tem mensagem de retorno padrão
         if(oDadosCliente.whatsapp.mensagemRetornoPadrao && oDadosCliente.whatsapp.mensagemRetornoPadrao.toString().length > 0){
             /**
@@ -476,22 +492,22 @@ module.exports = class WhatsappUseCase {
                  */
                 return HttpResponse.serverError()
             }
-        }
 
-        /**
-         * Notifica via SNS
-         *
-         * @var {object} oSNS
-         */
-        const oSNS = await helpers.AWSSNS.notificar(oDados.id, 'recebimento')
-
-        // Verifica se houve erro
-        if(oSNS == null){
             /**
-             * Caso gere algum erro
-             * Retorna o erro
+             * Notifica via SNS
+             *
+             * @var {object} oSNS
              */
-            return HttpResponse.serverError()
+            const oSNS = await helpers.AWSSNS.notificar(oEnviaMensagem.body.idMensagem, 'recebimento')
+            
+            // Verifica se houve erro
+            if(oSNS == null){
+                /**
+                 * Caso gere algum erro
+                 * Retorna o erro
+                 */
+                return HttpResponse.serverError()
+            }
         }
 
         return HttpResponse.created({mensagem: 'Mensagem inserida com sucesso!'})
