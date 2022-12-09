@@ -5,7 +5,7 @@
  *
  * @category  JavaScript
  * @package   WhatsApp
- * @author    Equipe Webcart?rios <contato@webcartorios.com.br>
+ * @author    Equipe Webcartórios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/api-whatsapp
@@ -13,7 +13,7 @@
  */
 
 /**
- * Configura??es globais
+ * Configurações globais
  */
 const HttpResponse = require('../../presentation/helpers/http-response')
 const AxiosClient = require('./axios-client-helper')
@@ -26,7 +26,7 @@ const Crypto = require('./crypto-helper')
  */
 module.exports = class ZenviaClient {
     /**
-     * Fun??o para enviar mensagem
+     * Função para enviar mensagem
      * 
      * @async
      * @function enviarMensagem
