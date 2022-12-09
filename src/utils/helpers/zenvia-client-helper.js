@@ -112,7 +112,7 @@
              if(oDados.tipo == 'template'){              
                  oMensagem = {
                      type: "template",
-                     template: oDados.template,
+                     templateId: oDados.template,
                      fields: oDados.parametros
                  }
              }
