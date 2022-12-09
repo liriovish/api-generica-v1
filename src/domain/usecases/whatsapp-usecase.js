@@ -156,6 +156,7 @@ module.exports = class WhatsappUseCase {
             oEnviaMensagem.id = oEnviaMensagem.messages[0].id
             oEnviaMensagem.from = oDadosCliente.whatsapp.metaIdNumeroTelefone
             oEnviaMensagem.to = oEnviaMensagem.contacts[0].input
+            oEnviaMensagem.contents = oDados.parametros.conteudo ?? ''
         }        
 
         /**
@@ -486,22 +487,6 @@ module.exports = class WhatsappUseCase {
 
             // Verifica se houve erro
             if(oEnviaMensagem.statusCode != 201){
-                /**
-                 * Caso gere algum erro
-                 * Retorna o erro
-                 */
-                return HttpResponse.serverError()
-            }
-
-            /**
-             * Notifica via SNS
-             *
-             * @var {object} oSNS
-             */
-            const oSNS = await helpers.AWSSNS.notificar(oEnviaMensagem.body.idMensagem, 'recebimento')
-            
-            // Verifica se houve erro
-            if(oSNS == null){
                 /**
                  * Caso gere algum erro
                  * Retorna o erro
