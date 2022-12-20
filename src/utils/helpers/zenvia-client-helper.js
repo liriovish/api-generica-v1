@@ -87,6 +87,8 @@
       * @return object Retorna os dados da api ou erro
       */
       static async enviarMensagemV2(oDados, oCliente) {
+        console.log('DADOS', oDados)
+        console.log('CLIENTE', oCliente)
          try {
              /**
               * Descriptografa o token

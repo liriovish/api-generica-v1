@@ -477,15 +477,13 @@ module.exports = class WhatsappUseCase {
                     conteudo: oDadosCliente.whatsapp.mensagemRetornoPadrao
                 }
             }
-            console.log('MENSAGEM', oDadosMensagem);
-            console.log('CLIENTE', oDadosCliente);
+
             /**
              * Envia a mensagem de retorno
              *
              * @var {object} oEnviaMensagem
              */
             const oEnviaMensagem = await this.enviarMensagemV2(oDadosMensagem, oDadosCliente)
-            console.log('RETORNO', oEnviaMensagem);
 
             // Verifica se houve erro
             if(oEnviaMensagem.statusCode != 201){
