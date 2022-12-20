@@ -421,8 +421,8 @@ module.exports = class WhatsappUseCase {
          *
          * @var {object} oDadosContato
          */
-        const oDadosContato = await this.whatsappRepository.insereContato(oCliente._id, oDados.from)
-
+        const oDadosContato = await this.whatsappRepository.insereContato(oCliente.body._id, oDados.from)
+        console.log(oDadosContato)
         // Verifica se não houve cadastro
         if(oDadosContato == null){
             return HttpResponse.serverError()

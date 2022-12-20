@@ -70,10 +70,10 @@ module.exports = class WhatsappRepository {
                 },
                 { 
                     upsert: true,
-                    returnNewDocument: true
+                    returnOriginal: false
                 }
             )
-
+  
             return oInsereContato
         } catch (error) {
             console.log(error)
