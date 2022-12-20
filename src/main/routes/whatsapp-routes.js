@@ -47,7 +47,7 @@
       * @UsaFuncao WhatsappRouteComposer.webhookStatus
       * @return {object}
       */
-     router.post('/v1/whatsapp/webhookStatus', adapt(WhatsappRouteComposer.webhookStatus()))
+     router.post('/v1/whatsapp/webhookStatus/:identificadorCliente', adapt(WhatsappRouteComposer.webhookStatus()))
  
      /**
       * Rota POST para o webhook de recebimento
@@ -56,7 +56,7 @@
       * @UsaFuncao WhatsappRouteComposer.webhookStatus
       * @return {object}
       */
-     router.post('/v1/whatsapp/webhookRecebimento', adapt(WhatsappRouteComposer.webhookRecebimento()))
+     router.post('/v1/whatsapp/webhookRecebimento/:identificadorCliente', adapt(WhatsappRouteComposer.webhookRecebimento()))
  
      /**
       * Rota V2 POST para o envio da mensagem
@@ -74,7 +74,7 @@
       * @UsaFuncao WhatsappRouteComposer.webhookVerificar
       * @return {object}
       */
-     router.get('/v2/whatsapp/webhook', adapt(WhatsappRouteComposer.webhookVerificar()))
+     router.get('/v2/whatsapp/webhook/:identificadorCliente', adapt(WhatsappRouteComposer.webhookVerificar()))
  
      /**
       * Rota V2 POST para o envio da mensagem
@@ -83,5 +83,5 @@
       * @UsaFuncao WhatsappRouteComposer.webhookVerificar
       * @return {object}
       */
-      router.post('/v2/whatsapp/webhook', adapt(WhatsappRouteComposer.webhook()))
+      router.post('/v2/whatsapp/webhook/:identificadorCliente', adapt(WhatsappRouteComposer.webhook()))
  }

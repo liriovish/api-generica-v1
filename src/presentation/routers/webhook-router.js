@@ -39,7 +39,7 @@ module.exports = class Webhook {
      * 
      * @returns {HttpResponse}
      */
-    async route(oBody, sIp, sToken) {
+    async route(oBody, sIp, sToken, oParams) {
         try {
             /**
              * Dispara o webhook de status
@@ -48,7 +48,7 @@ module.exports = class Webhook {
              *
              * @UsaFuncao webhookStatus
              */
-            const oDadosWebhookStatus = await this.whatsappUseCase.webhookStatus(oBody)
+            const oDadosWebhookStatus = await this.whatsappUseCase.webhookStatus(oBody, oParams.identificadorCliente)
 
             if(oDadosWebhookStatus.statusCode == 201){
                 /**
@@ -64,7 +64,7 @@ module.exports = class Webhook {
              *
              * @UsaFuncao webhookRecebimento
              */
-            const oDadosWebhookRecebimento = await this.whatsappUseCase.webhookRecebimento(oBody, sToken)
+            const oDadosWebhookRecebimento = await this.whatsappUseCase.webhookRecebimento(oBody, sToken, oParams.identificadorCliente)
             
             if(oDadosWebhookRecebimento.statusCode == 201){
                 /**

@@ -30,7 +30,7 @@ module.exports = class ClienteFilter {
      * 
      * @returns {HttpResponse}
      */
-    async dadosCliente(sToken, sIdCliente = '', sTokenJwt = '') {
+    async dadosCliente(sToken, sIdCliente = '', sTokenJwt = '', sIdentificadorCliente = '') {
         try {
             /**
              * Define a URL
@@ -41,6 +41,10 @@ module.exports = class ClienteFilter {
 
             if (sIdCliente != '') {
                 sUrl = `${sUrl}/${sIdCliente}`
+            }
+
+            if (sIdentificadorCliente != '') {
+                sUrl = `${sUrl}/identificador/${sIdentificadorCliente}`
             }
 
             /**

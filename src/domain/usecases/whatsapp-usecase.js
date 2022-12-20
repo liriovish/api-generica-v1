@@ -368,7 +368,7 @@ module.exports = class WhatsappUseCase {
      *
      * @returns {object}
      */
-    async webhookRecebimento(oBody, sToken) {
+    async webhookRecebimento(oBody, sToken, sIdentificadorCliente) {
         /**
          * Status da mensagem e id da mensagem
          *
@@ -401,31 +401,31 @@ module.exports = class WhatsappUseCase {
         }
 
         /**
-         * Busca os dados do contato na mensagem enviada
-         *
-         * @var {object} oDadosContato
-         */
-        const oDadosContato = await this.whatsappRepository.buscaMensagemEnviada(oDados.from, oDados.to)
-
-        // Verifica se não houve contato
-        if(oDadosContato == null){
-            return HttpResponse.serverError()
-        }
-
-        /**
          * Busca os dados do cliente
          *
          * @var {obejct} oCliente
          *
          * @UsaFuncao dadosCliente
          */
-        const oCliente = await this.clienteFilter.dadosCliente(sToken, oDadosContato.idCliente)
-        
+        const oCliente = await this.clienteFilter.dadosCliente(sToken, '', '', sIdentificadorCliente)
+  
         // Verifica se existe o cliente
         if(oCliente.statusCode != 200){
             return HttpResponse.badRequest(
                 new CustomError('Cliente não localizado', 2)
             )
+        }
+
+        /**
+         * Insere o contato
+         *
+         * @var {object} oDadosContato
+         */
+        const oDadosContato = await this.whatsappRepository.insereContato(oCliente._id, oDados.from)
+
+        // Verifica se não houve cadastro
+        if(oDadosContato == null){
+            return HttpResponse.serverError()
         }
 
         /**

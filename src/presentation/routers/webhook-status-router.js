@@ -44,7 +44,7 @@
       * 
       * @returns {HttpResponse}
       */
-     async route(oBody, sIp, sToken) {
+     async route(oBody, sIp, sTokens, oParams) {
          try {
              /**
               * Valida a requisição
