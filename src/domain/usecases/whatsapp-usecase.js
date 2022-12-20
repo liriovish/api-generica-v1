@@ -288,7 +288,7 @@ module.exports = class WhatsappUseCase {
      *
      * @returns {object}
      */
-    async webhookStatus(oDados) {
+    async webhookStatus(oDados, sIdentificadorCliente) {
         /**
          * Status da mensagem e id da mensagem
          *
@@ -346,7 +346,7 @@ module.exports = class WhatsappUseCase {
          *
          * @var {object} oSNS
          */
-        const oSNS = await helpers.AWSSNS.notificar(oDados.messageId, 'status')
+        const oSNS = await helpers.AWSSNS.notificar(oDados.messageId, sIdentificadorCliente, 'status')
 
         // Verifica se houve erro
         if(oSNS == null){
@@ -452,7 +452,7 @@ module.exports = class WhatsappUseCase {
          *
          * @var {object} oSNS
          */
-        const oSNS = await helpers.AWSSNS.notificar(oDados.id, 'recebimento')
+        const oSNS = await helpers.AWSSNS.notificar(oDados.id, sIdentificadorCliente, 'recebimento')
 
         // Verifica se houve erro
         if(oSNS == null){

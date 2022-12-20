@@ -67,7 +67,7 @@
               *
               * @UsaFuncao webhookStatus
               */
-             const oDadosWebhookStatus = await this.whatsappUseCase.webhookStatus(oBody)
+             const oDadosWebhookStatus = await this.whatsappUseCase.webhookStatus(oBody, oParams.identificadorCliente)
  
              /**
               * Retorna dados
