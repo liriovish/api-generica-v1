@@ -53,8 +53,8 @@ module.exports = class AWSSNS {
          * @var object oTopicArn
          */
         const oTopicArn = {
-            'status': process.env.TOPIC_ARN_NOTIFICACAO_STATUS,
-            'recebimento': process.env.TOPIC_ARN_NOTIFICACAO
+            status: process.env.TOPIC_ARN_NOTIFICACAO_STATUS,
+            recebimento: process.env.TOPIC_ARN_NOTIFICACAO
         }
 
         try {
