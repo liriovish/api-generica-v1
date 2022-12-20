@@ -15,143 +15,137 @@
 /**
  * Configurações globais
  */
- const HttpResponse = require('../../presentation/helpers/http-response')
- const AxiosClient = require('./axios-client-helper')
- const Crypto = require('./crypto-helper')
- 
- /**
-  * Classe ZenviaClient
-  * 
-  * @package  src\main\composers
-  */
- module.exports = class ZenviaClient {
-     /**
-      * Função para enviar mensagem
-      * 
-      * @async
-      * @function enviarMensagem
-      * 
-      * @param object oDados
-      * @param object oCliente
-      * 
-      * @return object Retorna os dados da api ou erro
-      */
-     static async enviarMensagem(oDados, oCliente) {
-        
-        console.log('DADOS', oDados)
-        console.log('DADOS', oCliente)
-         try {
-             /**
-              * Descriptografa o token
-              *
-              * @var {string} sTokenDecrypted
-              */
-             const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.tokenIntegracao, oCliente._id)
- 
-             /**
-              * Busca os dados do cliente
-              *
-              * @var {oDadosCliente}
-              */
-             const oDadosCliente = await AxiosClient.post(
-                 'https://api.zenvia.com/v2/channels/whatsapp/messages', 
-                 {
-                     from: oCliente.whatsapp.numero,
-                     to: oDados.numeroDestinatario.toString(),
-                     contents: oDados.mensagem
-                 }, 
-                 '', 
-                 sTokenDecrypted
-             )
-             console.log(oDadosCliente)
- 
-             /**
-              * Retorna dados
-              */
-             return oDadosCliente
-         } catch (error) {
-             console.log(error)
-             /**
-              * Caso gere algum erro
-              * Retorna o erro
-              */
-             return HttpResponse.serverError()
-         }
-     }
- 
-     /**
-      * Função para enviar mensagem
-      * 
-      * @async
-      * @function enviarMensagem
-      * 
-      * @param object oDados
-      * @param object oCliente
-      * 
-      * @return object Retorna os dados da api ou erro
-      */
-      static async enviarMensagemV2(oDados, oCliente) {
-        console.log('DADOS', oDados)
-        console.log('CLIENTE', oCliente)
-         try {
-             /**
-              * Descriptografa o token
-              *
-              * @var {string} sTokenDecrypted
-              */
-             const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.tokenIntegracao, oCliente._id)
- 
-             /**
-              * Define os dados da mensagem
-              *
-              * @var {object} oMensagem
-              */
-             let oMensagem = {}
- 
-             if(oDados.tipo == 'texto'){
-                 oMensagem = {
-                     type: 'text',
-                     text: oDados.parametros.conteudo.toString()
-                 }
-             }
- 
-             if(oDados.tipo == 'template'){              
-                 oMensagem = {
-                     type: "template",
-                     templateId: oDados.template,
-                     fields: oDados.parametros
-                 }
-             }
-             
-             /**
-              * Busca os dados do cliente
-              *
-              * @var {oDadosCliente}
-              */
-             const oDadosCliente = await AxiosClient.post(
-                 'https://api.zenvia.com/v2/channels/whatsapp/messages', 
-                 {
-                     from: oCliente.whatsapp.numero,
-                     to: oDados.numeroDestinatario.toString(),
-                     contents: [
-                         oMensagem
-                     ]
-                 }, 
-                 '', 
-                 sTokenDecrypted
-             )
-                 console.log(oDadosCliente)
-             /**
-              * Retorna dados
-              */
-             return oDadosCliente
-         } catch (error) {
-             console.log(error)
-             /**
-              * Caso gere algum erro
-              * Retorna o erro
-              */
-             return HttpResponse.serverError()
-         }
-     }
- }
+const HttpResponse = require('../../presentation/helpers/http-response')
+const AxiosClient = require('./axios-client-helper')
+const Crypto = require('./crypto-helper')
+
+/**
+ * Classe ZenviaClient
+ * 
+ * @package  src\main\composers
+ */
+module.exports = class ZenviaClient {
+    /**
+     * Função para enviar mensagem
+     * 
+     * @async
+     * @function enviarMensagem
+     * 
+     * @param object oDados
+     * @param object oCliente
+     * 
+     * @return object Retorna os dados da api ou erro
+     */
+    static async enviarMensagem(oDados, oCliente) {
+        try {
+            /**
+             * Descriptografa o token
+             *
+             * @var {string} sTokenDecrypted
+             */
+            const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.tokenIntegracao, oCliente._id)
+
+            /**
+             * Busca os dados do cliente
+             *
+             * @var {oDadosCliente}
+             */
+            const oDadosCliente = await AxiosClient.post(
+                'https://api.zenvia.com/v2/channels/whatsapp/messages', 
+                {
+                    from: oCliente.whatsapp.numero,
+                    to: oDados.numeroDestinatario.toString(),
+                    contents: oDados.mensagem
+                }, 
+                '', 
+                sTokenDecrypted
+            )
+
+            /**
+             * Retorna dados
+             */
+            return oDadosCliente
+        } catch (error) {
+            console.log(error)
+            /**
+             * Caso gere algum erro
+             * Retorna o erro
+             */
+            return HttpResponse.serverError()
+        }
+    }
+
+    /**
+     * Função para enviar mensagem
+     * 
+     * @async
+     * @function enviarMensagem
+     * 
+     * @param object oDados
+     * @param object oCliente
+     * 
+     * @return object Retorna os dados da api ou erro
+     */
+    static async enviarMensagemV2(oDados, oCliente) {
+        try {
+            /**
+             * Descriptografa o token
+             *
+             * @var {string} sTokenDecrypted
+             */
+            const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.tokenIntegracao, oCliente._id)
+
+            /**
+             * Define os dados da mensagem
+             *
+             * @var {object} oMensagem
+             */
+            let oMensagem = {}
+
+            if(oDados.tipo == 'texto'){
+                oMensagem = {
+                    type: 'text',
+                    text: oDados.parametros.conteudo.toString()
+                }
+            }
+
+            if(oDados.tipo == 'template'){              
+                oMensagem = {
+                    type: "template",
+                    templateId: oDados.template,
+                    fields: oDados.parametros
+                }
+            }
+            
+            /**
+             * Busca os dados do cliente
+             *
+             * @var {oDadosCliente}
+             */
+            const oDadosCliente = await AxiosClient.post(
+                'https://api.zenvia.com/v2/channels/whatsapp/messages', 
+                {
+                    from: oCliente.whatsapp.numero,
+                    to: oDados.numeroDestinatario.toString(),
+                    contents: [
+                        oMensagem
+                    ]
+                }, 
+                '', 
+                sTokenDecrypted
+            )
+
+            /**
+             * Retorna dados
+             */
+            return oDadosCliente
+        } catch (error) {
+            console.log(error)
+            /**
+             * Caso gere algum erro
+             * Retorna o erro
+             */
+            return HttpResponse.serverError()
+        }
+    }
+}

@@ -131,7 +131,7 @@ module.exports = class WhatsappUseCase {
 
         if(oDadosCliente.whatsapp.integrador == 'ZENVIA'){
             oEnviaMensagem = await helpers.ZenviaClient.enviarMensagemV2(oDados, oDadosCliente)
-            
+
             // Verifica se não houve cadastro
             if(oEnviaMensagem.statusCode != null && oEnviaMensagem.statusCode != 200){
                 /**
