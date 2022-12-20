@@ -220,7 +220,7 @@ module.exports = class WhatsappRepository {
              * @var {mongoose} dbMensagensEnviadas
              */ 
             const dbMensagensEnviadas = await db.MensagensEnviadas()
-
+            
             /**
              * Insere no banco de dados
              * 

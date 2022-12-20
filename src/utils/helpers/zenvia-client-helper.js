@@ -37,6 +37,9 @@
       * @return object Retorna os dados da api ou erro
       */
      static async enviarMensagem(oDados, oCliente) {
+        
+        console.log('DADOS', oDados)
+        console.log('DADOS', oCliente)
          try {
              /**
               * Descriptografa o token
@@ -60,6 +63,7 @@
                  '', 
                  sTokenDecrypted
              )
+             console.log(oDadosCliente)
  
              /**
               * Retorna dados
