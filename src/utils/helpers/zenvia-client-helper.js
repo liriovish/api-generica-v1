@@ -136,7 +136,7 @@
                  '', 
                  sTokenDecrypted
              )
- 
+                 console.log(oDadosCliente)
              /**
               * Retorna dados
               */
