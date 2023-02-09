@@ -5,7 +5,7 @@
  *
  * @category  JavaScript
  * @package   WhatsApp
- * @author    Equipe Webcartórios <contato@webcartorios.com.br>
+ * @author    Equipe WebcartÃ³rios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/api-whatsapp
@@ -13,7 +13,7 @@
  */
 
 /**
- * Configurações globais
+ * ConfiguraÃ§Ãµes globais
  */
 const HttpResponse = require('../../presentation/helpers/http-response')
 const { AxiosClient } = require('../helpers')
@@ -24,7 +24,7 @@ const { AxiosClient } = require('../helpers')
  */
 module.exports = class ClienteFilter {
     /**
-     * Função para o filtro
+     * FunÃ§Ã£o para o filtro
      *
      * @param {string} sChave
      * 

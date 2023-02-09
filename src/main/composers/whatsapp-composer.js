@@ -161,6 +161,71 @@ module.exports = class WhatsappComposer {
      *
      * @returns
      */
+     static enviarMensagemV3() {
+        /**
+         * Chama a classe do respositório que é resposável pela comunicação com
+         * o banco de dados.
+         *
+         * @var {WhatsappRepository} whatsappRepository
+         */
+        const whatsappRepository = new WhatsappRepository()
+
+        /**
+         * Chama a classe de filtro do cliente.
+         *
+         * @var {ClienteFilter} clienteFilter
+         */
+        const clienteFilter = new ClienteFilter()
+
+        /**
+         * Chama a classe do respositório que é resposável pela comunicação com
+         * o banco de dados.
+         *
+         * @param {WhatsappValidator} whatsappValidator
+         * 
+         * @var {WhatsappRepository} whatsappRepository
+         */
+        const whatsappValidator = new WhatsappValidator({
+            whatsappRepository,
+            clienteFilter
+        })
+        
+        /**
+         * Chama a classe do caso de uso que é responsável pela consulta no
+         * banco de dados
+         *
+         * @var {WhatsappUseCase} whatsappUseCase
+         *
+         * @param {WhatsappRepository} whatsappRepository
+         */
+        const whatsappUseCase = new WhatsappUseCase({
+            whatsappRepository
+        })
+
+        /**
+         * Chama a classe da rota para montar e responder ao usuário com os
+         * dados consultados no banco de dados
+         *
+         * @var {EnviarMensagemV3}
+         *
+         * @param {WhatsappUseCase} whatsappUseCase
+         * @param {WhatsappValidator} whatsappValidator
+         * @param {ClienteFilter} clienteFilter
+         *
+         * @return {object}
+         */
+        return new WhatsappRouter.EnviarMensagemV3({
+            whatsappUseCase,
+            whatsappValidator,
+            clienteFilter
+        })
+    }
+
+    /**
+     * Função resposável por montar a chamada das classes do whatsapp
+     *
+     * @returns
+     */
     static historicoMensagens() {
         /**
          * Chama a classe de filtro do cliente.
@@ -413,6 +478,272 @@ module.exports = class WhatsappComposer {
          */
         return new WhatsappRouter.Webhook({
             whatsappUseCase
+        })
+    }
+
+    /**
+     * Função resposável por montar a chamada das classes do whatsapp
+     *
+     * @returns
+     */
+    static criarTemplate() {
+        /**
+         * Chama a classe de filtro do cliente.
+         *
+         * @var {ConsultaFilter} consultaFilter
+         */
+        const consultaFilter = new ConsultaFilter()
+
+        /**
+         * Chama a classe do respositório que é resposável pela comunicação com
+         * o banco de dados.
+         *
+         * @var {WhatsappRepository} whatsappRepository
+         */
+        const whatsappRepository = new WhatsappRepository({
+            consultaFilter
+        })
+
+        /**
+         * Chama a classe de filtro do cliente.
+         *
+         * @var {ClienteFilter} clienteFilter
+         */
+        const clienteFilter = new ClienteFilter()
+
+        /**
+         * Chama a classe do respositório que é resposável pela comunicação com
+         * o banco de dados.
+         *
+         * @param {WhatsappValidator} whatsappValidator
+         * 
+         * @var {WhatsappRepository} whatsappRepository
+         */
+        const whatsappValidator = new WhatsappValidator({
+            whatsappRepository,
+            clienteFilter
+        })
+        
+        /**
+         * Chama a classe do caso de uso que é responsável pela consulta no
+         * banco de dados
+         *
+         * @var {WhatsappUseCase} whatsappUseCase
+         *
+         * @param {WhatsappRepository} whatsappRepository
+         */
+        const whatsappUseCase = new WhatsappUseCase({
+            whatsappRepository
+        })
+
+        /**
+         * Chama a classe da rota para montar e responder ao usuário com os
+         * dados consultados no banco de dados
+         *
+         * @var {CriarTemplate}
+         *
+         * @param {WhatsappUseCase} whatsappUseCase
+         * @param {WhatsappValidator} whatsappValidator
+         * @param {ClienteFilter} clienteFilter
+         *
+         * @return {object}
+         */
+        return new WhatsappRouter.CriarTemplate({
+            whatsappUseCase,
+            whatsappValidator,
+            clienteFilter
+        })
+    }
+
+    /**
+     * Função resposável por montar a chamada das classes do whatsapp
+     *
+     * @returns
+     */
+    static atualizarTemplate() {
+        /**
+         * Chama a classe de filtro do cliente.
+         *
+         * @var {ConsultaFilter} consultaFilter
+         */
+        const consultaFilter = new ConsultaFilter()
+
+        /**
+         * Chama a classe do respositório que é resposável pela comunicação com
+         * o banco de dados.
+         *
+         * @var {WhatsappRepository} whatsappRepository
+         */
+        const whatsappRepository = new WhatsappRepository({
+            consultaFilter
+        })
+
+        /**
+         * Chama a classe de filtro do cliente.
+         *
+         * @var {ClienteFilter} clienteFilter
+         */
+        const clienteFilter = new ClienteFilter()
+
+        /**
+         * Chama a classe do respositório que é resposável pela comunicação com
+         * o banco de dados.
+         *
+         * @param {WhatsappValidator} whatsappValidator
+         * 
+         * @var {WhatsappRepository} whatsappRepository
+         */
+        const whatsappValidator = new WhatsappValidator({
+            whatsappRepository,
+            clienteFilter
+        })
+        
+        /**
+         * Chama a classe do caso de uso que é responsável pela consulta no
+         * banco de dados
+         *
+         * @var {WhatsappUseCase} whatsappUseCase
+         *
+         * @param {WhatsappRepository} whatsappRepository
+         */
+        const whatsappUseCase = new WhatsappUseCase({
+            whatsappRepository
+        })
+
+        /**
+         * Chama a classe da rota para montar e responder ao usuário com os
+         * dados consultados no banco de dados
+         *
+         * @var {AtualizarTemplate}
+         *
+         * @param {WhatsappUseCase} whatsappUseCase
+         * @param {WhatsappValidator} whatsappValidator
+         * @param {ClienteFilter} clienteFilter
+         *
+         * @return {object}
+         */
+        return new WhatsappRouter.AtualizarTemplate({
+            whatsappUseCase,
+            whatsappValidator,
+            clienteFilter
+        })
+    }
+
+    /**
+     * Função resposável por montar a chamada das classes do whatsapp
+     *
+     * @returns
+     */
+    static listarTemplates() {
+        /**
+         * Chama a classe de filtro do cliente.
+         *
+         * @var {ConsultaFilter} consultaFilter
+         */
+        const consultaFilter = new ConsultaFilter()
+
+        /**
+         * Chama a classe do respositório que é resposável pela comunicação com
+         * o banco de dados.
+         *
+         * @var {WhatsappRepository} whatsappRepository
+         */
+        const whatsappRepository = new WhatsappRepository({
+            consultaFilter
+        })
+
+        /**
+         * Chama a classe de filtro do cliente.
+         *
+         * @var {ClienteFilter} clienteFilter
+         */
+        const clienteFilter = new ClienteFilter()
+        
+        /**
+         * Chama a classe do caso de uso que é responsável pela consulta no
+         * banco de dados
+         *
+         * @var {WhatsappUseCase} whatsappUseCase
+         *
+         * @param {WhatsappRepository} whatsappRepository
+         */
+        const whatsappUseCase = new WhatsappUseCase({
+            whatsappRepository
+        })
+
+        /**
+         * Chama a classe da rota para montar e responder ao usuário com os
+         * dados consultados no banco de dados
+         *
+         * @var {ListarTemplates}
+         *
+         * @param {WhatsappUseCase} whatsappUseCase
+         * @param {ClienteFilter} clienteFilter
+         *
+         * @return {object}
+         */
+        return new WhatsappRouter.ListarTemplates({
+            whatsappUseCase,
+            clienteFilter
+        })
+    }
+
+    /**
+     * Função resposável por montar a chamada das classes do whatsapp
+     *
+     * @returns
+     */
+    static listarContatos() {
+        /**
+         * Chama a classe de filtro do cliente.
+         *
+         * @var {ConsultaFilter} consultaFilter
+         */
+        const consultaFilter = new ConsultaFilter()
+
+        /**
+         * Chama a classe do respositório que é resposável pela comunicação com
+         * o banco de dados.
+         *
+         * @var {WhatsappRepository} whatsappRepository
+         */
+        const whatsappRepository = new WhatsappRepository({
+            consultaFilter
+        })
+
+        /**
+         * Chama a classe de filtro do cliente.
+         *
+         * @var {ClienteFilter} clienteFilter
+         */
+        const clienteFilter = new ClienteFilter()
+        
+        /**
+         * Chama a classe do caso de uso que é responsável pela consulta no
+         * banco de dados
+         *
+         * @var {WhatsappUseCase} whatsappUseCase
+         *
+         * @param {WhatsappRepository} whatsappRepository
+         */
+        const whatsappUseCase = new WhatsappUseCase({
+            whatsappRepository
+        })
+
+        /**
+         * Chama a classe da rota para montar e responder ao usuário com os
+         * dados consultados no banco de dados
+         *
+         * @var {ListarContatos}
+         *
+         * @param {WhatsappUseCase} whatsappUseCase
+         * @param {ClienteFilter} clienteFilter
+         *
+         * @return {object}
+         */
+        return new WhatsappRouter.ListarContatos({
+            whatsappUseCase,
+            clienteFilter
         })
     }
 }

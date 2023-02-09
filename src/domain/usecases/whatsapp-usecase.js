@@ -19,6 +19,8 @@
 const HttpResponse = require('../../presentation/helpers/http-response')
 const helpers = require('../../utils/helpers')
 const { CustomError } = require('../../utils/errors/')
+const moment = require('moment-timezone')
+moment.tz.setDefault("America/Sao_Paulo")
 
 /**
  * Classe WhatsappUseCase
@@ -48,7 +50,7 @@ module.exports = class WhatsappUseCase {
          *
          * @var {object} oDadosContato
          */
-        const oDadosContato = await this.whatsappRepository.insereContato(oDadosCliente._id, oDados.numeroDestinatario)
+        const oDadosContato = await this.whatsappRepository.insereContato(oDadosCliente._id, oDados.numeroDestinatario, oDados.nomeDestinatario)
 
         // Verifica se não houve cadastro
         if(oDadosContato == null){
@@ -115,7 +117,95 @@ module.exports = class WhatsappUseCase {
          *
          * @var {object} oDadosContato
          */
-        const oDadosContato = await this.whatsappRepository.insereContato(oDadosCliente._id, oDados.numeroDestinatario)
+        const oDadosContato = await this.whatsappRepository.insereContato(oDadosCliente._id, oDados.numeroDestinatario, oDados.nomeDestinatario)
+
+        // Verifica se não houve cadastro
+        if(oDadosContato == null){
+            return HttpResponse.serverError()
+        }
+
+        /**
+         * Insere o contato
+         *
+         * @var {object} oEnviaMensagem
+         */
+        let oEnviaMensagem = {}
+
+        if(oDadosCliente.whatsapp.integrador == 'ZENVIA'){
+            oEnviaMensagem = await helpers.ZenviaClient.enviarMensagemV2(oDados, oDadosCliente)
+
+            // Verifica se não houve cadastro
+            if(oEnviaMensagem.statusCode != null && oEnviaMensagem.statusCode != 200){
+                /**
+                 * Caso gere algum erro
+                 * Retorna o erro
+                 */
+                return HttpResponse.serverError()
+            }
+        }else if(oDadosCliente.whatsapp.integrador == 'META'){
+            oEnviaMensagem = await helpers.MetaClient.enviarMensagem(oDados, oDadosCliente)
+
+            // Verifica se não houve cadastro
+            if(oEnviaMensagem.statusCode != null && oEnviaMensagem.statusCode != 200){
+                /**
+                 * Caso gere algum erro
+                 * Retorna o erro
+                 */
+                return HttpResponse.serverError()
+            }
+
+            // Atualiza o objeto recebido para salvar no banco
+            oEnviaMensagem.id = oEnviaMensagem.messages[0].id
+            oEnviaMensagem.from = oDadosCliente.whatsapp.metaIdNumeroTelefone
+            oEnviaMensagem.to = oEnviaMensagem.contacts[0].input
+            oEnviaMensagem.contents = oDados.parametros.conteudo ?? ''
+        }        
+
+        /**
+         * Insere a mensagem enviada
+         *
+         * @var {object} oDadosMensagemEnviada
+         */
+        const oDadosMensagemEnviada = await this.whatsappRepository.insereMensagemEnviada(oDadosContato, oEnviaMensagem)
+
+        // Verifica se não houve cadastro
+        if(oDadosMensagemEnviada == null){
+            return HttpResponse.serverError()
+        }
+
+        /**
+         * Define o retorno
+         *
+         * @var {object} oRetorno
+         */
+        const oRetorno = {
+            _id: oDadosMensagemEnviada._id,
+            idContato: oDadosMensagemEnviada.idContato,
+            numeroDestinatario: oDadosMensagemEnviada.numeroDestinatario,
+            mensagem: oDadosMensagemEnviada.mensagem,
+            idMensagem: oDadosMensagemEnviada.idMensagem,
+            dataCadastro: oDadosMensagemEnviada.dataCadastro,
+            dataAtualizacao: oDadosMensagemEnviada.dataAtualizacao
+        }
+
+        return HttpResponse.created(oRetorno)
+    }
+
+    /**
+     * Função responsável pelo envio da mensagem
+     *
+     * @param {object} oDados
+     * @param {object} oDadosCliente
+     *
+     * @returns {object}
+     */
+    async enviarMensagemV3(oDados, oDadosCliente) {
+        /**
+         * Insere o contato
+         *
+         * @var {object} oDadosContato
+         */
+        const oDadosContato = await this.whatsappRepository.insereContato(oDadosCliente._id, oDados.numeroDestinatario, oDados.nomeDestinatario)
 
         // Verifica se não houve cadastro
         if(oDadosContato == null){
@@ -421,7 +511,7 @@ module.exports = class WhatsappUseCase {
          *
          * @var {object} oDadosContato
          */
-        const oDadosContato = await this.whatsappRepository.insereContato(oCliente.body._id, oDados.from)
+        const oDadosContato = await this.whatsappRepository.insereContato(oCliente.body._id, oDados.from, oDados.from)
 
         // Verifica se não houve cadastro
         if(oDadosContato == null){
@@ -496,5 +586,191 @@ module.exports = class WhatsappUseCase {
         }
 
         return HttpResponse.created({mensagem: 'Mensagem inserida com sucesso!'})
+    }
+
+    /**
+     * Função responsável pela criação do template
+     *
+     * @param {object} oDados
+     * @param {object} oDadosCliente
+     *
+     * @returns {object}
+     */
+    async criarTemplate(oDados, oDadosCliente) {
+        /**
+         * Insere o contato
+         *
+         * @var {object} oTemplate
+         */
+        const oTemplate = await this.whatsappRepository.insereTemplate(oDadosCliente._id, oDados)
+
+        // Verifica se não houve cadastro
+        if(oTemplate == null){
+            return HttpResponse.badRequest(
+                new CustomError('Não foi possível criar o template', 2)
+            )
+        }
+
+        /**
+         * Define o retorno
+         *
+         * @var {object} oRetorno
+         */
+        const oRetorno = {
+            id: oTemplate._id,
+            hashTemplateInterno: oTemplate.hashTemplateInterno,
+            titulo: oTemplate.titulo,
+            campos: oTemplate.campos ?? [],
+            texto: oTemplate.texto,
+            identificadorTemplateZenvia: oTemplate.identificadorTemplateZenvia ?? '',
+            identificadorTemplateMeta: oTemplate.identificadorTemplateMeta ?? '',
+            dataCadastro: moment(oTemplate.dataCadastro).format('YYYY-MM-DD HH:mm:ss'),
+            dataAtualizacao: moment(oTemplate.dataAtualizacao).format('YYYY-MM-DD HH:mm:ss')
+        }
+        
+        return HttpResponse.created(oRetorno)
+    }
+
+    /**
+     * Função responsável pela atualização do template
+     *
+     * @param {object} oDados
+     * @param {object} oDadosCliente
+     * @param {string} sTemplate
+     *
+     * @returns {object}
+     */
+    async atualizarTemplate(oDados, oDadosCliente, sTemplate) {
+        /**
+         * Insere o contato
+         *
+         * @var {object} oTemplate
+         */
+        const oTemplate = await this.whatsappRepository.atualizaTemplate(oDadosCliente._id, oDados, sTemplate)
+        console.log(oTemplate)
+        // Verifica se não houve cadastro
+        if(oTemplate == null){
+            return HttpResponse.serverError()
+        }
+
+        /**
+         * Define o retorno
+         *
+         * @var {object} oRetorno
+         */
+        const oRetorno = {
+            id: oTemplate._id,
+            hashTemplateInterno: oTemplate.hashTemplateInterno,
+            titulo: oTemplate.titulo,
+            campos: oTemplate.campos ?? [],
+            texto: oTemplate.texto,
+            identificadorTemplateZenvia: oTemplate.identificadorTemplateZenvia ?? '',
+            identificadorTemplateMeta: oTemplate.identificadorTemplateMeta ?? '',
+            dataCadastro: moment(oTemplate.dataCadastro).format('YYYY-MM-DD HH:mm:ss'),
+            dataAtualizacao: moment(oTemplate.dataAtualizacao).format('YYYY-MM-DD HH:mm:ss')
+        }
+
+        return HttpResponse.ok(oRetorno)
+    }
+
+    /**
+     * Função responsável pela listagem dos templates
+     *
+     * @param {object} oDadosCliente
+     * @param {string} sTemplate
+     *
+     * @returns {object}
+     */
+    async listarTemplates(oDadosCliente, sTemplate) {
+        /**
+         * Insere o contato
+         *
+         * @var {object} oTemplates
+         */
+        const oTemplates = await this.whatsappRepository.listarTemplates(oDadosCliente._id, sTemplate)
+
+        // Verifica se não houve cadastro
+        if(oTemplates == null){
+            return HttpResponse.serverError()
+        }
+
+        /**
+         * Define o retorno
+         *
+         * @var {object} oRetorno
+         */
+        let oRetorno = {
+            templates: []
+        }
+
+        /**
+         * Itera os dados
+         */
+        await Promise.all(oTemplates.map(async (oTemplate) => {
+            /**
+             * Adiciona no objeto de retorno
+             */
+            oRetorno.templates.push({
+                id: oTemplate._id,
+                hashTemplateInterno: oTemplate.hashTemplateInterno,
+                titulo: oTemplate.titulo,
+                campos: oTemplate.campos ?? [],
+                texto: oTemplate.texto,
+                identificadorTemplateZenvia: oTemplate.identificadorTemplateZenvia ?? '',
+                identificadorTemplateMeta: oTemplate.identificadorTemplateMeta ?? '',
+                dataCadastro: moment(oTemplate.dataCadastro).format('YYYY-MM-DD HH:mm:ss'),
+                dataAtualizacao: moment(oTemplate.dataAtualizacao).format('YYYY-MM-DD HH:mm:ss')
+            })
+        }))
+
+        return HttpResponse.ok(oRetorno)
+    }
+
+    /**
+     * Função responsável pela listagem dos contatos
+     *
+     * @param {object} oDadosCliente
+     * @param {string} sNumero
+     *
+     * @returns {object}
+     */
+    async listarContatos(oDadosCliente, sNumero) {
+        /**
+         * Insere o contato
+         *
+         * @var {object} oContatos
+         */
+        const oContatos = await this.whatsappRepository.listarContatos(oDadosCliente._id, sNumero)
+
+        // Verifica se não houve cadastro
+        if(oContatos == null){
+            return HttpResponse.serverError()
+        }
+
+        /**
+         * Define o retorno
+         *
+         * @var {object} oRetorno
+         */
+        let oRetorno = {
+            contatos: []
+        }
+
+        /**
+         * Itera os dados
+         */
+        await Promise.all(oContatos.map(async (oContato) => {
+            /**
+             * Adiciona no objeto de retorno
+             */
+            oRetorno.contatos.push({
+                nome: oContato.nome,
+                numero: oContato.numero,
+                ultimaMensagem: '',
+                tipoUltimaMensagem: 'IN',
+            })
+        }))
+
+        return HttpResponse.ok(oRetorno)
     }
 }

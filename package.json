@@ -27,6 +27,7 @@
     "express": "^4.17.3",
     "fast-glob": "^3.2.11",
     "moment": "^2.29.3",
+    "moment-timezone": "^0.5.40",
     "mongodb": "^4.5.0",
     "mongoose": "^6.3.0",
     "serverless-http": "^2.7.0"

@@ -54,28 +54,6 @@ module.exports = class WhatsappValidator {
         }
 
         /**
-         * Valida se existe o tipo da mensagem
-         */
-        if (!oDados.tipo ||
-            oDados.tipo.length < 1
-        ) {
-            // return HttpResponse.badRequest(
-            //     new CustomError('Tipo não informado', 5)
-            // )
-        }
-
-        /**
-         * Valida se existe o template se necessario
-         */
-        if (oDados.template &&
-            oDados.template.length < 1
-        ) {
-            // return HttpResponse.badRequest(
-            //     new CustomError('Template não informado', 6)
-            // )
-        }
-
-        /**
          * Valida se o numero do destinatario é valido
          */
         if (!/^\d+$/.test(oDados.numeroDestinatario) || oDados.numeroDestinatario.toString().length != 13) {
@@ -308,6 +286,174 @@ module.exports = class WhatsappValidator {
             return HttpResponse.badRequest(
                 new CustomError('Request inválido', 1)
             )
+        }
+
+        return null;
+    }
+
+    /**
+     * Função responsável por fazer a validação
+     *
+     * @function validarCriacaoTemplate
+     *
+     * @param  {object} oDados
+     *
+     * @return {object|null}  Retorna a resposta de erro ou null no caso de OK
+     */
+    async validarCriacaoTemplate(oDados) {
+        /**
+         * Valida se existe o titulo
+         */
+        if (!oDados.titulo ||
+            oDados.titulo.length < 1
+        ) {
+            return HttpResponse.badRequest(
+                new CustomError('Título inválido', 1)
+            )
+        }
+
+        /**
+         * Valida se existe o identificador do template
+         */
+        if ((!oDados.identificadorTemplateZenvia ||
+            oDados.identificadorTemplateZenvia.length < 1)
+            && (!oDados.identificadorTemplateMeta ||
+                oDados.identificadorTemplateMeta.length < 1)
+        ) {
+            return HttpResponse.badRequest(
+                new CustomError('Identificador do template inválido', 2)
+            )
+        }
+
+        /**
+         * Valida se existe o texto do template
+         */
+        if (!oDados.texto ||
+            oDados.texto.length < 1
+        ) {
+            return HttpResponse.badRequest(
+                new CustomError('Texto do template inválido', 4)
+            )
+        }
+
+        /**
+         * Valida se existe os campos
+         */
+        if (!oDados.campos) {
+            return HttpResponse.badRequest(
+                new CustomError('Não foi informado os campos do template', 5)
+            )
+        }
+
+        /**
+         * Valida se existe os campos
+         */
+        if (oDados.campos && Object.keys(oDados.campos).length > 0) {
+            console.log(oDados.campos)
+            for(const iChave in oDados.campos) {
+                if(!oDados.campos[iChave].id || oDados.campos[iChave].id.length < 1){
+                    return HttpResponse.badRequest(
+                        new CustomError('Campo [id] inválido', 6)
+                    )
+                }
+
+                if(!oDados.campos[iChave].label || oDados.campos[iChave].label.length < 1){
+                    return HttpResponse.badRequest(
+                        new CustomError('Campo [label] inválido', 7)
+                    )
+                }
+
+                if(!oDados.campos[iChave].obrigatorio || oDados.campos[iChave].obrigatorio.length < 1){
+                    return HttpResponse.badRequest(
+                        new CustomError('Campo [obrigatorio] inválido',8)
+                    )
+                }
+
+                if(!oDados.campos[iChave].tipo || oDados.campos[iChave].tipo.length < 1){
+                    return HttpResponse.badRequest(
+                        new CustomError('Campo [tipo] inválido', 9)
+                    )
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Função responsável por fazer a validação
+     *
+     * @function validarAtualizacaoTemplate
+     *
+     * @param  {object} oDados
+     *
+     * @return {object|null}  Retorna a resposta de erro ou null no caso de OK
+     */
+    async validarAtualizacaoTemplate(oDados) {
+        /**
+         * Valida se existe o titulo
+         */
+        if (oDados.titulo != undefined &&
+            oDados.titulo.length < 1
+        ) {
+            return HttpResponse.badRequest(
+                new CustomError('Título inválido', 1)
+            )
+        }
+
+        /**
+         * Valida se existe o identificador do template
+         */
+        if ((oDados.identificadorTemplateZenvia != undefined &&
+            oDados.identificadorTemplateZenvia.length < 1)
+            || (oDados.identificadorTemplateMeta != undefined &&
+                oDados.identificadorTemplateMeta.length < 1)
+        ) {
+            return HttpResponse.badRequest(
+                new CustomError('Identificador do template inválido', 2)
+            )
+        }
+
+        /**
+         * Valida se existe o texto do template
+         */
+        if (oDados.texto != undefined &&
+            oDados.texto.length < 1
+        ) {
+            return HttpResponse.badRequest(
+                new CustomError('Texto do template inválido', 4)
+            )
+        }
+
+        /**
+         * Valida se existe os campos
+         */
+        if (oDados.campos != undefined && Object.keys(oDados.campos).length > 0) {
+            for(const iChave in oDados.campos) {
+                if(!oDados.campos[iChave].id || oDados.campos[iChave].id.length < 1){
+                    return HttpResponse.badRequest(
+                        new CustomError('Campo [id] inválido', 6)
+                    )
+                }
+
+                if(!oDados.campos[iChave].label || oDados.campos[iChave].label.length < 1){
+                    return HttpResponse.badRequest(
+                        new CustomError('Campo [label] inválido', 7)
+                    )
+                }
+
+                if(!oDados.campos[iChave].obrigatorio || oDados.campos[iChave].obrigatorio.length < 1){
+                    return HttpResponse.badRequest(
+                        new CustomError('Campo [obrigatorio] inválido',8)
+                    )
+                }
+
+                if(!oDados.campos[iChave].tipo || oDados.campos[iChave].tipo.length < 1){
+                    return HttpResponse.badRequest(
+                        new CustomError('Campo [tipo] inválido', 9)
+                    )
+                }
+            }
         }
 
         return null;

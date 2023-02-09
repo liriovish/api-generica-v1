@@ -96,7 +96,7 @@ module.exports = class ZenviaClient {
                     }
                 }
 
-                if(oDados.botao.urlLogin){
+                if(oDados?.botao?.urlLogin){
                     oMensagem.template.components.push(
                         {
                             type: "button",

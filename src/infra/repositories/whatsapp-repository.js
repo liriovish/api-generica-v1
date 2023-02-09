@@ -15,7 +15,9 @@
 /**
  * Configurações globais
  */
-const moment = require('moment')
+const moment = require('moment-timezone')
+moment.tz.setDefault("America/Sao_Paulo")
+const crypto = require('crypto')
 const db = require('../models')
 
 /**
@@ -43,7 +45,7 @@ module.exports = class WhatsappRepository {
      * 
      * @return object Retorna os dados do contato ou null
      */
-    async insereContato(sIdCliente, sNumero) {
+    async insereContato(sIdCliente, sNumero, sNome) {
         try { 
             /**
              * Insere no banco de dados
@@ -51,6 +53,10 @@ module.exports = class WhatsappRepository {
              * @var {mongoose} dbWhatsapp
              */ 
             const dbContatos = await db.Contatos()
+
+            if(sNome == null){
+                sNome = sNumero
+            }
 
             /**
              * Insere no banco de dados
@@ -60,12 +66,14 @@ module.exports = class WhatsappRepository {
             const oInsereContato = await dbContatos.findOneAndUpdate(
                 {
                     idCliente: sIdCliente,
-                    numero: sNumero
+                    numero: sNumero,
+                    nome: sNome
                 },
                 {
                     $setOnInsert: {
                         idCliente: sIdCliente,
-                        numero: sNumero
+                        numero: sNumero,
+                        nome: sNome
                     }
                 },
                 { 
@@ -459,6 +467,199 @@ module.exports = class WhatsappRepository {
              .limit(bBuscaTodos == true ? null : 100)
 
             return oBuscaMensagemEnviada
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para inserir o template no banco de dados
+     * 
+     * @async
+     * @function insereTemplate
+     * 
+     * @param string sIdCliente
+     * @param object oDados
+     * 
+     * @return object Retorna os dados do contato ou null
+     */
+    async insereTemplate(sIdCliente, oDados) {
+        try { 
+            /**
+             * Instancia o model
+             * 
+             * @var {mongoose} dbTemplates
+             */ 
+            const dbTemplates = await db.Templates()
+
+            /**
+             * Define o id do cliente nos dados
+             */ 
+            oDados.idCliente = sIdCliente
+
+            /**
+             * Define o hash do template do cliente nos dados
+             */
+            oDados.hashTemplateInterno = crypto.randomUUID()
+
+            /**
+             * Define as datas
+             */
+            oDados.dataCadastro = moment().format('YYYY-MM-DD HH:mm:ss')
+            oDados.dataAtualizacao = moment().format('YYYY-MM-DD HH:mm:ss')
+
+            /**
+             * Insere no banco de dados
+             * 
+             * @var object oInsere
+             */
+            const oInsere = await dbTemplates.create(oDados)
+
+            return oInsere
+        } catch (error) {
+            console.error(error)
+
+            return null
+        }
+    }
+
+    /**
+     * Função para inserir o template no banco de dados
+     * 
+     * @async
+     * @function atualizaTemplate
+     * 
+     * @param string sIdCliente
+     * @param object oDados
+     * @param string sTemplate
+     * 
+     * @return object Retorna os dados do contato ou null
+     */
+    async atualizaTemplate(sIdCliente, oDados, sTemplate) {
+        try { 
+            /**
+             * Instancia o model
+             * 
+             * @var {mongoose} dbTemplates
+             */ 
+            const dbTemplates = await db.Templates()
+
+            /**
+             * Define as datas
+             */
+            oDados.dataAtualizacao = moment().format('YYYY-MM-DD HH:mm:ss')
+
+            /**
+             * Insere no banco de dados
+             * 
+             * @var object oInsere
+             */
+            const oInsere = await dbTemplates.findOneAndUpdate(
+                {
+                    hashTemplateInterno: sTemplate,
+                    idCliente: sIdCliente
+                },
+                {
+                    $set: oDados
+                },
+                {
+                    returnOriginal: false
+                }
+            )
+  
+            return oInsere
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para listar os template
+     * 
+     * @async
+     * @function listarTemplates
+     * 
+     * @param string sIdCliente
+     * @param string sTemplate
+     * 
+     * @return object Retorna os dados do contato ou null
+     */
+    async listarTemplates(sIdCliente, sTemplate) {
+        try { 
+            /**
+             * Instancia o model
+             * 
+             * @var {mongoose} dbTemplates
+             */ 
+            const dbTemplates = await db.Templates()
+
+            /**
+             * Define os dados da busca
+             * 
+             * @var {object} oBusca
+             */ 
+            const oBusca = {
+                idCliente: sIdCliente
+            }
+
+            if(sTemplate != undefined){
+                oBusca.hashTemplateInterno = sTemplate
+            }        
+
+            /**
+             * Insere no banco de dados
+             * 
+             * @var object oTemplates
+             */
+            const oTemplates = await dbTemplates.find(oBusca)
+  
+            return oTemplates
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para listar os template
+     * 
+     * @async
+     * @function listarContatos
+     * 
+     * @param string sIdCliente
+     * @param string sTemplate
+     * 
+     * @return object Retorna os dados do contato ou null
+     */
+    async listarContatos(sIdCliente, sNumero) {
+        try { 
+            /**
+             * Instancia o model
+             * 
+             * @var {mongoose} dbContatos
+             */ 
+            const dbContatos = await db.Contatos()
+
+            /**
+             * Define os dados da busca
+             * 
+             * @var {object} oBusca
+             */ 
+            const oBusca = {
+                idCliente: sIdCliente
+            }
+
+            if(sNumero != undefined){
+                oBusca.numero = sNumero
+            }        
+
+            /**
+             * Insere no banco de dados
+             * 
+             * @var object oContatos
+             */
+            const oContatos = await dbContatos.find(oBusca)
+  
+            return oContatos
         } catch (error) {
             console.log(error)
         }

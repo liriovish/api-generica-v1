@@ -15,23 +15,33 @@
 /**
  * Configurações globais
  */
- const EnviarMensagem = require('./enviar-mensagem-router')
- const EnviarMensagemV2 = require('./enviar-mensagem-router-v2')
- const HistoricoMensagens = require('./historico-mensagens-router')
- const WebhookStatus = require('./webhook-status-router')
- const WebhookRecebimento = require('./webhook-recebimento-router')
- const WebhookVerificar = require('./webhook-verificar-router')
- const Webhook = require('./webhook-router')
- 
- /**
-  * Realiza o export das classes de geração dos erros
-  */
- module.exports = {
-     EnviarMensagem,
-     EnviarMensagemV2,
-     HistoricoMensagens,
-     WebhookStatus,
-     WebhookRecebimento,
-     WebhookVerificar,
-     Webhook
- }
+const EnviarMensagem = require('./enviar-mensagem-router')
+const EnviarMensagemV2 = require('./enviar-mensagem-router-v2')
+const EnviarMensagemV3 = require('./enviar-mensagem-router-v3')
+const HistoricoMensagens = require('./historico-mensagens-router')
+const WebhookStatus = require('./webhook-status-router')
+const WebhookRecebimento = require('./webhook-recebimento-router')
+const WebhookVerificar = require('./webhook-verificar-router')
+const Webhook = require('./webhook-router')
+const CriarTemplate = require('./criar-template-router')
+const AtualizarTemplate = require('./atualizar-template-router')
+const ListarTemplates = require('./listar-templates-router')
+const ListarContatos = require('./listar-contatos-router')
+
+/**
+ * Realiza o export das classes de geração dos erros
+ */
+module.exports = {
+    EnviarMensagem,
+    EnviarMensagemV2,
+    EnviarMensagemV3,
+    HistoricoMensagens,
+    WebhookStatus,
+    WebhookRecebimento,
+    WebhookVerificar,
+    Webhook,
+    CriarTemplate,
+    AtualizarTemplate,
+    ListarTemplates,
+    ListarContatos
+}
