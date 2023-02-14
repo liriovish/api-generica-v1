@@ -76,7 +76,7 @@ module.exports = class WhatsappValidator {
             )
         }
 
-        return null;
+        return null
     }
 
     /**
@@ -230,7 +230,7 @@ module.exports = class WhatsappValidator {
             )
         }
 
-        return null;
+        return null
     }
 
     /**
@@ -264,7 +264,7 @@ module.exports = class WhatsappValidator {
             )
         }
 
-        return null;
+        return null
     }
 
     /**
@@ -288,7 +288,29 @@ module.exports = class WhatsappValidator {
             )
         }
 
-        return null;
+        return null
+    }
+
+    /**
+     * Função responsável por fazer a validação
+     *
+     * @function validarListaMensagens
+     *
+     * @param  {object} oDados
+     *
+     * @return {object|null}  Retorna a resposta de erro ou null no caso de OK
+     */
+    async validarListaMensagens(oDados) {
+        /**
+         * Valida se existe o numero do destinatario
+         */
+        if (!oDados.numero || oDados.numero == '') {
+            return HttpResponse.badRequest(
+                new CustomError('Número inválido', 1)
+            )
+        }
+
+        return null
     }
 
     /**
@@ -349,7 +371,6 @@ module.exports = class WhatsappValidator {
          * Valida se existe os campos
          */
         if (oDados.campos && Object.keys(oDados.campos).length > 0) {
-            console.log(oDados.campos)
             for(const iChave in oDados.campos) {
                 if(!oDados.campos[iChave].id || oDados.campos[iChave].id.length < 1){
                     return HttpResponse.badRequest(
@@ -377,7 +398,7 @@ module.exports = class WhatsappValidator {
             }
         }
 
-        return null;
+        return null
     }
 
     /**
@@ -456,6 +477,6 @@ module.exports = class WhatsappValidator {
             }
         }
 
-        return null;
+        return null
     }
 }

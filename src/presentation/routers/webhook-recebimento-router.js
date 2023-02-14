@@ -47,7 +47,7 @@ module.exports = class WebhookRecebimentoRouter {
      * 
      * @returns {HttpResponse}
      */
-     async route(oBody, sIp, sToken, oParams) {
+     async route(oBody, sIp, sToken, oParams, sTokenJwt) {
         try {
             /**
              * Valida a requisição
@@ -70,7 +70,7 @@ module.exports = class WebhookRecebimentoRouter {
              *
              * @UsaFuncao webhookRecebimento
              */
-            const oDadosWebhookRecebimento = await this.whatsappUseCase.webhookRecebimento(oBody, sToken, oParams.identificadorCliente)
+            const oDadosWebhookRecebimento = await this.whatsappUseCase.webhookRecebimento(oBody, sToken, sTokenJwt, oParams.identificadorCliente)
 
             // Verifica se houve erro
             if(oDadosWebhookRecebimento.statusCode != 201){
@@ -80,7 +80,7 @@ module.exports = class WebhookRecebimentoRouter {
             /**
              * Retorna dados
              */
-            return HttpResponse.ok(oDadosWebhookRecebimento)
+            return oDadosWebhookRecebimento
         } catch (error) {
             console.log(error)
             /**

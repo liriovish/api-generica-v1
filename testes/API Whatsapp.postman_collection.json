@@ -1,19 +1,20 @@
 {
 	"info": {
-		"_postman_id": "8f2794a6-8ce1-4f04-b4cd-5f7d0ce67c48",
+		"_postman_id": "a1e69c5b-1a1d-4629-b0cb-0e6b1caa69ca",
 		"name": "API Whatsapp",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24720207"
 	},
 	"item": [
 		{
-			"name": "Enviar mensagem",
+			"name": "Enviar mensagem V1",
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJraWQiOiJHZHM1a1NqVlwvVFpUblNsTU1PbW9cL1F1UEdkc05CSVZ6NUJxbjdwbDZ1Ylk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLnNpbXBsZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5uYXR1cmV6YXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5zaXR1YWNvZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5yZWdpc3Ryb3MgZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLmxvdGUiLCJhdXRoX3RpbWUiOjE2NjYyOTYzMTMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5zYS1lYXN0LTEuYW1hem9uYXdzLmNvbVwvc2EtZWFzdC0xX05jaFpCUXFsbiIsImV4cCI6MTY2NjI5OTkxMywiaWF0IjoxNjY2Mjk2MzEzLCJ2ZXJzaW9uIjoyLCJqdGkiOiI5OTIzMGRkOC0yYTBjLTQyOGYtOWQ3Yy1mODcwYzAyMDY4YWEiLCJjbGllbnRfaWQiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSJ9.ppcC3Z021OXdXE4OZnevTBtjDS37U9UD37VLs4HLhVehdsefgaRLKpkuuEyXbK2TAQQDytWN_nXYAQbBbksSLGsV9lJTf7oLTarnpDxAIrWG3P82KBR-GalrUG2BNP-B_nheLfzemqUEFNuccT2Po7wTeI1YDrqOSV4LfgsLz3viDqZFW9PnajEDET0bn_o-SfS_z2sev6xNuBaUy-XF-lyfmstpWCK7cGmlEvsrcdX-9ATdU-FJ7z-itsku4SDUOXQ6-rnvOJtl9uF9ID89NCR4gXbwdcj1EmEm2V_hdUj6YicdxNkgoLHB0h7Udagy66XACJvAQMmpxGm2vQJhZg",
+							"value": "eyJraWQiOiJMQXJNK3kybzNYaWRcL2QzeGU3WUZpdUZ0Mk9cL1wvZUl4d3N2eE45XC9VR1F3Yz0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIzdTBtb2gxZ3Y3ZTN2a2FxNDNyZXFwcG9lYSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXBpXC9jbGllbnRlcy5sZWl0dXJhIGFwaVwvd2hhdHNhcHAuZ3JhdmFjYW8gYXBpXC9jbGllbnRlcy5ncmF2YWNhbyBhcGlcL3doYXRzYXBwLmxlaXR1cmEiLCJhdXRoX3RpbWUiOjE2NzQ4NDk4NzIsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5zYS1lYXN0LTEuYW1hem9uYXdzLmNvbVwvc2EtZWFzdC0xX1ZTY1habHhiZiIsImV4cCI6MTY3NDg1MzQ3MiwiaWF0IjoxNjc0ODQ5ODcyLCJ2ZXJzaW9uIjoyLCJqdGkiOiJhYjMyZDRjOS1jYzRmLTRkZjktOTE5NC00ODZhMjYwYjQxMTgiLCJjbGllbnRfaWQiOiIzdTBtb2gxZ3Y3ZTN2a2FxNDNyZXFwcG9lYSJ9.qs8gVQ2RG1PMM6yMA04PdV4XJW7Gg1hhWCACeAdqMvxjX4lGzFz3vOHAGYhAV6yiTPgLfHxarB3NOkuqYu1aePQYk3jw_uYMDq_Br6ew6dlXr13HeY9pRZJvACgwmQtfqmKHvanC04BLKjOT07z8zlUlUvuGQU6Hw_gzXMWe-G1eP3ghjvlrRQ-_3qJOne4IDFd3F0qedijX_p3TtFdnq53DQZ5liumrT-gL37UIvZer0zJlEhrmTFLPcZYe8J3bKqoeX4u65IOxlyrhcr62p6BMGdFb5a1eiaAdifwjtkC-y94vDq0b7C_uOCKR-UU_0sSi9OEEiUK6P56qiFwxkw",
 							"type": "string"
 						}
 					]
@@ -22,7 +23,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"numeroDestinatario\":\"5547991798864\",\"mensagem\":[{\"type\":\"text\",\"text\":\"teste\"}]}",
+					"raw": "{\r\n    \"numeroDestinatario\": 0,\r\n    \"mensagem\": [\r\n        {\r\n            \"type\": \"string\",\r\n            \"text\": \"string\"\r\n        }\r\n    ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -30,12 +31,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3001/v1/whatsapp/enviarMensagem",
-					"protocol": "http",
+					"raw": "https://apiweb.services/v1/whatsapp/enviarMensagem",
+					"protocol": "https",
 					"host": [
-						"localhost"
+						"apiweb",
+						"services"
 					],
-					"port": "3001",
 					"path": [
 						"v1",
 						"whatsapp",
@@ -66,7 +67,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3001/v1/whatsapp/webhookStatus",
+					"raw": "http://localhost:3001/v1/whatsapp/webhookStatus/teste",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -75,7 +76,97 @@
 					"path": [
 						"v1",
 						"whatsapp",
-						"webhookStatus"
+						"webhookStatus",
+						"teste"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Webhook",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": \"261eda6d-3787-4eb2-bb3b-26b0ff7d05ac\",\r\n  \"timestamp\": \"2022-10-27T19:04:41.221Z\",\r\n  \"type\": \"MESSAGE_STATUS\",\r\n  \"subscriptionId\": \"e23965fc-864c-4807-8b33-3ce966151c4f\",\r\n  \"channel\": \"whatsapp\",\r\n  \"messageId\": \"6c276f28-fceb-4a5d-b910-f0cd66fff795\",\r\n  \"messageStatus\": {\r\n    \"timestamp\": \"2022-10-27T19:04:40+00:00\",\r\n    \"code\": \"DELIVERED\",\r\n    \"description\": \"The message has been delivered by the provider\"\r\n  },\r\n  \"contentIndex\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/v2/whatsapp/webhook",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v2",
+						"whatsapp",
+						"webhook"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verificar Webhook",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/v2/whatsapp/webhook?hub_mode=subscribe&hub_verify_token=TOKEN&hub_challenge=NUMBER",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v2",
+						"whatsapp",
+						"webhook"
+					],
+					"query": [
+						{
+							"key": "hub_mode",
+							"value": "subscribe"
+						},
+						{
+							"key": "hub_verify_token",
+							"value": "TOKEN"
+						},
+						{
+							"key": "hub_challenge",
+							"value": "NUMBER"
+						}
 					]
 				}
 			},
@@ -84,6 +175,16 @@
 		{
 			"name": "Webhook Recebimento",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJraWQiOiJHZHM1a1NqVlwvVFpUblNsTU1PbW9cL1F1UEdkc05CSVZ6NUJxbjdwbDZ1Ylk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLnNpbXBsZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5uYXR1cmV6YXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5zaXR1YWNvZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5yZWdpc3Ryb3MgZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLmxvdGUiLCJhdXRoX3RpbWUiOjE2NjYyOTYzMTMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5zYS1lYXN0LTEuYW1hem9uYXdzLmNvbVwvc2EtZWFzdC0xX05jaFpCUXFsbiIsImV4cCI6MTY2NjI5OTkxMywiaWF0IjoxNjY2Mjk2MzEzLCJ2ZXJzaW9uIjoyLCJqdGkiOiI5OTIzMGRkOC0yYTBjLTQyOGYtOWQ3Yy1mODcwYzAyMDY4YWEiLCJjbGllbnRfaWQiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSJ9.ppcC3Z021OXdXE4OZnevTBtjDS37U9UD37VLs4HLhVehdsefgaRLKpkuuEyXbK2TAQQDytWN_nXYAQbBbksSLGsV9lJTf7oLTarnpDxAIrWG3P82KBR-GalrUG2BNP-B_nheLfzemqUEFNuccT2Po7wTeI1YDrqOSV4LfgsLz3viDqZFW9PnajEDET0bn_o-SfS_z2sev6xNuBaUy-XF-lyfmstpWCK7cGmlEvsrcdX-9ATdU-FJ7z-itsku4SDUOXQ6-rnvOJtl9uF9ID89NCR4gXbwdcj1EmEm2V_hdUj6YicdxNkgoLHB0h7Udagy66XACJvAQMmpxGm2vQJhZg",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -134,7 +235,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"filtros\": [\r\n    {\r\n      \"campo\": \"statusEntregaCliente\",\r\n      \"operacao\": \"=\",\r\n      \"valor\": \"DELETED\"\r\n    }\r\n  ],\r\n  \"ordem\": {\r\n    \"campo\": \"dataCadastro\",\r\n    \"ordem\": \"desc\"\r\n  }\r\n}",
+					"raw": "{\r\n  \"filtros\": [\r\n    {\r\n      \"campo\": \"string\",\r\n      \"operacao\": \"string\",\r\n      \"valor\": \"string\"\r\n    }\r\n  ],\r\n  \"ordem\": {\r\n    \"campo\": \"string\",\r\n    \"ordem\": \"string\"\r\n  }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -153,6 +254,300 @@
 						"whatsapp",
 						"historicoMensagens",
 						"enviada"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Criar template",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJraWQiOiJHZHM1a1NqVlwvVFpUblNsTU1PbW9cL1F1UEdkc05CSVZ6NUJxbjdwbDZ1Ylk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLnNpbXBsZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5uYXR1cmV6YXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5zaXR1YWNvZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5yZWdpc3Ryb3MgZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLmxvdGUiLCJhdXRoX3RpbWUiOjE2NjYyOTYzMTMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5zYS1lYXN0LTEuYW1hem9uYXdzLmNvbVwvc2EtZWFzdC0xX05jaFpCUXFsbiIsImV4cCI6MTY2NjI5OTkxMywiaWF0IjoxNjY2Mjk2MzEzLCJ2ZXJzaW9uIjoyLCJqdGkiOiI5OTIzMGRkOC0yYTBjLTQyOGYtOWQ3Yy1mODcwYzAyMDY4YWEiLCJjbGllbnRfaWQiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSJ9.ppcC3Z021OXdXE4OZnevTBtjDS37U9UD37VLs4HLhVehdsefgaRLKpkuuEyXbK2TAQQDytWN_nXYAQbBbksSLGsV9lJTf7oLTarnpDxAIrWG3P82KBR-GalrUG2BNP-B_nheLfzemqUEFNuccT2Po7wTeI1YDrqOSV4LfgsLz3viDqZFW9PnajEDET0bn_o-SfS_z2sev6xNuBaUy-XF-lyfmstpWCK7cGmlEvsrcdX-9ATdU-FJ7z-itsku4SDUOXQ6-rnvOJtl9uF9ID89NCR4gXbwdcj1EmEm2V_hdUj6YicdxNkgoLHB0h7Udagy66XACJvAQMmpxGm2vQJhZg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"titulo\": \"string\",\r\n    \"identificadorTemplateMeta\": \"string\",\r\n    \"texto\": \"string\",\r\n    \"campos\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/v1/whatsapp/templates",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"whatsapp",
+						"templates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualizar template",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJraWQiOiJHZHM1a1NqVlwvVFpUblNsTU1PbW9cL1F1UEdkc05CSVZ6NUJxbjdwbDZ1Ylk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLnNpbXBsZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5uYXR1cmV6YXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5zaXR1YWNvZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5yZWdpc3Ryb3MgZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLmxvdGUiLCJhdXRoX3RpbWUiOjE2NjYyOTYzMTMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5zYS1lYXN0LTEuYW1hem9uYXdzLmNvbVwvc2EtZWFzdC0xX05jaFpCUXFsbiIsImV4cCI6MTY2NjI5OTkxMywiaWF0IjoxNjY2Mjk2MzEzLCJ2ZXJzaW9uIjoyLCJqdGkiOiI5OTIzMGRkOC0yYTBjLTQyOGYtOWQ3Yy1mODcwYzAyMDY4YWEiLCJjbGllbnRfaWQiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSJ9.ppcC3Z021OXdXE4OZnevTBtjDS37U9UD37VLs4HLhVehdsefgaRLKpkuuEyXbK2TAQQDytWN_nXYAQbBbksSLGsV9lJTf7oLTarnpDxAIrWG3P82KBR-GalrUG2BNP-B_nheLfzemqUEFNuccT2Po7wTeI1YDrqOSV4LfgsLz3viDqZFW9PnajEDET0bn_o-SfS_z2sev6xNuBaUy-XF-lyfmstpWCK7cGmlEvsrcdX-9ATdU-FJ7z-itsku4SDUOXQ6-rnvOJtl9uF9ID89NCR4gXbwdcj1EmEm2V_hdUj6YicdxNkgoLHB0h7Udagy66XACJvAQMmpxGm2vQJhZg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"titulo\": \"string\",\r\n    \"identificadorTemplateMeta\": \"string\",\r\n    \"texto\": \"string\",\r\n    \"campos\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/v1/whatsapp/templates/:hashInterno",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"whatsapp",
+						"templates",
+						":hashInterno"
+					],
+					"variable": [
+						{
+							"key": "hashInterno",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar templates",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJraWQiOiJHZHM1a1NqVlwvVFpUblNsTU1PbW9cL1F1UEdkc05CSVZ6NUJxbjdwbDZ1Ylk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLnNpbXBsZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5uYXR1cmV6YXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5zaXR1YWNvZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5yZWdpc3Ryb3MgZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLmxvdGUiLCJhdXRoX3RpbWUiOjE2NjYyOTYzMTMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5zYS1lYXN0LTEuYW1hem9uYXdzLmNvbVwvc2EtZWFzdC0xX05jaFpCUXFsbiIsImV4cCI6MTY2NjI5OTkxMywiaWF0IjoxNjY2Mjk2MzEzLCJ2ZXJzaW9uIjoyLCJqdGkiOiI5OTIzMGRkOC0yYTBjLTQyOGYtOWQ3Yy1mODcwYzAyMDY4YWEiLCJjbGllbnRfaWQiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSJ9.ppcC3Z021OXdXE4OZnevTBtjDS37U9UD37VLs4HLhVehdsefgaRLKpkuuEyXbK2TAQQDytWN_nXYAQbBbksSLGsV9lJTf7oLTarnpDxAIrWG3P82KBR-GalrUG2BNP-B_nheLfzemqUEFNuccT2Po7wTeI1YDrqOSV4LfgsLz3viDqZFW9PnajEDET0bn_o-SfS_z2sev6xNuBaUy-XF-lyfmstpWCK7cGmlEvsrcdX-9ATdU-FJ7z-itsku4SDUOXQ6-rnvOJtl9uF9ID89NCR4gXbwdcj1EmEm2V_hdUj6YicdxNkgoLHB0h7Udagy66XACJvAQMmpxGm2vQJhZg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/v1/whatsapp/templates?pagina=1&registrosPorPagina=50",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"whatsapp",
+						"templates"
+					],
+					"query": [
+						{
+							"key": "pagina",
+							"value": "1"
+						},
+						{
+							"key": "registrosPorPagina",
+							"value": "50"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar contatos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJraWQiOiJHZHM1a1NqVlwvVFpUblNsTU1PbW9cL1F1UEdkc05CSVZ6NUJxbjdwbDZ1Ylk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLnNpbXBsZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5uYXR1cmV6YXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5zaXR1YWNvZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5yZWdpc3Ryb3MgZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLmxvdGUiLCJhdXRoX3RpbWUiOjE2NjYyOTYzMTMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5zYS1lYXN0LTEuYW1hem9uYXdzLmNvbVwvc2EtZWFzdC0xX05jaFpCUXFsbiIsImV4cCI6MTY2NjI5OTkxMywiaWF0IjoxNjY2Mjk2MzEzLCJ2ZXJzaW9uIjoyLCJqdGkiOiI5OTIzMGRkOC0yYTBjLTQyOGYtOWQ3Yy1mODcwYzAyMDY4YWEiLCJjbGllbnRfaWQiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSJ9.ppcC3Z021OXdXE4OZnevTBtjDS37U9UD37VLs4HLhVehdsefgaRLKpkuuEyXbK2TAQQDytWN_nXYAQbBbksSLGsV9lJTf7oLTarnpDxAIrWG3P82KBR-GalrUG2BNP-B_nheLfzemqUEFNuccT2Po7wTeI1YDrqOSV4LfgsLz3viDqZFW9PnajEDET0bn_o-SfS_z2sev6xNuBaUy-XF-lyfmstpWCK7cGmlEvsrcdX-9ATdU-FJ7z-itsku4SDUOXQ6-rnvOJtl9uF9ID89NCR4gXbwdcj1EmEm2V_hdUj6YicdxNkgoLHB0h7Udagy66XACJvAQMmpxGm2vQJhZg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/v1/whatsapp/contatos?pagina=1&registrosPorPagina=50",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"whatsapp",
+						"contatos"
+					],
+					"query": [
+						{
+							"key": "pagina",
+							"value": "1"
+						},
+						{
+							"key": "registrosPorPagina",
+							"value": "50"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Enviar mensagem V3",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJraWQiOiJHZHM1a1NqVlwvVFpUblNsTU1PbW9cL1F1UEdkc05CSVZ6NUJxbjdwbDZ1Ylk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLnNpbXBsZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5uYXR1cmV6YXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5zaXR1YWNvZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5yZWdpc3Ryb3MgZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLmxvdGUiLCJhdXRoX3RpbWUiOjE2NjYyOTYzMTMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5zYS1lYXN0LTEuYW1hem9uYXdzLmNvbVwvc2EtZWFzdC0xX05jaFpCUXFsbiIsImV4cCI6MTY2NjI5OTkxMywiaWF0IjoxNjY2Mjk2MzEzLCJ2ZXJzaW9uIjoyLCJqdGkiOiI5OTIzMGRkOC0yYTBjLTQyOGYtOWQ3Yy1mODcwYzAyMDY4YWEiLCJjbGllbnRfaWQiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSJ9.ppcC3Z021OXdXE4OZnevTBtjDS37U9UD37VLs4HLhVehdsefgaRLKpkuuEyXbK2TAQQDytWN_nXYAQbBbksSLGsV9lJTf7oLTarnpDxAIrWG3P82KBR-GalrUG2BNP-B_nheLfzemqUEFNuccT2Po7wTeI1YDrqOSV4LfgsLz3viDqZFW9PnajEDET0bn_o-SfS_z2sev6xNuBaUy-XF-lyfmstpWCK7cGmlEvsrcdX-9ATdU-FJ7z-itsku4SDUOXQ6-rnvOJtl9uF9ID89NCR4gXbwdcj1EmEm2V_hdUj6YicdxNkgoLHB0h7Udagy66XACJvAQMmpxGm2vQJhZg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"numeroDestinatario\": 0,\r\n    \"tipo\": \"string\",\r\n    \"template\": \"string\",\r\n    \"parametros\": {\r\n        \"conteudo\": \"string\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/v3/whatsapp/enviarMensagem",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v3",
+						"whatsapp",
+						"enviarMensagem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Enviar mensagem V2",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJraWQiOiJHZHM1a1NqVlwvVFpUblNsTU1PbW9cL1F1UEdkc05CSVZ6NUJxbjdwbDZ1Ylk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLnNpbXBsZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5uYXR1cmV6YXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5zaXR1YWNvZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5yZWdpc3Ryb3MgZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLmxvdGUiLCJhdXRoX3RpbWUiOjE2NjYyOTYzMTMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5zYS1lYXN0LTEuYW1hem9uYXdzLmNvbVwvc2EtZWFzdC0xX05jaFpCUXFsbiIsImV4cCI6MTY2NjI5OTkxMywiaWF0IjoxNjY2Mjk2MzEzLCJ2ZXJzaW9uIjoyLCJqdGkiOiI5OTIzMGRkOC0yYTBjLTQyOGYtOWQ3Yy1mODcwYzAyMDY4YWEiLCJjbGllbnRfaWQiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSJ9.ppcC3Z021OXdXE4OZnevTBtjDS37U9UD37VLs4HLhVehdsefgaRLKpkuuEyXbK2TAQQDytWN_nXYAQbBbksSLGsV9lJTf7oLTarnpDxAIrWG3P82KBR-GalrUG2BNP-B_nheLfzemqUEFNuccT2Po7wTeI1YDrqOSV4LfgsLz3viDqZFW9PnajEDET0bn_o-SfS_z2sev6xNuBaUy-XF-lyfmstpWCK7cGmlEvsrcdX-9ATdU-FJ7z-itsku4SDUOXQ6-rnvOJtl9uF9ID89NCR4gXbwdcj1EmEm2V_hdUj6YicdxNkgoLHB0h7Udagy66XACJvAQMmpxGm2vQJhZg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"numeroDestinatario\": 0,\r\n    \"tipo\": \"string\",\r\n    \"template\": \"string\",\r\n    \"parametros\": {\r\n        \"conteudo\": \"string\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/v2/whatsapp/enviarMensagem",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v2",
+						"whatsapp",
+						"enviarMensagem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar mensagens",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJraWQiOiJHZHM1a1NqVlwvVFpUblNsTU1PbW9cL1F1UEdkc05CSVZ6NUJxbjdwbDZ1Ylk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLnNpbXBsZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5uYXR1cmV6YXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5zaXR1YWNvZXMgZGV2LWFzc2luYWRvcndlYlwvcmVhZC5yZWdpc3Ryb3MgZGV2LWFzc2luYWRvcndlYlwvd3JpdGUucmVnaXN0cm9zLmxvdGUiLCJhdXRoX3RpbWUiOjE2NjYyOTYzMTMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5zYS1lYXN0LTEuYW1hem9uYXdzLmNvbVwvc2EtZWFzdC0xX05jaFpCUXFsbiIsImV4cCI6MTY2NjI5OTkxMywiaWF0IjoxNjY2Mjk2MzEzLCJ2ZXJzaW9uIjoyLCJqdGkiOiI5OTIzMGRkOC0yYTBjLTQyOGYtOWQ3Yy1mODcwYzAyMDY4YWEiLCJjbGllbnRfaWQiOiI0bWNrNjEwdmxza2dmNHViNnQ0czNpODh0cSJ9.ppcC3Z021OXdXE4OZnevTBtjDS37U9UD37VLs4HLhVehdsefgaRLKpkuuEyXbK2TAQQDytWN_nXYAQbBbksSLGsV9lJTf7oLTarnpDxAIrWG3P82KBR-GalrUG2BNP-B_nheLfzemqUEFNuccT2Po7wTeI1YDrqOSV4LfgsLz3viDqZFW9PnajEDET0bn_o-SfS_z2sev6xNuBaUy-XF-lyfmstpWCK7cGmlEvsrcdX-9ATdU-FJ7z-itsku4SDUOXQ6-rnvOJtl9uF9ID89NCR4gXbwdcj1EmEm2V_hdUj6YicdxNkgoLHB0h7Udagy66XACJvAQMmpxGm2vQJhZg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/v3/whatsapp/historicoMensagens/contato/:numero?registrosPorPagina=50",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v3",
+						"whatsapp",
+						"historicoMensagens",
+						"contato",
+						":numero"
+					],
+					"query": [
+						{
+							"key": "registrosPorPagina",
+							"value": "50"
+						}
+					],
+					"variable": [
+						{
+							"key": "numero",
+							"value": null
+						}
 					]
 				}
 			},

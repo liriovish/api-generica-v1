@@ -43,7 +43,7 @@ module.exports = class ListarContatosRouter {
      * 
      * @returns {HttpResponse}
      */
-    async route(oBody, sIp, sToken, oParams, sTokenJwt) {
+    async route(oBody, sIp, sToken, oParams, sTokenJwt, oQuery) {
         try {
             /**
              * Busca os dados do cliente
@@ -75,7 +75,7 @@ module.exports = class ListarContatosRouter {
              *
              * @UsaFuncao listarContatos
              */
-            const oContatos = await this.whatsappUseCase.listarContatos(oDadosCliente, oParams.numero)
+            const oContatos = await this.whatsappUseCase.listarContatos(oDadosCliente, oParams.numero, oQuery)
 
             /**
              * Retorna dados

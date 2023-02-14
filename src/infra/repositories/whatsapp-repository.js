@@ -66,8 +66,7 @@ module.exports = class WhatsappRepository {
             const oInsereContato = await dbContatos.findOneAndUpdate(
                 {
                     idCliente: sIdCliente,
-                    numero: sNumero,
-                    nome: sNome
+                    numero: sNumero
                 },
                 {
                     $setOnInsert: {
@@ -217,10 +216,11 @@ module.exports = class WhatsappRepository {
      * 
      * @param object oDadosContato
      * @param object oDadosMensagem
+     * @param string sConteudo
      * 
      * @return object Retorna os dados da mensagem enviada ou null
      */
-    async insereMensagemEnviada(oDadosContato, oDadosMensagem) {
+    async insereMensagemEnviada(oDadosContato, oDadosMensagem, sConteudo) {
         try { 
             /**
              * Insere no banco de dados
@@ -241,6 +241,7 @@ module.exports = class WhatsappRepository {
                     numeroDestinatario: oDadosMensagem.to,
                     mensagem: oDadosMensagem,
                     idMensagem: oDadosMensagem.id,
+                    conteudo: sConteudo,
                     idCliente: oDadosContato.idCliente,
                     dataEnvio: moment().format()
                 }
@@ -325,6 +326,7 @@ module.exports = class WhatsappRepository {
                     numeroRemetente: oDadosMensagem.from,
                     numeroDestinatario: oDadosMensagem.to,
                     mensagem: oDadosMensagem,
+                    conteudo: oDadosMensagem.conteudo,
                     idMensagem: oDadosMensagem.id,
                     idCliente: oDadosContato.idCliente
                 }
@@ -481,7 +483,7 @@ module.exports = class WhatsappRepository {
      * @param string sIdCliente
      * @param object oDados
      * 
-     * @return object Retorna os dados do contato ou null
+     * @return object Retorna os dados do template ou null
      */
     async insereTemplate(sIdCliente, oDados) {
         try { 
@@ -533,7 +535,7 @@ module.exports = class WhatsappRepository {
      * @param object oDados
      * @param string sTemplate
      * 
-     * @return object Retorna os dados do contato ou null
+     * @return object Retorna os dados do template ou null
      */
     async atualizaTemplate(sIdCliente, oDados, sTemplate) {
         try { 
@@ -581,10 +583,11 @@ module.exports = class WhatsappRepository {
      * 
      * @param string sIdCliente
      * @param string sTemplate
+     * @param object oDados
      * 
-     * @return object Retorna os dados do contato ou null
+     * @return object Retorna os dados do template ou null
      */
-    async listarTemplates(sIdCliente, sTemplate) {
+    async listarTemplates(sIdCliente, sTemplate, oDados) {
         try { 
             /**
              * Instancia o model
@@ -604,7 +607,11 @@ module.exports = class WhatsappRepository {
 
             if(sTemplate != undefined){
                 oBusca.hashTemplateInterno = sTemplate
-            }        
+            }   
+            
+            if(!oDados.registrosPorPagina){
+                oDados.registrosPorPagina = 20
+            }
 
             /**
              * Insere no banco de dados
@@ -612,8 +619,56 @@ module.exports = class WhatsappRepository {
              * @var object oTemplates
              */
             const oTemplates = await dbTemplates.find(oBusca)
+            .skip( oDados.pagina > 0 ? ( ( oDados.pagina - 1 ) * oDados.registrosPorPagina ) : 0 )
+            .limit( oDados.registrosPorPagina )
   
             return oTemplates
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para contar os template
+     * 
+     * @async
+     * @function totalTemplates
+     * 
+     * @param string sIdCliente
+     * @param string sTemplate
+     * 
+     * @return object Retorna os dados do template ou null
+     */
+    async totalTemplates(sIdCliente, sTemplate) {
+        try { 
+            /**
+             * Instancia o model
+             * 
+             * @var {mongoose} dbTemplates
+             */ 
+            const dbTemplates = await db.Templates()
+
+            /**
+             * Define os dados da busca
+             * 
+             * @var {object} oBusca
+             */ 
+            const oBusca = {
+                idCliente: sIdCliente
+            }
+
+            if(sTemplate != undefined){
+                oBusca.hashTemplateInterno = sTemplate
+            }   
+
+            /**
+             * Conta no banco de dados
+             * 
+             * @var int iTemplates
+             */
+            const iTemplates = await dbTemplates.count(oBusca)
+  
+            return iTemplates
         } catch (error) {
             console.log(error)
         }
@@ -623,14 +678,53 @@ module.exports = class WhatsappRepository {
      * Função para listar os template
      * 
      * @async
-     * @function listarContatos
+     * @function buscaTemplate
      * 
      * @param string sIdCliente
      * @param string sTemplate
      * 
+     * @return object Retorna os dados do template ou null
+     */
+    async buscaTemplate(sIdCliente, sTemplate) {
+        try { 
+            /**
+             * Instancia o model
+             * 
+             * @var {mongoose} dbTemplates
+             */ 
+            const dbTemplates = await db.Templates()    
+
+            /**
+             * Busca no banco de dados
+             * 
+             * @var object oTemplate
+             */
+            const oTemplate = await dbTemplates.findOne(
+                {
+                    idCliente: sIdCliente,
+                    hashTemplateInterno: sTemplate
+                }
+            )
+  
+            return oTemplate
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para listar os contatos
+     * 
+     * @async
+     * @function listarContatos
+     * 
+     * @param string sIdCliente
+     * @param string sTemplate
+     * @param object oDados
+     * 
      * @return object Retorna os dados do contato ou null
      */
-    async listarContatos(sIdCliente, sNumero) {
+    async listarContatos(sIdCliente, sNumero, oDados) {
         try { 
             /**
              * Instancia o model
@@ -650,7 +744,11 @@ module.exports = class WhatsappRepository {
 
             if(sNumero != undefined){
                 oBusca.numero = sNumero
-            }        
+            }     
+            
+            if(!oDados.registrosPorPagina){
+                oDados.registrosPorPagina = 20
+            }
 
             /**
              * Insere no banco de dados
@@ -658,8 +756,346 @@ module.exports = class WhatsappRepository {
              * @var object oContatos
              */
             const oContatos = await dbContatos.find(oBusca)
-  
+            .skip( oDados.pagina > 0 ? ( ( oDados.pagina - 1 ) * oDados.registrosPorPagina ) : 0 )
+            .limit( oDados.registrosPorPagina )
+
             return oContatos
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para contar os contatos
+     * 
+     * @async
+     * @function totalContatos
+     * 
+     * @param string sIdCliente
+     * @param string sTemplate
+     * 
+     * @return object Retorna os dados do contato ou null
+     */
+    async totalContatos(sIdCliente, sNumero) {
+        try { 
+            /**
+             * Instancia o model
+             * 
+             * @var {mongoose} dbContatos
+             */ 
+            const dbContatos = await db.Contatos()
+
+            /**
+             * Define os dados da busca
+             * 
+             * @var {object} oBusca
+             */ 
+            const oBusca = {
+                idCliente: sIdCliente
+            }
+
+            if(sNumero != undefined){
+                oBusca.numero = sNumero
+            }   
+
+            /**
+             * Conta no banco de dados
+             * 
+             * @var int iContatos
+             */
+            const iContatos = await dbContatos.count(oBusca)
+
+            return iContatos
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para buscar a ultima mensagem no banco de dados
+     * 
+     * @async
+     * @function buscaUltimaMensagem
+     * 
+     * @param string sContato
+     * 
+     * @return object Retorna os dados ou null
+     */
+    async buscaUltimaMensagem(sContato) {
+        try {  
+            /**
+             * Define o model
+             * 
+             * @var {mongoose} dbMensagensEnviadas
+             */ 
+            const dbMensagensEnviadas = await db.MensagensEnviadas()
+
+            /**
+             * Define os dados da busca
+             * 
+             * @var object oBusca
+             */ 
+            const oBusca = {
+                idContato: sContato
+            }
+
+            /**
+             * Busca no banco de dados
+             * 
+             * @var object oBuscaMensagemEnviada
+             */
+            const oBuscaMensagemEnviada = await dbMensagensEnviadas.find(
+                oBusca,
+                {
+                    "conteudo": 1,
+                    "dataCadastro": 1,
+                    "dataEnvio": 1
+                }
+            )
+            .sort(
+                {
+                    _id:-1
+                }
+            )
+            .limit(1)
+
+            if(Object.keys(oBuscaMensagemEnviada).length > 0){
+                oBusca.dataCadastro = {
+                    $gte: oBuscaMensagemEnviada[0].dataEnvio
+                }
+            }
+
+            /**
+             * Define o model
+             * 
+             * @var {mongoose} dbMensagensRecebidas
+             */ 
+            const dbMensagensRecebidas = await db.MensagensRecebidas()
+
+            /**
+             * Busca no banco de dados
+             * 
+             * @var object oBuscaMensagemRecebida
+             */
+            const oBuscaMensagemRecebida = await dbMensagensRecebidas.find(
+                oBusca,
+                {
+                    "conteudo": 1,
+                    "dataCadastro": 1
+                }
+            )
+            .sort(
+                {
+                    _id:-1
+                }
+            )
+            .limit(1)
+
+            if(Object.keys(oBuscaMensagemRecebida).length == 0){
+                if(Object.keys(oBuscaMensagemEnviada).length > 0){
+                    oBuscaMensagemEnviada[0]._doc.tipo = 'IN'
+
+                    return oBuscaMensagemEnviada[0]._doc
+                }
+                
+                return {}
+            }
+
+            oBuscaMensagemRecebida[0]._doc.tipo = 'OUT'
+
+            return oBuscaMensagemRecebida[0]._doc
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
+    /**
+     * Função para contar as mensagens nao lidas no banco de dados
+     * 
+     * @async
+     * @function contagemMensagensNaoLidas
+     * 
+     * @param string sContato
+     * 
+     * @return object Retorna a contagem dos dados ou null
+     */
+    async contagemMensagensNaoLidas(sContato) {
+        try {  
+            /**
+             * Define o model
+             * 
+             * @var {mongoose} dbMensagensRecebidas
+             */ 
+            const dbMensagensRecebidas = await db.MensagensRecebidas()
+
+            /**
+             * Busca no banco de dados
+             * 
+             * @var int iContagem
+             */
+            const iContagem = await dbMensagensRecebidas.count(
+                {
+                    idContato: sContato,
+                    statusEntregaCliente: {
+                        $ne: 'READ'
+                    }
+                }
+            )
+
+            return iContagem
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para buscar as mensagens no banco de dados
+     * 
+     * @async
+     * @function listarMensagens
+     * 
+     * @param string sIdCliente
+     * @param string sNumero
+     * @param object oDados
+     * 
+     * @return object Retorna os dados ou null
+     */
+    async listarMensagens(sIdCliente, sNumero, oDados) {
+        try { 
+            /**
+             * Verifica se foi informada a data inicial da busca
+             */  
+            if(!oDados.data){
+                oDados.data = moment().format()
+            }
+
+            /**
+             * Define o model
+             * 
+             * @var {mongoose} dbMensagensEnviadas
+             */ 
+            const dbMensagensEnviadas = await db.MensagensEnviadas()
+
+            /**
+             * Busca no banco de dados
+             * 
+             * @var object oBuscaMensagemEnviada
+             */
+            const oBuscaMensagemEnviada = await dbMensagensEnviadas.find(
+                {
+                    idCliente: sIdCliente,
+                    numeroDestinatario: sNumero,
+                    dataCadastro: {
+                        $lt: oDados.data
+                    }
+                },
+                {
+                    "conteudo": 1,
+                    "status": 1,
+                    "dataCadastro": 1
+                }
+            ).sort({ dataCadastro: 1 })
+
+            for (let oMensagemEnviada in oBuscaMensagemEnviada) {
+                oBuscaMensagemEnviada[oMensagemEnviada] = oBuscaMensagemEnviada[oMensagemEnviada]._doc
+                oBuscaMensagemEnviada[oMensagemEnviada].tipo = "IN"
+            }
+
+            /**
+             * Define o model
+             * 
+             * @var {mongoose} dbMensagensRecebidas
+             */ 
+            const dbMensagensRecebidas = await db.MensagensRecebidas()
+
+            /**
+             * Busca no banco de dados
+             * 
+             * @var object oBuscaMensagemRecebida
+             */
+            const oBuscaMensagemRecebida = await dbMensagensRecebidas.find(
+                {
+                    idCliente: sIdCliente,
+                    numeroRemetente: sNumero,
+                    dataCadastro: {
+                        $lt: oDados.data
+                    }
+                },
+                {
+                    "conteudo": 1,
+                    "statusEntregaCliente": 1,
+                    "dataCadastro": 1
+                }
+            ).sort({ dataCadastro: 1 })
+
+            for (let oMensagemRecebida in oBuscaMensagemRecebida) {
+                oBuscaMensagemRecebida[oMensagemRecebida] = oBuscaMensagemRecebida[oMensagemRecebida]._doc
+                oBuscaMensagemRecebida[oMensagemRecebida].tipo = "OUT"
+            }
+
+            /**
+             * Busca no banco de dados
+             * 
+             * @var object oBuscaMensagemRecebida
+             */
+            let oMensagens = oBuscaMensagemEnviada.concat(oBuscaMensagemRecebida)
+
+            oMensagens.sort((a, b) => {
+                return new Date(b.dataCadastro) - new Date(a.dataCadastro)
+            })
+
+            if(!oDados.registrosPorPagina){
+                oDados.registrosPorPagina = 20
+            }
+
+            oMensagens = oMensagens.slice(0, oDados.registrosPorPagina)
+
+            return oMensagens
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para buscar as mensagens no banco de dados
+     * 
+     * @async
+     * @function listarMensagens
+     * 
+     * @param string sIdCliente
+     * @param string sNumero
+     * @param object oDados
+     * 
+     * @return object Retorna os dados ou null
+     */
+    async marcarMensagensLidas(sIdCliente, sNumero) {
+        try { 
+            /**
+             * Define o model
+             * 
+             * @var {mongoose} dbMensagensRecebidas
+             */ 
+            const dbMensagensRecebidas = await db.MensagensRecebidas()
+
+            /**
+             * Busca no banco de dados
+             * 
+             * @var object oMensagemRecebida
+             */
+            const oMensagemRecebida = await dbMensagensRecebidas.updateMany(
+                {
+                    idCliente: sIdCliente,
+                    numeroRemetente: sNumero,
+                    statusEntregaCliente: { $ne: 'READ' }
+                },
+                {
+                    $set: {
+                        statusEntregaCliente: 'READ'
+                    }
+                }
+            )
+
+            return oMensagemRecebida
         } catch (error) {
             console.log(error)
         }

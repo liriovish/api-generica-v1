@@ -51,6 +51,9 @@ const schema = new mongoose.Schema(
         status: {
             type: String
         },
+        conteudo: {
+            type: String
+        },
         dataEnvio: {
             type: Date
         },

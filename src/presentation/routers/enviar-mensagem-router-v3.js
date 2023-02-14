@@ -96,7 +96,7 @@ module.exports = class EnviarMensagemRouter {
             /**
              * Retorna dados
              */
-            return HttpResponse.ok(oDadosEnviarMensagem)
+            return oDadosEnviarMensagem
         } catch (error) {
             console.log(error)
             /**

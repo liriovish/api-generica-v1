@@ -72,7 +72,7 @@
              /**
               * Retorna dados
               */
-             return HttpResponse.ok(oDadosWebhookStatus)
+             return oDadosWebhookStatus
          } catch (error) {
              console.log(error)
              /**

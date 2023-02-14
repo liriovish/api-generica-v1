@@ -42,6 +42,9 @@ const schema = new mongoose.Schema(
         mensagem: {
             type: Object
         },
+        conteudo: {
+            type: String
+        },
         idMensagem: {
             type: String
         },

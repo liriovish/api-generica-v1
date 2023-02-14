@@ -54,7 +54,7 @@ module.exports = class Webhook {
                 /**
                  * Retorna dados
                  */
-                return HttpResponse.ok(oDadosWebhookStatus)
+                return oDadosWebhookStatus
             }
             
             /**
@@ -70,7 +70,7 @@ module.exports = class Webhook {
                 /**
                  * Retorna dados
                  */
-                return HttpResponse.ok(oDadosWebhookRecebimento)
+                return oDadosWebhookRecebimento
             }
 
             /**

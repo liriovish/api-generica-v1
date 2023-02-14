@@ -212,14 +212,40 @@ module.exports = class WhatsappUseCase {
             return HttpResponse.serverError()
         }
 
+        
         /**
-         * Insere o contato
+         * Define o template vazio
+         *
+         * @var {object} oTemplate
+         */
+        let oTemplate = {}
+
+        if(oDados.tipo == 'template'){
+            /**
+             * Busca o template
+             *
+             * @var {object} oTemplate
+             */
+            oTemplate = await this.whatsappRepository.buscaTemplate(oDadosCliente._id, oDados.template ?? '')
+
+            if(oTemplate == null){
+                return HttpResponse.badRequest(
+                    new CustomError('Template não localizado', 3)
+                )
+            }
+        }
+
+        /**
+         * Inicia o objeto da mensagem e o conteudo
          *
          * @var {object} oEnviaMensagem
          */
         let oEnviaMensagem = {}
+        let sConteudo = '{{conteudo}}'
 
         if(oDadosCliente.whatsapp.integrador == 'ZENVIA'){
+            oDados.template = oTemplate?.identificadorTemplateZenvia ?? ''
+
             oEnviaMensagem = await helpers.ZenviaClient.enviarMensagemV2(oDados, oDadosCliente)
 
             // Verifica se não houve cadastro
@@ -230,7 +256,30 @@ module.exports = class WhatsappUseCase {
                  */
                 return HttpResponse.serverError()
             }
+
+            /**
+             * Inicia o contador
+             *
+             * @var {int} iContador
+             */
+            let iContador = 1
+
+            if(oTemplate.texto){
+                sConteudo = oTemplate.texto                
+            }
+
+            /**
+             * Itera os dados
+             */
+            await Promise.all(Object.keys(oDados.parametros).map(async (sChave) => {
+                sConteudo = sConteudo.replace('{{'+sChave+'}}', oDados.parametros[sChave])
+                sConteudo = sConteudo.replace('{{'+iContador+'}}', oDados.parametros[sChave])
+
+                iContador++
+            }))
         }else if(oDadosCliente.whatsapp.integrador == 'META'){
+            oDados.template = oTemplate?.identificadorTemplateMeta ?? ''
+
             oEnviaMensagem = await helpers.MetaClient.enviarMensagem(oDados, oDadosCliente)
 
             // Verifica se não houve cadastro
@@ -247,6 +296,27 @@ module.exports = class WhatsappUseCase {
             oEnviaMensagem.from = oDadosCliente.whatsapp.metaIdNumeroTelefone
             oEnviaMensagem.to = oEnviaMensagem.contacts[0].input
             oEnviaMensagem.contents = oDados.parametros.conteudo ?? ''
+
+            /**
+             * Inicia o contador
+             *
+             * @var {int} iContador
+             */
+            let iContador = 1
+
+            if(oTemplate.texto){
+                sConteudo = oTemplate.texto                
+            }
+
+            /**
+             * Itera os dados
+             */
+            await Promise.all(Object.keys(oDados.parametros).map(async (sChave) => {
+                sConteudo = sConteudo.replace('{{'+sChave+'}}', oDados.parametros[sChave])
+                sConteudo = sConteudo.replace('{{'+iContador+'}}', oDados.parametros[sChave])
+
+                iContador++
+            }))
         }        
 
         /**
@@ -254,7 +324,7 @@ module.exports = class WhatsappUseCase {
          *
          * @var {object} oDadosMensagemEnviada
          */
-        const oDadosMensagemEnviada = await this.whatsappRepository.insereMensagemEnviada(oDadosContato, oEnviaMensagem)
+        const oDadosMensagemEnviada = await this.whatsappRepository.insereMensagemEnviada(oDadosContato, oEnviaMensagem, sConteudo)
 
         // Verifica se não houve cadastro
         if(oDadosMensagemEnviada == null){
@@ -269,9 +339,13 @@ module.exports = class WhatsappUseCase {
         const oRetorno = {
             _id: oDadosMensagemEnviada._id,
             idContato: oDadosMensagemEnviada.idContato,
+            numeroRemetente: oDadosMensagemEnviada.numeroRemetente,
             numeroDestinatario: oDadosMensagemEnviada.numeroDestinatario,
             mensagem: oDadosMensagemEnviada.mensagem,
+            conteudo: oDadosMensagemEnviada.conteudo,
             idMensagem: oDadosMensagemEnviada.idMensagem,
+            idCliente: oDadosMensagemEnviada.idCliente,
+            dataEnvio: oDadosMensagemEnviada.dataEnvio,
             dataCadastro: oDadosMensagemEnviada.dataCadastro,
             dataAtualizacao: oDadosMensagemEnviada.dataAtualizacao
         }
@@ -458,7 +532,7 @@ module.exports = class WhatsappUseCase {
      *
      * @returns {object}
      */
-    async webhookRecebimento(oBody, sToken, sIdentificadorCliente) {
+    async webhookRecebimento(oBody, sToken, sTokenJwt, sIdentificadorCliente) {
         /**
          * Status da mensagem e id da mensagem
          *
@@ -469,6 +543,8 @@ module.exports = class WhatsappUseCase {
         // Verifica se o corpo do webhook foi enviado pela ZENVIA
         if(oBody.message){
             oDados = oBody.message
+
+            oDados.conteudo = oBody.message.contents[0].text
         }
 
         // Verifica se o corpo do webhook foi enviado pela META
@@ -483,6 +559,8 @@ module.exports = class WhatsappUseCase {
             if(oDados.from.slice(0,2) == '55' && oDados.from.length == 12){
                 oDados.from = `${oDados.from.slice(0,4)}9${oDados.from.slice(4)}`
             }
+
+            oDados.conteudo = oBody.message.contents[0].text
         }
 
         // Verifica se encontrou algum integrador, senão, gera erro
@@ -497,8 +575,8 @@ module.exports = class WhatsappUseCase {
          *
          * @UsaFuncao dadosCliente
          */
-        const oCliente = await this.clienteFilter.dadosCliente(sToken, '', '', sIdentificadorCliente)
-  
+        const oCliente = await this.clienteFilter.dadosCliente(sToken, '', sTokenJwt, sIdentificadorCliente)
+
         // Verifica se existe o cliente
         if(oCliente.statusCode != 200){
             return HttpResponse.badRequest(
@@ -573,7 +651,7 @@ module.exports = class WhatsappUseCase {
              *
              * @var {object} oEnviaMensagem
              */
-            const oEnviaMensagem = await this.enviarMensagemV2(oDadosMensagem, oDadosCliente)
+            const oEnviaMensagem = await this.enviarMensagemV3(oDadosMensagem, oDadosCliente)
 
             // Verifica se houve erro
             if(oEnviaMensagem.statusCode != 201){
@@ -647,7 +725,7 @@ module.exports = class WhatsappUseCase {
          * @var {object} oTemplate
          */
         const oTemplate = await this.whatsappRepository.atualizaTemplate(oDadosCliente._id, oDados, sTemplate)
-        console.log(oTemplate)
+
         // Verifica se não houve cadastro
         if(oTemplate == null){
             return HttpResponse.serverError()
@@ -678,16 +756,17 @@ module.exports = class WhatsappUseCase {
      *
      * @param {object} oDadosCliente
      * @param {string} sTemplate
+     * @param {object} oDados
      *
      * @returns {object}
      */
-    async listarTemplates(oDadosCliente, sTemplate) {
+    async listarTemplates(oDadosCliente, sTemplate, oDados) {
         /**
          * Insere o contato
          *
          * @var {object} oTemplates
          */
-        const oTemplates = await this.whatsappRepository.listarTemplates(oDadosCliente._id, sTemplate)
+        const oTemplates = await this.whatsappRepository.listarTemplates(oDadosCliente._id, sTemplate, oDados)
 
         // Verifica se não houve cadastro
         if(oTemplates == null){
@@ -695,12 +774,20 @@ module.exports = class WhatsappUseCase {
         }
 
         /**
+         * Busca o total de templates
+         *
+         * @var {object} iTotalTemplates
+         */
+        const iTotalTemplates = await this.whatsappRepository.totalTemplates(oDadosCliente._id, sTemplate, oDados)
+
+        /**
          * Define o retorno
          *
          * @var {object} oRetorno
          */
         let oRetorno = {
-            templates: []
+            totalRegistros: iTotalTemplates,
+            data: []
         }
 
         /**
@@ -710,7 +797,7 @@ module.exports = class WhatsappUseCase {
             /**
              * Adiciona no objeto de retorno
              */
-            oRetorno.templates.push({
+            oRetorno.data.push({
                 id: oTemplate._id,
                 hashTemplateInterno: oTemplate.hashTemplateInterno,
                 titulo: oTemplate.titulo,
@@ -731,19 +818,93 @@ module.exports = class WhatsappUseCase {
      *
      * @param {object} oDadosCliente
      * @param {string} sNumero
+     * @param {object} oDados
      *
      * @returns {object}
      */
-    async listarContatos(oDadosCliente, sNumero) {
+    async listarContatos(oDadosCliente, sNumero, oDados) {
         /**
-         * Insere o contato
+         * Lista os contatos
          *
          * @var {object} oContatos
          */
-        const oContatos = await this.whatsappRepository.listarContatos(oDadosCliente._id, sNumero)
+        const oContatos = await this.whatsappRepository.listarContatos(oDadosCliente._id, sNumero, oDados)
 
         // Verifica se não houve cadastro
         if(oContatos == null){
+            return HttpResponse.serverError()
+        }
+
+        /**
+         * Busca o total de contatos
+         *
+         * @var {object} iTotalContatos
+         */
+        const iTotalContatos = await this.whatsappRepository.totalContatos(oDadosCliente._id, sNumero, oDados)
+
+        /**
+         * Define o retorno
+         *
+         * @var {object} oRetorno
+         */
+        let oRetorno = {
+            totalRegistros: iTotalContatos,
+            data: []
+        }
+
+        /**
+         * Itera os dados
+         */
+        await Promise.all(oContatos.map(async (oContato) => {
+            /**
+             * Busca a ultima mensagem do contato
+             *
+             * @var {object} oMensagem
+             */
+            const oMensagem = await this.whatsappRepository.buscaUltimaMensagem(oContato.id)
+
+            /**
+             * Define o numero de mensagens nao lidas
+             *
+             * @var {int} iNaoLidas
+             */
+            const iNaoLidas = await this.whatsappRepository.contagemMensagensNaoLidas(oContato.id)
+
+            /**
+             * Adiciona no objeto de retorno
+             */
+            oRetorno.data.push({
+                nome: oContato.nome,
+                numero: oContato.numero,
+                ultimaMensagem: oMensagem.conteudo ?? '',
+                dataUltimaMensagem: moment(oMensagem.dataEnvio).format('YYYY-MM-DD HH:mm:ss') ?? moment(oMensagem.dataCadastro).format('YYYY-MM-DD HH:mm:ss') ?? '',
+                tipoUltimaMensagem: oMensagem.tipo ?? '',
+                quantidadeNaoLidas: iNaoLidas
+            })
+        }))
+
+        return HttpResponse.ok(oRetorno)
+    }
+
+    /**
+     * Função responsável pela listagem dos contatos
+     *
+     * @param {object} oDadosCliente
+     * @param {string} sNumero
+     * @param {object} oDados
+     *
+     * @returns {object}
+     */
+    async listarMensagens(oDadosCliente, sNumero, oDados) {
+        /**
+         * Lista as mensagens
+         *
+         * @var {object} oMensagens
+         */
+        const oMensagens = await this.whatsappRepository.listarMensagens(oDadosCliente._id, sNumero, oDados)
+
+        // Verifica se não houve cadastro
+        if(oMensagens == null){
             return HttpResponse.serverError()
         }
 
@@ -753,23 +914,29 @@ module.exports = class WhatsappUseCase {
          * @var {object} oRetorno
          */
         let oRetorno = {
-            contatos: []
+            data: []
         }
 
         /**
          * Itera os dados
          */
-        await Promise.all(oContatos.map(async (oContato) => {
+        await Promise.all(oMensagens.map(async (oMensagem) => {
             /**
              * Adiciona no objeto de retorno
              */
-            oRetorno.contatos.push({
-                nome: oContato.nome,
-                numero: oContato.numero,
-                ultimaMensagem: '',
-                tipoUltimaMensagem: 'IN',
+            oRetorno.data.push({
+                tipo: oMensagem.tipo,
+                numero: oMensagem.numero,
+                status: oMensagem.status ?? oMensagem.statusEntregaCliente ?? '',
+                dataMensagem: moment(oMensagem.dataEnvio).format('YYYY-MM-DD HH:mm:ss') ?? moment(oMensagem.dataCadastro).format('YYYY-MM-DD HH:mm:ss') ?? '',
+                mensagem: oMensagem.conteudo ?? ''
             })
         }))
+
+        /**
+         * Marcar as mensagens como lida
+         */
+        await this.whatsappRepository.marcarMensagensLidas(oDadosCliente._id, sNumero)
 
         return HttpResponse.ok(oRetorno)
     }

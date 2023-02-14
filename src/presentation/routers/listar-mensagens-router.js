@@ -21,17 +21,19 @@ const { CustomError } = require('../../utils/errors')
 const HttpResponse = require('../helpers/http-response')
 
 /**
- * Classe ListarTemplatesRouter
+ * Classe ListarMensagensRouter
  * @package  src\presentation\routers
  */
-module.exports = class ListarTemplatesRouter {
+module.exports = class ListarMensagensRouter {
     /**
      * Construtor
      * @param {whatsappUseCase}
+     * @param {whatsappValidator}
      * @param {clienteFilter}
      */
-    constructor({ whatsappUseCase, clienteFilter } = {}) {
+    constructor({ whatsappUseCase, whatsappValidator, clienteFilter } = {}) {
         this.whatsappUseCase = whatsappUseCase
+        this.whatsappValidator = whatsappValidator
         this.clienteFilter = clienteFilter
     }
 
@@ -69,18 +71,32 @@ module.exports = class ListarTemplatesRouter {
             const oDadosCliente = oCliente.body
 
             /**
-             * Lista os templates
+             * Valida os dados
              *
-             * @var {object} oTemplates
+             * @var {object} bValidaListaMensagens
              *
-             * @UsaFuncao listarTemplates
+             * @UsaFuncao validarListaMensagens
              */
-            const oTemplates = await this.whatsappUseCase.listarTemplates(oDadosCliente, oParams.template, oQuery)
+            const bValidaListaMensagens = await this.whatsappValidator.validarListaMensagens(oParams)
+
+            // Verifica se retornou erro
+            if(bValidaListaMensagens != null){
+                return bValidaListaMensagens
+            }
+
+            /**
+             * Lista os mensagens
+             *
+             * @var {object} oMensagens
+             *
+             * @UsaFuncao listarMensagens
+             */
+            const oMensagens = await this.whatsappUseCase.listarMensagens(oDadosCliente, oParams.numero, oQuery)
 
             /**
              * Retorna dados
              */
-            return oTemplates
+            return oMensagens
         } catch (error) {
             console.log(error)
             /**

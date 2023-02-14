@@ -47,7 +47,7 @@ module.exports = router => {
      * @UsaFuncao WhatsappRouteComposer.webhookStatus
      * @return {object}
      */
-    router.post('/v1/whatsapp/webhookStatus/:identificadorCliente', adapt(WhatsappRouteComposer.webhookStatus()))
+    router.post('/v1/whatsapp/webhookStatus/:identificadorCliente?', adapt(WhatsappRouteComposer.webhookStatus()))
 
     /**
      * Rota POST para o webhook de recebimento
@@ -56,7 +56,7 @@ module.exports = router => {
      * @UsaFuncao WhatsappRouteComposer.webhookStatus
      * @return {object}
      */
-    router.post('/v1/whatsapp/webhookRecebimento/:identificadorCliente', adapt(WhatsappRouteComposer.webhookRecebimento()))
+    router.post('/v1/whatsapp/webhookRecebimento/:identificadorCliente?', adapt(WhatsappRouteComposer.webhookRecebimento()))
 
     /**
      * Rota V2 POST para o envio da mensagem
@@ -68,13 +68,22 @@ module.exports = router => {
     router.post('/v2/whatsapp/enviarMensagem', adapt(WhatsappRouteComposer.enviarMensagemV2()))
 
     /**
-     * Rota V2 POST para o envio da mensagem
+     * Rota V2 GET para a verificação do webhook
      *
      * @UsaFuncao adapt
      * @UsaFuncao WhatsappRouteComposer.webhookVerificar
      * @return {object}
      */
-    router.get('/v2/whatsapp/webhook/:identificadorCliente', adapt(WhatsappRouteComposer.webhookVerificar()))
+    router.get('/v2/whatsapp/webhook/:identificadorCliente?', adapt(WhatsappRouteComposer.webhookVerificar()))
+
+    /**
+     * Rota V2 POST para o webhook
+     *
+     * @UsaFuncao adapt
+     * @UsaFuncao WhatsappRouteComposer.webhook
+     * @return {object}
+     */
+    router.post('/v2/whatsapp/webhook/:identificadorCliente?', adapt(WhatsappRouteComposer.webhook()))
 
     /**
      * Rota V3 POST para o envio da mensagem
@@ -120,4 +129,13 @@ module.exports = router => {
      * @return {object}
      */
     router.get('/v1/whatsapp/contatos/:numero?', adapt(WhatsappRouteComposer.listarContatos()))
+
+    /**
+     * Rota V3 GET para listar as mensagens
+     *
+     * @UsaFuncao adapt
+     * @UsaFuncao WhatsappRouteComposer.atualizarTemplate
+     * @return {object}
+     */
+    router.get('/v3/whatsapp/historicoMensagens/contato/:numero?', adapt(WhatsappRouteComposer.listarMensagens()))
 }

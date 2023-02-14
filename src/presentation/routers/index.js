@@ -27,6 +27,7 @@ const CriarTemplate = require('./criar-template-router')
 const AtualizarTemplate = require('./atualizar-template-router')
 const ListarTemplates = require('./listar-templates-router')
 const ListarContatos = require('./listar-contatos-router')
+const ListarMensagens = require('./listar-mensagens-router')
 
 /**
  * Realiza o export das classes de geração dos erros
@@ -43,5 +44,6 @@ module.exports = {
     CriarTemplate,
     AtualizarTemplate,
     ListarTemplates,
-    ListarContatos
+    ListarContatos,
+    ListarMensagens
 }
