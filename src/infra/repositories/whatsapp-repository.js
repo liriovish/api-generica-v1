@@ -80,6 +80,25 @@ module.exports = class WhatsappRepository {
                     returnOriginal: false
                 }
             )
+
+            if(sNome != sNumero){
+                /**
+                 * Insere no banco de dados
+                 * 
+                 * @var object oAtualizaNome
+                 */
+                const oAtualizaNome = await dbContatos.findOneAndUpdate(
+                    {
+                        idCliente: sIdCliente,
+                        numero: sNumero
+                    },
+                    {
+                        $set: {
+                            nome: sNome
+                        }
+                    }
+                )
+            }
   
             return oInsereContato
         } catch (error) {
@@ -243,7 +262,9 @@ module.exports = class WhatsappRepository {
                     idMensagem: oDadosMensagem.id,
                     conteudo: sConteudo,
                     idCliente: oDadosContato.idCliente,
-                    dataEnvio: moment().format()
+                    dataEnvio: moment().format(),
+                    dataCadastro: moment().format(),
+                    dataAtualizacao: moment().format()
                 }
             )
 
@@ -328,7 +349,9 @@ module.exports = class WhatsappRepository {
                     mensagem: oDadosMensagem,
                     conteudo: oDadosMensagem.conteudo,
                     idMensagem: oDadosMensagem.id,
-                    idCliente: oDadosContato.idCliente
+                    idCliente: oDadosContato.idCliente,
+                    dataCadastro: moment().format(),
+                    dataAtualizacao: moment().format()
                 }
             )
 
@@ -966,7 +989,7 @@ module.exports = class WhatsappRepository {
              * Verifica se foi informada a data inicial da busca
              */  
             if(!oDados.data){
-                oDados.data = moment().format()
+                oDados.data = moment().add(1, 'days').format()
             }
 
             /**
@@ -1034,11 +1057,23 @@ module.exports = class WhatsappRepository {
             }
 
             /**
-             * Busca no banco de dados
+             * Inicia a variavel das mensagens
              * 
-             * @var object oBuscaMensagemRecebida
+             * @var object oMensagens
              */
-            let oMensagens = oBuscaMensagemEnviada.concat(oBuscaMensagemRecebida)
+            let oMensagens = []
+
+            if(!oDados.tipoMensagem || oDados.tipoMensagem == 'ALL'){
+                oMensagens = oBuscaMensagemEnviada.concat(oBuscaMensagemRecebida)
+            }
+
+            if(oDados.tipoMensagem == 'RECEIVED'){
+                oMensagens = oBuscaMensagemRecebida
+            }
+
+            if(oDados.tipoMensagem == 'SENT'){
+                oMensagens = oBuscaMensagemEnviada
+            }
 
             oMensagens.sort((a, b) => {
                 return new Date(b.dataCadastro) - new Date(a.dataCadastro)

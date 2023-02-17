@@ -877,7 +877,7 @@ module.exports = class WhatsappUseCase {
                 nome: oContato.nome,
                 numero: oContato.numero,
                 ultimaMensagem: oMensagem.conteudo ?? '',
-                dataUltimaMensagem: moment(oMensagem.dataEnvio).format('YYYY-MM-DD HH:mm:ss') ?? moment(oMensagem.dataCadastro).format('YYYY-MM-DD HH:mm:ss') ?? '',
+                dataUltimaMensagem: moment(oMensagem.dataEnvio ?? oMensagem.dataCadastro).format('YYYY-MM-DD HH:mm:ss'),
                 tipoUltimaMensagem: oMensagem.tipo ?? '',
                 quantidadeNaoLidas: iNaoLidas
             })
@@ -920,7 +920,7 @@ module.exports = class WhatsappUseCase {
         /**
          * Itera os dados
          */
-        await Promise.all(oMensagens.map(async (oMensagem) => {
+        oMensagens.map(async (oMensagem) => {
             /**
              * Adiciona no objeto de retorno
              */
@@ -928,10 +928,10 @@ module.exports = class WhatsappUseCase {
                 tipo: oMensagem.tipo,
                 numero: oMensagem.numero,
                 status: oMensagem.status ?? oMensagem.statusEntregaCliente ?? '',
-                dataMensagem: moment(oMensagem.dataEnvio).format('YYYY-MM-DD HH:mm:ss') ?? moment(oMensagem.dataCadastro).format('YYYY-MM-DD HH:mm:ss') ?? '',
+                dataMensagem: moment(oMensagem.dataEnvio ?? oMensagem.dataCadastro).format('YYYY-MM-DD HH:mm:ss'),
                 mensagem: oMensagem.conteudo ?? ''
             })
-        }))
+        })
 
         /**
          * Marcar as mensagens como lida
