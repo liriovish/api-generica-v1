@@ -27,6 +27,7 @@ module.exports = class MongoDB {
      * @param string sDatabaseURI 
      */
     static async connect(sDatabaseURI) {
+        mongoose.set('strictQuery', true);
         mongoose.connect(sDatabaseURI)
 
         mongoose.Promise = global.Promise
