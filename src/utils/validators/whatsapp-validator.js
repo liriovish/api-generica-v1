@@ -479,4 +479,28 @@ module.exports = class WhatsappValidator {
 
         return null
     }
+
+    /**
+     * Função responsável por fazer a validação
+     *
+     * @function validarAtualizacaoContato
+     *
+     * @param  {object} oDados
+     *
+     * @return {object|null}  Retorna a resposta de erro ou null no caso de OK
+     */
+    async validarAtualizacaoContato(oDados) {
+        /**
+         * Valida se existe o titulo
+         */
+        if (oDados.numero != undefined &&
+            oDados.numero.length < 1
+        ) {
+            return HttpResponse.badRequest(
+                new CustomError('Número do contato inválido', 1)
+            )
+        }
+
+        return null
+    }
 }

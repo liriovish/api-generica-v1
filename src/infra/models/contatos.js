@@ -37,6 +37,17 @@ const schema = new mongoose.Schema({
     },
     idCliente: {
         type: mongoose.ObjectId
+    },
+    arquivado: {
+        type: Boolean
+    },
+    dataCadastro: {
+        type: Date,
+        default: Date()
+    },
+    dataAtualizacao: {
+        type: Date,
+        default: Date()
     }
 })
 

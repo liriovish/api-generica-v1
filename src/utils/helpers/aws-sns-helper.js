@@ -7,15 +7,18 @@
  * @package   Cartoon
  * @author    Equipe Webcartórios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
- * @license   https://github.com/dynamic-system-vish/visualizacao-matricula-getimagem/licence.txt BSD Licence
- * @link      https://github.com/dynamic-system-vish/visualizacao-matricula-getimagem
+ * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
+ * @link      https://github.com/dynamic-system-vish/api-whatsapp
  * @CriadoEm  20/10/2022
  */
 
 /**
  * Configurações globais
  */
-const AWS = require('aws-sdk')
+const AWS = require('aws-sdk'),
+      {
+       SNS
+      } = require("@aws-sdk/client-sns");
 require('dotenv').config()
 
 /**
@@ -76,14 +79,14 @@ module.exports = class AWSSNS {
              * 
              * @var object oMensagemSNS
              */
-            const oMensagemSNS = new AWS.SNS({apiVersion: '2010-03-31'})
+            const oMensagemSNS = new SNS({apiVersion: '2010-03-31'})
 
             /**
              * Envia uma mensagem com o SNS para realizar o processamento
              * 
              * @var object oEnviarSNS
              */
-            const oEnviarSNS = await oMensagemSNS.publish(oDadosSNS).promise()
+            const oEnviarSNS = await oMensagemSNS.publish(oDadosSNS)
 
             return oEnviarSNS
         } catch (erro) {

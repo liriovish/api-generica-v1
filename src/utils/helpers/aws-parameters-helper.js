@@ -1,25 +1,28 @@
 /**
- * Helper para retornar o valor do parâmetro na AWS
+ * Helper para retornar o valor do parametro na AWS
  *
  * NodeJS version 16.x
  *
  * @category  JavaScript
  * @package   Cartoon
- * @author    Equipe Webcartórios <contato@webcartorios.com.br>
+ * @author    Equipe WebcartÃ³rios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
- * @license   https://github.com/dynamic-system-vish/visualizacao-matricula-getimagem/licence.txt BSD Licence
- * @link      https://github.com/dynamic-system-vish/visualizacao-matricula-getimagem
+ * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
+ * @link      https://github.com/dynamic-system-vish/api-whatsapp
  * @CriadoEm  20/10/2022
  */
 
 /**
- * Configurações globais
+ * ConfiguraÃ§Ãµes globais
  */
-const AWS = require('aws-sdk')
+const AWS = require('aws-sdk'),
+      {
+       SSM
+      } = require("@aws-sdk/client-ssm");
 require('dotenv').config()
 
 /**
- * Configurações AWS
+ * ConfiguraÃ§Ãµes AWS
  */
 AWS.config.update({region: process.env.REGION_AWS, accessKeyId: process.env.ACCESS_KEY_ID, secretAccessKey: process.env.SECRET_ACCESS_KEY})
 
@@ -30,12 +33,12 @@ AWS.config.update({region: process.env.REGION_AWS, accessKeyId: process.env.ACCE
  */
 module.exports = class AWSParameters {
     /**
-     * Função para retornar o valor do parâmetro
+     * FunÃ§Ã£o para retornar o valor do parametro
      * 
      * @async
      * @function getValueParameter
      * 
-     * @param string sParametro Nome do parâmetro
+     * @param string sParametro Nome do parametro
      * 
      * @return object Retorna os dados
      */
@@ -43,7 +46,7 @@ module.exports = class AWSParameters {
         try {
 
             /**
-             * Se o parâmetro for inválido ou não existir dados, retorna o mesmo
+             * Se o parametro for invalido ou nÃ£o existir dados, retorna o mesmo
              * valor
              */
             if (typeof sValorParametro === 'undefined'
@@ -53,38 +56,38 @@ module.exports = class AWSParameters {
             }
 
             /**
-             * Se as iníciais não forem BDL_, considera o parâmetro sendo o valor
+             * Se as iniciais nÃ£o forem BDL_, considera o parametro sendo o valor
              */
             if (sValorParametro.substr(0, 4) !=  process.env.PREFIXO_VARIAVEIS_SSM) {
                 return sValorParametro
             }
 
             /**
-             * Inícia o SSM
+             * Inicia o SSM
              *
              * @var mix  mSsm
              */
-            const mSsm = new AWS.SSM()
+            const mSsm = new SSM()
 
             /**
-             * Busca os dados do parâmetro
+             * Busca os dados do parametro
              *
              * @var object oDadosParametro
              */
             const oDadosParametro = await mSsm.getParameter({
                 Name: sValorParametro,
                 WithDecryption: true
-            }).promise()
+            })
 
             /**
-             * Valor da variável
+             * Valor da variavel
              *
              * @var {String} sValor
              */
             const sValor = oDadosParametro?.Parameter?.Value ?? null
 
             /**
-             * Altera o valor da variável se existir
+             * Altera o valor da variavel se existir
              */
             if (typeof sValor !== 'undefined'
                 && sValor.length > 0

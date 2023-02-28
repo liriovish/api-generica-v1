@@ -125,7 +125,7 @@ module.exports = router => {
      * Rota GET para listar os contatos
      *
      * @UsaFuncao adapt
-     * @UsaFuncao WhatsappRouteComposer.atualizarTemplate
+     * @UsaFuncao WhatsappRouteComposer.listarContatos
      * @return {object}
      */
     router.get('/v1/whatsapp/contatos/:numero?', adapt(WhatsappRouteComposer.listarContatos()))
@@ -134,8 +134,17 @@ module.exports = router => {
      * Rota V3 GET para listar as mensagens
      *
      * @UsaFuncao adapt
-     * @UsaFuncao WhatsappRouteComposer.atualizarTemplate
+     * @UsaFuncao WhatsappRouteComposer.listarMensagens
      * @return {object}
      */
     router.get('/v3/whatsapp/historicoMensagens/contato/:numero?', adapt(WhatsappRouteComposer.listarMensagens()))
+
+    /**
+     * Rota V1 PUT para atualizar o contato
+     *
+     * @UsaFuncao adapt
+     * @UsaFuncao WhatsappRouteComposer.atualizarContato
+     * @return {object}
+     */
+    router.put('/v1/whatsapp/contatos/:numero', adapt(WhatsappRouteComposer.atualizarContato()))
 }

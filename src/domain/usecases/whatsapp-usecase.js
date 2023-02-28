@@ -843,12 +843,20 @@ module.exports = class WhatsappUseCase {
         const iTotalContatos = await this.whatsappRepository.totalContatos(oDadosCliente._id, sNumero, oDados)
 
         /**
+         * Busca o total de contatos arquivados
+         *
+         * @var {object} iTotalContatosArquivados
+         */
+        const iTotalContatosArquivados = await this.whatsappRepository.totalContatosArquivados(oDadosCliente._id, sNumero, oDados)
+
+        /**
          * Define o retorno
          *
          * @var {object} oRetorno
          */
         let oRetorno = {
             totalRegistros: iTotalContatos,
+            totalRegistrosArquivados: iTotalContatosArquivados,
             data: []
         }
 
@@ -879,7 +887,8 @@ module.exports = class WhatsappUseCase {
                 ultimaMensagem: oMensagem.conteudo ?? '',
                 dataUltimaMensagem: moment(oMensagem.dataEnvio ?? oMensagem.dataCadastro).format('YYYY-MM-DD HH:mm:ss'),
                 tipoUltimaMensagem: oMensagem.tipo ?? '',
-                quantidadeNaoLidas: iNaoLidas
+                quantidadeNaoLidas: iNaoLidas,
+                arquivado: oContato.arquivado ?? false
             })
         }))
 
@@ -937,6 +946,45 @@ module.exports = class WhatsappUseCase {
          * Marcar as mensagens como lida
          */
         await this.whatsappRepository.marcarMensagensLidas(oDadosCliente._id, sNumero)
+
+        return HttpResponse.ok(oRetorno)
+    }
+
+    /**
+     * Função responsável pela atualização do contato
+     *
+     * @param {object} oDados
+     * @param {object} oDadosCliente
+     *
+     * @returns {object}
+     */
+    async atualizarContato(oDados, oDadosCliente) {
+        console.log(oDados)
+        /**
+         * Insere o contato
+         *
+         * @var {object} oContato
+         */
+        const oContato = await this.whatsappRepository.atualizarContato(oDadosCliente._id, oDados, oDados.numero)
+
+        // Verifica se não houve cadastro
+        if(oContato == null){
+            return HttpResponse.badRequest(
+                new CustomError('Contato não localizado', 1)
+            )
+        }
+
+        /**
+         * Define o retorno
+         *
+         * @var {object} oRetorno
+         */
+        const oRetorno = {
+            id: oContato._id,
+            nome: oContato.nome,
+            numero: oContato.numero,
+            arquivado: oContato.arquivado,
+        }
 
         return HttpResponse.ok(oRetorno)
     }

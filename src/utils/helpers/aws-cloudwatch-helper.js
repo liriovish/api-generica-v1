@@ -7,22 +7,24 @@
  * @package   Cartoon
  * @author    Equipe Webcartórios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
- * @license   https://github.com/dynamic-system-vish/visualizacao-matricula-getimagem/licence.txt BSD Licence
- * @link      https://github.com/dynamic-system-vish/visualizacao-matricula-getimagem
+ * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
+ * @link      https://github.com/dynamic-system-vish/api-whatsapp
  * @CriadoEm  20/10/2022
  */
 
 /**
  * Configurações globais
  */
-//const env = require('../../main/config/env')
-const AWS = require('aws-sdk')
+const AWS = require('aws-sdk'),
+      {
+       CloudWatchLogs
+      } = require("@aws-sdk/client-cloudwatch-logs");
 require('dotenv').config()
 
 /**
  * Configurações AWS
  */
-AWS.config.update({region: process.env.REGION_AWS})
+AWS.config.update({region: process.env.REGION_AWS, accessKeyId: process.env.ACCESS_KEY_ID, secretAccessKey: process.env.SECRET_ACCESS_KEY})
 
 /**
  * Classe LogAWSCloudWatch
@@ -69,7 +71,7 @@ module.exports = class LogAWSCloudWatch {
              *
              * @var mix  mCloudWatchLogs
              */
-            const mCloudWatchLogs = new AWS.CloudWatchLogs()
+            const mCloudWatchLogs = new CloudWatchLogs()
 
             /**
              * Verifica se o grupo de log existe
@@ -78,7 +80,7 @@ module.exports = class LogAWSCloudWatch {
              */
             oDescribeLogGroups = await mCloudWatchLogs.describeLogGroups({
                 logGroupNamePrefix: process.env.cloudwatchGroup
-            }).promise()
+            })
 
             /**
              * Se não existir, cria o grupo de log
@@ -86,7 +88,7 @@ module.exports = class LogAWSCloudWatch {
             if (oDescribeLogGroups.logGroups.length === 0) {
                 oCreateLogGroup = await mCloudWatchLogs.createLogGroup({
                     logGroupName: process.env.cloudwatchGroup
-                }).promise()
+                })
 
                 /**
                  * Define como grupo existente
@@ -124,7 +126,7 @@ module.exports = class LogAWSCloudWatch {
                     logGroupName: process.env.cloudwatchGroup,
                     logStreamNamePrefix: process.env.cloudwatchStream,
                     limit: 1
-                }).promise()
+                })
 
                 /**
                  * Se não existir, cria o grupo de log
@@ -133,7 +135,7 @@ module.exports = class LogAWSCloudWatch {
                     oCreateLogStreams = await mCloudWatchLogs.createLogStream({
                         logGroupName: process.env.cloudwatchGroup,
                         logStreamName: process.env.cloudwatchStream
-                    }).promise()
+                    })
 
                     /**
                      * Define como stream existente
@@ -198,7 +200,7 @@ module.exports = class LogAWSCloudWatch {
                 /**
                  * Grava o log no CloudWatch
                  */
-                const oResultadoCloudWatchLogs = await mCloudWatchLogs.putLogEvents(oParametrosCloudWatchLogs).promise()
+                const oResultadoCloudWatchLogs = await mCloudWatchLogs.putLogEvents(oParametrosCloudWatchLogs)
 
                 /**
                  * Verifica se o log foi gravado e gerou o próximo token
