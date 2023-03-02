@@ -30,7 +30,7 @@ module.exports = async(req, res, next) => {
          */
         const sRota = req.originalUrl
 
-        if(process.env.APP_ENV == 'development' && req.method == 'OPTIONS'){
+        if(process.env.APP_ENV == 'development' || req.method == 'OPTIONS'){
             return res.end()
         }
 
