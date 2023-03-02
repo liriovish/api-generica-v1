@@ -50,6 +50,10 @@ const schema = new mongoose.Schema({
     texto: {
         type: String
     },
+    ativo: {
+        type: Boolean,
+        default: true
+    },
     dataCadastro: {
         type: Date
     },

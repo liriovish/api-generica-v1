@@ -421,13 +421,13 @@ module.exports = class WhatsappValidator {
                 new CustomError('Título inválido', 1)
             )
         }
-
+        
         /**
          * Valida se existe o identificador do template
          */
         if ((oDados.identificadorTemplateZenvia != undefined &&
             oDados.identificadorTemplateZenvia.length < 1)
-            || (oDados.identificadorTemplateMeta != undefined &&
+            && (oDados.identificadorTemplateMeta != undefined &&
                 oDados.identificadorTemplateMeta.length < 1)
         ) {
             return HttpResponse.badRequest(

@@ -700,6 +700,7 @@ module.exports = class WhatsappUseCase {
             titulo: oTemplate.titulo,
             campos: oTemplate.campos ?? [],
             texto: oTemplate.texto,
+            status: oTemplate.ativo == true ? 'Ativo' : 'Inativo',
             identificadorTemplateZenvia: oTemplate.identificadorTemplateZenvia ?? '',
             identificadorTemplateMeta: oTemplate.identificadorTemplateMeta ?? '',
             dataCadastro: moment(oTemplate.dataCadastro).format('YYYY-MM-DD HH:mm:ss'),
@@ -742,12 +743,13 @@ module.exports = class WhatsappUseCase {
             titulo: oTemplate.titulo,
             campos: oTemplate.campos ?? [],
             texto: oTemplate.texto,
+            status: oTemplate.ativo == true ? 'Ativo' : 'Inativo',
             identificadorTemplateZenvia: oTemplate.identificadorTemplateZenvia ?? '',
             identificadorTemplateMeta: oTemplate.identificadorTemplateMeta ?? '',
             dataCadastro: moment(oTemplate.dataCadastro).format('YYYY-MM-DD HH:mm:ss'),
             dataAtualizacao: moment(oTemplate.dataAtualizacao).format('YYYY-MM-DD HH:mm:ss')
         }
-
+        
         return HttpResponse.ok(oRetorno)
     }
 
@@ -803,6 +805,7 @@ module.exports = class WhatsappUseCase {
                 titulo: oTemplate.titulo,
                 campos: oTemplate.campos ?? [],
                 texto: oTemplate.texto,
+                status: oTemplate.ativo == true ? 'Ativo' : 'Inativo',
                 identificadorTemplateZenvia: oTemplate.identificadorTemplateZenvia ?? '',
                 identificadorTemplateMeta: oTemplate.identificadorTemplateMeta ?? '',
                 dataCadastro: moment(oTemplate.dataCadastro).format('YYYY-MM-DD HH:mm:ss'),
@@ -959,7 +962,6 @@ module.exports = class WhatsappUseCase {
      * @returns {object}
      */
     async atualizarContato(oDados, oDadosCliente) {
-        console.log(oDados)
         /**
          * Insere o contato
          *
