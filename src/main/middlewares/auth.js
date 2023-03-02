@@ -30,6 +30,10 @@ module.exports = async(req, res, next) => {
          */
         const sRota = req.originalUrl
 
+        if(process.env.APP_ENV == 'development' && req.method == 'OPTIONS'){
+            return res.end()
+        }
+
         if(sRota.includes('webhook')){
             /**
              * Adiciona as configurações do cliente

@@ -20,7 +20,7 @@
  * @param {next} next 
  */
 module.exports = (req, res, next) => {
-    res.set('access-control-allow-origin', '*')
+    res.header('Access-Control-Allow-Origin', '*');
     res.set('access-control-allow-methods', '*')
     res.set('access-control-allow-headers', '*')
     next()

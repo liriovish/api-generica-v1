@@ -11,7 +11,7 @@
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/api-whatsapp
- * @CriadoEm  20/10/2022
+ * @CriadoEm  09/02/2023
  */
 
 /**
@@ -21,10 +21,10 @@ const { CustomError } = require('../../utils/errors')
 const HttpResponse = require('../helpers/http-response')
 
 /**
- * Classe WebhookRecebimentoRouter
+ * Classe CriarTemplateRouter
  * @package  src\presentation\routers
  */
-module.exports = class WebhookRecebimentoRouter {
+module.exports = class CriarTemplateRouter {
     /**
      * Construtor
      * @param {whatsappUseCase}
@@ -41,46 +41,62 @@ module.exports = class WebhookRecebimentoRouter {
      * Função para criação da rota
      *
      * @param {object} oBody
-     * @param {string} sIp
-     * @param {string} sToken
-     * @param {string} oParams
+     * @param {string} sChave
      * 
      * @returns {HttpResponse}
      */
-     async route(oBody, sIp, sToken, oParams, sTokenJwt) {
+    async route(oBody, sIp, sToken, oParams, sTokenJwt) {
         try {
             /**
-             * Valida a requisição
+             * Busca os dados do cliente
              *
-             * @var {object} oValidacao
+             * @var {obejct} oCliente
              *
-             * @UsaFuncao validarWebhookRecebimento
+             * @UsaFuncao dadosCliente
              */
-            const oValidacao = await this.whatsappValidator.validarWebhookRecebimento(oBody)
+            const oCliente = await this.clienteFilter.dadosCliente(sToken, '', sTokenJwt)
 
-            // Verifica se existe a requisição é valida
-            if(oValidacao != null){
-                return oValidacao
+            // Verifica se existe o cliente
+            if(oCliente.statusCode != 200){
+                return HttpResponse.badRequest(
+                    new CustomError('Cliente não localizado', 2)
+                )
             }
 
             /**
-             * Altera o status da mensagem
+             * Define os dados do cliente
              *
-             * @var {object} oDadosWebhookRecebimento
-             *
-             * @UsaFuncao webhookRecebimento
+             * @var {oDadosCliente}
              */
-            const oDadosWebhookRecebimento = await this.whatsappUseCase.webhookRecebimento(oBody, sToken, sTokenJwt, oParams.identificadorCliente)
+            const oDadosCliente = oCliente.body
 
-            // Verifica se houve erro
-            if(oDadosWebhookRecebimento.statusCode != 201){
-                return oDadosWebhookRecebimento
+            /**
+             * Valida os dados
+             *
+             * @var {object} bValidaCriarTemplate
+             *
+             * @UsaFuncao validarCriarTemplate
+             */
+            const bValidaCriarTemplate = await this.whatsappValidator.validarCriacaoTemplate(oBody)
+
+            // Verifica se retornou erro
+            if(bValidaCriarTemplate != null){
+                return bValidaCriarTemplate
             }
+
+            /**
+             * Cria o template
+             *
+             * @var {object} oDadosCriarTemplate
+             *
+             * @UsaFuncao criarTemplate
+             */
+            const oDadosCriarTemplate = await this.whatsappUseCase.criarTemplate(oBody, oDadosCliente)
 
             /**
              * Retorna dados
              */
-            return oDadosWebhookRecebimento
+            return oDadosCriarTemplate
         } catch (error) {
             console.log(error)
             /**

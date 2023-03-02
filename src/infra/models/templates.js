@@ -9,7 +9,7 @@
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/api-whatsapp
- * @CriadoEm  20/10/2022
+ * @CriadoEm  09/02/2023
  */
 
 /**
@@ -26,36 +26,47 @@ require('dotenv').config()
  *
  * @return {mongoose}
  */
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const schema = new mongoose.Schema({
-    numero: {
-        type: String
-    },
-    nome: {
-        type: String
-    },
     idCliente: {
         type: mongoose.ObjectId
     },
-    arquivado: {
-        type: Boolean
+    titulo: {
+        type: String
+    },
+    campos: {
+        type: Object
+    },
+    identificadorTemplateZenvia: {
+        type: String
+    },
+    identificadorTemplateMeta: {
+        type: String
+    },
+    hashTemplateInterno: {
+        type: String
+    },
+    texto: {
+        type: String
+    },
+    ativo: {
+        type: Boolean,
+        default: true
     },
     dataCadastro: {
-        type: Date,
-        default: Date()
+        type: Date
     },
     dataAtualizacao: {
-        type: Date,
-        default: Date()
+        type: Date
     }
 })
 
 
-let Contatos = null
+let Templates = null
 
 module.exports = async () => {
     await env()
-    Contatos = mongoose.model(`${process.env.sigla_db}contatos`, schema)
-    return Contatos
+    Templates = mongoose.model(`${process.env.sigla_db}templates`, schema)
+    return Templates
 }

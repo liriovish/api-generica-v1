@@ -43,8 +43,9 @@ module.exports = class ZenviaClient {
              *
              * @var {string} sTokenDecrypted
              */
-            const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.metaTokenIntegracao, oCliente._id)  
-            
+            // const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.metaTokenIntegracao, oCliente._id) 
+            const sTokenDecrypted = oCliente.whatsapp.metaTokenIntegracao
+
             /**
              * Define os dados da mensagem
              *
@@ -96,7 +97,7 @@ module.exports = class ZenviaClient {
                     }
                 }
 
-                if(oDados.botao.urlLogin){
+                if(oDados?.botao?.urlLogin){
                     oMensagem.template.components.push(
                         {
                             type: "button",
