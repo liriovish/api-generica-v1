@@ -43,7 +43,8 @@ module.exports = class ZenviaClient {
              *
              * @var {string} sTokenDecrypted
              */
-            const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.tokenIntegracao, oCliente._id)
+            // const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.tokenIntegracao, oCliente._id)
+            const sTokenDecrypted = oCliente.whatsapp.tokenIntegracao
 
             /**
              * Busca os dados do cliente
@@ -93,7 +94,8 @@ module.exports = class ZenviaClient {
              *
              * @var {string} sTokenDecrypted
              */
-            const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.tokenIntegracao, oCliente._id)
+            // const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.tokenIntegracao, oCliente._id)
+            const sTokenDecrypted = oCliente.whatsapp.tokenIntegracao
 
             /**
              * Define os dados da mensagem

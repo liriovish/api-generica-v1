@@ -53,7 +53,7 @@ module.exports = class ClienteFilter {
              * @var {oDadosCliente}
              */
             const oDadosCliente = await AxiosClient.get(sUrl, {}, {'X-API-TOKEN': sToken, 'Authorization': sTokenJwt})
-
+            
             /**
              * Retorna dados
              */

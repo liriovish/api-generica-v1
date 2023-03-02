@@ -72,12 +72,32 @@ module.exports = class WhatsappRepository {
                     $setOnInsert: {
                         idCliente: sIdCliente,
                         numero: sNumero,
+                        arquivado: false,
                         nome: sNome
                     }
                 },
                 { 
                     upsert: true,
                     returnOriginal: false
+                }
+            )
+
+            
+            /**
+             * Insere no banco de dados
+             * 
+             * @var object oAtualiza
+             */
+            const oAtualiza = await dbContatos.findOneAndUpdate(
+                {
+                    idCliente: sIdCliente,
+                    numero: sNumero
+                },
+                {
+                    $set: {
+                        arquivado: false,
+                        dataAtualizacao: moment().format('YYYY-MM-DD HH:mm:ss')
+                    }
                 }
             )
 
@@ -772,6 +792,10 @@ module.exports = class WhatsappRepository {
             if(!oDados.registrosPorPagina){
                 oDados.registrosPorPagina = 20
             }
+            
+            if(oDados.arquivado){
+                oBusca.arquivado = oDados.arquivado == 'true' ? true : { $ne: true }
+            }
 
             /**
              * Insere no banco de dados
@@ -796,10 +820,11 @@ module.exports = class WhatsappRepository {
      * 
      * @param string sIdCliente
      * @param string sTemplate
+     * @param object oDados
      * 
      * @return object Retorna os dados do contato ou null
      */
-    async totalContatos(sIdCliente, sNumero) {
+    async totalContatos(sIdCliente, sNumero, oDados) {
         try { 
             /**
              * Instancia o model
@@ -820,6 +845,57 @@ module.exports = class WhatsappRepository {
             if(sNumero != undefined){
                 oBusca.numero = sNumero
             }   
+            
+            if(oDados.arquivado){
+                oBusca.arquivado = oDados.arquivado == 'true' ? true : { $ne: true }
+            }
+
+            /**
+             * Conta no banco de dados
+             * 
+             * @var int iContatos
+             */
+            const iContatos = await dbContatos.count(oBusca)
+
+            return iContatos
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para contar os contatos arquivados
+     * 
+     * @async
+     * @function totalContatosArquivados
+     * 
+     * @param string sIdCliente
+     * @param string sTemplate
+     * 
+     * @return object Retorna os dados do contato ou null
+     */
+    async totalContatosArquivados(sIdCliente, sNumero) {
+        try { 
+            /**
+             * Instancia o model
+             * 
+             * @var {mongoose} dbContatos
+             */ 
+            const dbContatos = await db.Contatos()
+
+            /**
+             * Define os dados da busca
+             * 
+             * @var {object} oBusca
+             */ 
+            const oBusca = {
+                idCliente: sIdCliente,
+                arquivado: true
+            }
+
+            if(sNumero != undefined){
+                oBusca.numero = sNumero
+            } 
 
             /**
              * Conta no banco de dados
@@ -1131,6 +1207,56 @@ module.exports = class WhatsappRepository {
             )
 
             return oMensagemRecebida
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para atualizar o contato no banco de dados
+     * 
+     * @async
+     * @function atualizarContato
+     * 
+     * @param string sIdCliente
+     * @param object oDados
+     * @param string sNumero
+     * 
+     * @return object Retorna os dados do contato ou null
+     */
+    async atualizarContato(sIdCliente, oDados, sNumero) {
+        try { 
+            /**
+             * Instancia o model
+             * 
+             * @var {mongoose} dbContatos
+             */ 
+            const dbContatos = await db.Contatos()
+
+            /**
+             * Define as datas
+             */
+            oDados.dataAtualizacao = moment().format('YYYY-MM-DD HH:mm:ss')
+
+            /**
+             * Insere no banco de dados
+             * 
+             * @var object oAtualiza
+             */
+            const oAtualiza = await dbContatos.findOneAndUpdate(
+                {
+                    numero: sNumero,
+                    idCliente: sIdCliente
+                },
+                {
+                    $set: oDados
+                },
+                {
+                    returnOriginal: false
+                }
+            )
+  
+            return oAtualiza
         } catch (error) {
             console.log(error)
         }

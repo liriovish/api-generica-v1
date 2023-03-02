@@ -21,10 +21,10 @@ const { CustomError } = require('../../utils/errors')
 const HttpResponse = require('../helpers/http-response')
 
 /**
- * Classe AtualizarTemplateRouter
+ * Classe AtualizarContatoRouter
  * @package  src\presentation\routers
  */
-module.exports = class AtualizarTemplateRouter {
+module.exports = class AtualizarContatoRouter {
     /**
      * Construtor
      * @param {whatsappUseCase}
@@ -45,7 +45,7 @@ module.exports = class AtualizarTemplateRouter {
      * 
      * @returns {HttpResponse}
      */
-    async route(oBody, sIp, sToken, oParams, sTokenJwt) {
+    async route(oBody, sIp, sToken, oParams, sTokenJwt,) {
         try {
             /**
              * Busca os dados do cliente
@@ -64,6 +64,11 @@ module.exports = class AtualizarTemplateRouter {
             }
 
             /**
+             * Define o numero do contato no objeto dos dados
+             */
+            oBody.numero = oParams.numero
+
+            /**
              * Define os dados do cliente
              *
              * @var {oDadosCliente}
@@ -73,30 +78,30 @@ module.exports = class AtualizarTemplateRouter {
             /**
              * Valida os dados
              *
-             * @var {object} bValidaTemplate
+             * @var {object} bValidaContato
              *
-             * @UsaFuncao validarCriarTemplate
+             * @UsaFuncao validarCriarContato
              */
-            const bValidaTemplate = await this.whatsappValidator.validarAtualizacaoTemplate(oBody)
+            const bValidaContato = await this.whatsappValidator.validarAtualizacaoContato(oBody)
 
             // Verifica se retornou erro
-            if(bValidaTemplate != null){
-                return bValidaTemplate
+            if(bValidaContato != null){
+                return bValidaContato
             }
 
             /**
-             * Atualiza o template
+             * Atualiza o contato
              *
-             * @var {object} oDadosTemplate
+             * @var {object} oDadosContato
              *
-             * @UsaFuncao criarTemplate
+             * @UsaFuncao criarContato
              */
-            const oDadosTemplate = await this.whatsappUseCase.atualizarTemplate(oBody, oDadosCliente, oParams.template)
+            const oDadosContato = await this.whatsappUseCase.atualizarContato(oBody, oDadosCliente)
 
             /**
              * Retorna dados
              */
-            return oDadosTemplate
+            return oDadosContato
         } catch (error) {
             console.log(error)
             /**
