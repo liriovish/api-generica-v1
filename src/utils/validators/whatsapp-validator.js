@@ -384,7 +384,7 @@ module.exports = class WhatsappValidator {
                     )
                 }
 
-                if(!oDados.campos[iChave].obrigatorio || oDados.campos[iChave].obrigatorio.length < 1){
+                if(oDados.campos[iChave].obrigatorio.length < 1){
                     return HttpResponse.badRequest(
                         new CustomError('Campo [obrigatorio] inválido',8)
                     )
@@ -463,7 +463,7 @@ module.exports = class WhatsappValidator {
                     )
                 }
 
-                if(!oDados.campos[iChave].obrigatorio || oDados.campos[iChave].obrigatorio.length < 1){
+                if(oDados.campos[iChave].obrigatorio.length < 1){
                     return HttpResponse.badRequest(
                         new CustomError('Campo [obrigatorio] inválido',8)
                     )
