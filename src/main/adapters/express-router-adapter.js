@@ -78,7 +78,7 @@ module.exports = class ExpressRouterAdapter {
                 sToken,
                 req.query
             )
-
+            
             if(oHttpResponse.body && oHttpResponse.body.retorno){
                 res.status(oHttpResponse.statusCode).send(oHttpResponse.body.retorno)
             }else{
