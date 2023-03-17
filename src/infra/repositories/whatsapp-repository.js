@@ -656,6 +656,10 @@ module.exports = class WhatsappRepository {
                 oDados.registrosPorPagina = 20
             }
 
+            if(oDados.ativos && oDados.ativos == 1){
+                oDados.ativo = true
+            }
+
             /**
              * Insere no banco de dados
              * 
@@ -1062,13 +1066,6 @@ module.exports = class WhatsappRepository {
     async listarMensagens(sIdCliente, sNumero, oDados) {
         try { 
             /**
-             * Verifica se foi informada a data inicial da busca
-             */  
-            if(!oDados.data){
-                oDados.data = moment().add(1, 'days').format()
-            }
-
-            /**
              * Define o model
              * 
              * @var {mongoose} dbMensagensEnviadas
@@ -1083,10 +1080,7 @@ module.exports = class WhatsappRepository {
             const oBuscaMensagemEnviada = await dbMensagensEnviadas.find(
                 {
                     idCliente: sIdCliente,
-                    numeroDestinatario: sNumero,
-                    dataCadastro: {
-                        $lt: oDados.data
-                    }
+                    numeroDestinatario: sNumero
                 },
                 {
                     "conteudo": 1,
@@ -1115,10 +1109,7 @@ module.exports = class WhatsappRepository {
             const oBuscaMensagemRecebida = await dbMensagensRecebidas.find(
                 {
                     idCliente: sIdCliente,
-                    numeroRemetente: sNumero,
-                    dataCadastro: {
-                        $lt: oDados.data
-                    }
+                    numeroRemetente: sNumero
                 },
                 {
                     "conteudo": 1,
