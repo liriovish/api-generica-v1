@@ -31,11 +31,13 @@ module.exports = class AxiosClient {
      * @function get
      * 
      * @param string sHash
-     * @param string sIp
+     * @param object oDados
+     * @param object oHeaders
+     * @param string sResponseType
      * 
      * @return object Retorna os dados do token ou erro
      */
-    static async get(sEndpoint, oDados, oHeaders) {
+    static async get(sEndpoint, oDados, oHeaders, sResponseType = 'json') {
         /**
          * Realiza a requisição com o axios para a API REST
          * 
@@ -43,7 +45,8 @@ module.exports = class AxiosClient {
          */
         return axios.get(sEndpoint, {
             data: oDados,
-            headers: oHeaders
+            headers: oHeaders,
+            responseType: sResponseType
         })
         .then((response) => {
             /**

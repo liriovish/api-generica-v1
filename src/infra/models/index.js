@@ -19,6 +19,7 @@ const Contatos = require('./contatos')
 const MensagensEnviadas = require('./mensagens-enviadas')
 const MensagensRecebidas = require('./mensagens-recebidas')
 const Templates = require('./templates')
+const Arquivos = require('./arquivos')
 
 /**
  * Realiza o export das classes de geração dos erros
@@ -27,5 +28,6 @@ module.exports = {
     Contatos,
     MensagensEnviadas,
     MensagensRecebidas,
-    Templates
+    Templates,
+    Arquivos
 }

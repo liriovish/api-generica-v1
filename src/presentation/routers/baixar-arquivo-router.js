@@ -11,7 +11,7 @@
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/api-whatsapp
- * @CriadoEm  09/02/2023
+ * @CriadoEm  20/10/2022
  */
 
 /**
@@ -21,19 +21,17 @@ const { CustomError } = require('../../utils/errors')
 const HttpResponse = require('../helpers/http-response')
 
 /**
- * Classe EnviarMensagemRouter
+ * Classe BaixarArquivoRouter
  * @package  src\presentation\routers
  */
-module.exports = class EnviarMensagemRouter {
+module.exports = class BaixarArquivoRouter {
     /**
      * Construtor
      * @param {whatsappUseCase}
-     * @param {whatsappValidator}
      * @param {clienteFilter}
      */
-    constructor({ whatsappUseCase, whatsappValidator, clienteFilter } = {}) {
+    constructor({ whatsappUseCase, clienteFilter } = {}) {
         this.whatsappUseCase = whatsappUseCase
-        this.whatsappValidator = whatsappValidator
         this.clienteFilter = clienteFilter
     }
 
@@ -41,11 +39,13 @@ module.exports = class EnviarMensagemRouter {
      * Função para criação da rota
      *
      * @param {object} oBody
-     * @param {string} sChave
+     * @param {string} sIp
+     * @param {string} sToken
+     * @param {string} oParams
      * 
      * @returns {HttpResponse}
      */
-    async route(oBody, sIp, sToken, oParams, sTokenJwt, oQuery, oFile) {
+     async route(oBody, sIp, sToken, oParams, sTokenJwt) {
         try {
             /**
              * Busca os dados do cliente
@@ -64,39 +64,18 @@ module.exports = class EnviarMensagemRouter {
             }
 
             /**
-             * Define os dados do cliente
+             * Busca o arquivo e retorna o download
              *
-             * @var {oDadosCliente}
+             * @var {object} oArquivo
+             *
+             * @UsaFuncao webhookRecebimento
              */
-            const oDadosCliente = oCliente.body
-
-            /**
-             * Valida os dados
-             *
-             * @var {object} bValidaEnviarMensagem
-             *
-             * @UsaFuncao validarEnviarMensagem
-             */
-            const bValidaEnviarMensagem = await this.whatsappValidator.validarEnviarMensagem(oBody, oDadosCliente)
-
-            // Verifica se retornou erro
-            if(bValidaEnviarMensagem != null){
-                return bValidaEnviarMensagem
-            }
-
-            /**
-             * Envia a mensagem
-             *
-             * @var {object} oDadosEnviarMensagem
-             *
-             * @UsaFuncao enviarMensagem
-             */
-            const oDadosEnviarMensagem = await this.whatsappUseCase.enviarMensagemV3(oBody, oDadosCliente, oFile)
+            const oArquivo = await this.whatsappUseCase.baixarArquivo(oParams.id, oCliente)
 
             /**
              * Retorna dados
              */
-            return oDadosEnviarMensagem
+            return oArquivo
         } catch (error) {
             console.log(error)
             /**

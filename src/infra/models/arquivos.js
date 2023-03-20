@@ -5,21 +5,21 @@
  *
  * @category  JavaScript
  * @package   WhatsApp
- * @author    Equipe WebcartÃ³rios <contato@webcartorios.com.br>
+ * @author    Equipe Webcart�rios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/api-whatsapp
- * @CriadoEm  20/10/2022
+ * @CriadoEm  15/03/2023
  */
 
 /**
- * ConfiguraÃ§Ãµes globais
+ * Configura��es globais
  */
 const env = require('../../main/config/env')
 require('dotenv').config()
 
 /**
- * Exporta funÃ§Ã£o com as colunas do banco de dados
+ * Exporta fun��o com as colunas do banco de dados
  *
  * @param {mongoose} mongoose
  * @param {DataTypes} DataTypes
@@ -29,33 +29,45 @@ require('dotenv').config()
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-    numero: {
-        type: String
-    },
-    nome: {
-        type: String
-    },
     idCliente: {
         type: mongoose.ObjectId
     },
-    arquivado: {
-        type: Boolean
+    idMensagem: {
+        type: String
+    },
+    urlArquivo: {
+        type: String
+    },
+    urlOriginal: {
+        type: String
+    },
+    nomeArquivo: {
+        type: String
+    },
+    tipoArquivo: {
+        type: String
+    },
+    identificacao: {
+        type: String
+    },
+    status: {
+        type: Number
+    },
+    tentativasProcessamento:{
+        type: Number,
+        default: 0
     },
     dataCadastro: {
-        type: Date,
-        default: Date()
-    },
-    dataAtualizacao: {
         type: Date,
         default: Date()
     }
 })
 
 
-let Contatos = null
+let Arquivos = null
 
 module.exports = async () => {
     await env()
-    Contatos = mongoose.model(`${process.env.sigla_db}contatos`, schema)
-    return Contatos
+    Arquivos = mongoose.model(`${process.env.sigla_db}arquivos`, schema)
+    return Arquivos
 }

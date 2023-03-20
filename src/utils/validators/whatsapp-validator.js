@@ -246,19 +246,18 @@ module.exports = class WhatsappValidator {
         /**
          * Valida se existe o status
          */
-        if (oDados.type 
-            && (oDados.type != 'MESSAGE_STATUS'
-            || !oDados.messageStatus)
-        ) {
-            return HttpResponse.badRequest(
-                new CustomError('Request inválido', 1)
+        if (
+            (
+                oDados.type 
+                && (oDados.type != 'MESSAGE_STATUS'
+                || !oDados.messageStatus)
+            ) 
+            || 
+            (
+                oDados.entry 
+                && !oDados.entry[0].changes[0].value.statuses
             )
-        }
-
-        /**
-         * Valida se existe o status
-         */
-        if (oDados.entry && !oDados.entry[0].changes[0].value.statuses) {
+        ) {
             return HttpResponse.badRequest(
                 new CustomError('Request inválido', 1)
             )
@@ -278,11 +277,9 @@ module.exports = class WhatsappValidator {
      */
     async validarWebhookRecebimento(oDados) {
         /**
-         * Valida se existe o numero do destinatario
+         * Valida se existe os dados
          */
-        if (!oDados.type 
-            || oDados.type != 'MESSAGE'
-        ) {
+        if (!oDados.type && !oDados.entry) {
             return HttpResponse.badRequest(
                 new CustomError('Request inválido', 1)
             )

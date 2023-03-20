@@ -21,6 +21,8 @@ const MetaClient = require('./meta-client-helper')
 const LogAWSCloudWatch = require('./aws-cloudwatch-helper')
 const AWSSNS = require('./aws-sns-helper')
 const AWSParameters = require('./aws-parameters-helper')
+const Download = require('./download-helper')
+const AWSS3 = require('./aws-s3-helper')
 
 /**
  * Realiza o export das classes de geração dos erros
@@ -31,5 +33,7 @@ module.exports = {
     MetaClient,
     LogAWSCloudWatch,
     AWSSNS,
-    AWSParameters
+    AWSParameters,
+    Download,
+    AWSS3
 }
