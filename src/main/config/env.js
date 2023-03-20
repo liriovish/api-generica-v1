@@ -52,6 +52,22 @@ module.exports = async () => {
         'CLOUDWATCH_STREAM',
         process.env.CLOUDWATCH_STREAM
     )
+    process.env.bucketS3 = await AWSParameters.getValueParameter(
+        'BUCKET_S3',
+        process.env.BUCKET_S3
+    )
+    process.env.topicArnNotificacaoStatus = await AWSParameters.getValueParameter(
+        'TOPIC_ARN_NOTIFICACAO_STATUS',
+        process.env.TOPIC_ARN_NOTIFICACAO_STATUS
+    )
+    process.env.topicArnNotificacao = await AWSParameters.getValueParameter(
+        'TOPIC_ARN_NOTIFICACAO',
+        process.env.TOPIC_ARN_NOTIFICACAO
+    )
+    process.env.topicArnDownload = await AWSParameters.getValueParameter(
+        'TOPIC_ARN_DOWNLOAD',
+        process.env.TOPIC_ARN_DOWNLOAD
+    )
 
     return {
         database_uri: process.env.database_uri,
@@ -60,6 +76,10 @@ module.exports = async () => {
         environment: process.env.environment,
         regionAws: process.env.regionAws,
         cloudwatchGroup: process.env.cloudwatchGroup,
-        cloudwatchStream: process.env.cloudwatchStream
+        cloudwatchStream: process.env.cloudwatchStream,
+        bucketS3: process.env.bucketS3,
+        topicArnNotificacaoStatus: process.env.topicArnNotificacaoStatus,
+        topicArnNotificacao: process.env.topicArnNotificacao,
+        topicArnDownload: process.env.topicArnDownload
     }
 }

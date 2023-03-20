@@ -1252,4 +1252,122 @@ module.exports = class WhatsappRepository {
             console.log(error)
         }
     }
+
+    /**
+     * Função para inserir o arquivo no banco de dados
+     * 
+     * @async
+     * @function insereArquivo
+     * 
+     * @param string sIdCliente
+     * @param string sIdMensagem
+     * @param object oArquivo
+     * 
+     * @return object Retorna os dados do arquivo ou null
+     */
+    async insereArquivo(sIdCliente, sIdMensagem, oArquivo) {
+        try { 
+            /**
+             * Insere no banco de dados
+             * 
+             * @var {mongoose} dbArquivos
+             */ 
+            const dbArquivos = await db.Arquivos()
+
+            /**
+             * Insere no banco de dados
+             * 
+             * @var object oInsereArquivo
+             */
+            const oInsereArquivo = await dbArquivos.create(
+                {
+                    idCliente: sIdCliente,
+                    idMensagem: sIdMensagem,
+                    urlArquivo: oArquivo.urlArquivo ?? '',
+                    urlOriginal: oArquivo.fileUrl ?? oArquivo.url ?? '',
+                    nomeArquivo: oArquivo.filename ?? oArquivo.fileName ?? '',
+                    tipoArquivo: oArquivo.mime_type ?? oArquivo.fileMimeType ?? '',
+                    identificacao: oArquivo.id ?? '',
+                    status: 0
+                }
+            )
+
+            return oInsereArquivo
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para inserir o arquivo no banco de dados
+     * 
+     * @async
+     * @function buscaArquivo
+     * 
+     * @param object oBusca
+     * 
+     * @return object Retorna os dados do arquivo ou null
+     */
+    async buscaArquivo(oBusca) {
+        try { 
+            /**
+             * Insere no banco de dados
+             * 
+             * @var {mongoose} dbArquivos
+             */ 
+            const dbArquivos = await db.Arquivos()
+
+            /**
+             * Insere no banco de dados
+             * 
+             * @var object oDados
+             */
+            const oDados = await dbArquivos.findOne(oBusca)
+
+            return oDados
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Função para inserir o arquivo no banco de dados
+     * 
+     * @async
+     * @function editarArquivo
+     * 
+     * @param object oDados
+     * 
+     * @return object Retorna os dados do arquivo ou null
+     */
+    async editarArquivo(sId, sUrl) {
+        try { 
+            /**
+             * Instacia a tabela
+             * 
+             * @var {mongoose} dbArquivos
+             */ 
+            const dbArquivos = await db.Arquivos()
+
+            /**
+             * Atualiza no banco de dados
+             * 
+             * @var object oDados
+             */
+            const oDados = await dbArquivos.updateOne(
+                {
+                    _id: sId
+                },
+                {
+                    $set: {
+                        urlArquivo: sUrl
+                    }
+                }
+            )
+
+            return oDados
+        } catch (error) {
+            console.log(error)
+        }
+    }
 }

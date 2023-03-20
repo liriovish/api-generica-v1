@@ -118,6 +118,14 @@ module.exports = class ZenviaClient {
                     fields: oDados.parametros
                 }
             }
+
+            if(oDados.tipo == 'arquivo'){
+                oMensagem = {
+                    type: 'file',
+                    fileUrl: oDados.url,
+                    fileName: oDados.nomeArquivo,
+                }
+            }
             
             /**
              * Busca os dados do cliente

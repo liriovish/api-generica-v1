@@ -34,7 +34,7 @@ module.exports = async(req, res, next) => {
             return res.end()
         }
 
-        if(sRota.includes('webhook')){
+        if(sRota.includes('webhook') || sRota.includes('download')){
             /**
              * Adiciona as configurações do cliente
              */

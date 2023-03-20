@@ -20,11 +20,11 @@ const AxiosClient = require('./axios-client-helper')
 const Crypto = require('./crypto-helper')
 
 /**
- * Classe ZenviaClient
+ * Classe MetaClient
  * 
  * @package  src\main\composers
  */
-module.exports = class ZenviaClient {
+module.exports = class MetaClient {
     /**
      * Função para enviar mensagem
      * 
@@ -113,6 +113,19 @@ module.exports = class ZenviaClient {
                     )
                 }
             }
+
+            if(oDados.tipo == 'arquivo'){
+                oMensagem = {
+                    messaging_product: 'whatsapp',
+                    recipient_type: "individual",
+                    to: oDados.numeroDestinatario.toString(),
+                    type: "document",
+                    document: {
+                        link: oDados.url,
+                        filename: oDados.nomeArquivo
+                    }
+                }
+            }
             
             /**
              * Busca os dados do cliente
@@ -130,6 +143,51 @@ module.exports = class ZenviaClient {
              * Retorna dados
              */
             return oDadosCliente
+        } catch (error) {
+            console.log(error)
+            /**
+             * Caso gere algum erro
+             * Retorna o erro
+             */
+            return HttpResponse.serverError()
+        }
+    }
+
+    /**
+     * Função para buscar o arquivo
+     * 
+     * @async
+     * @function buscaArquivo
+     * 
+     * @param string sId
+     * 
+     * @return object Retorna os dados da api ou erro
+     */
+    static async buscaArquivo(sId, oCliente) {
+        try {
+            /**
+             * Descriptografa o token
+             *
+             * @var {string} sTokenDecrypted
+             */
+            // const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.metaTokenIntegracao, oCliente._id) 
+            const sTokenDecrypted = oCliente.whatsapp.metaTokenIntegracao
+            
+            /**
+             * Busca o arquivo
+             *
+             * @var {oArquivo}
+             */
+            const oArquivo = await AxiosClient.get(
+                `https://graph.facebook.com/v16.0/${sId}`, 
+                {}, 
+                { Authorization: `Bearer ${sTokenDecrypted}` }
+            )
+
+            /**
+             * Retorna dados
+             */
+            return oArquivo
         } catch (error) {
             console.log(error)
             /**

@@ -15,16 +15,8 @@
 /**
  * Configurações globais
  */
-const AWS = require('aws-sdk'),
-      {
-       SNS
-      } = require("@aws-sdk/client-sns");
+const { SNSClient, PublishCommand } = require("@aws-sdk/client-sns")
 require('dotenv').config()
-
-/**
- * Configurações AWS
- */
-AWS.config.update({region: process.env.REGION_AWS, accessKeyId: process.env.ACCESS_KEY_ID, secretAccessKey: process.env.SECRET_ACCESS_KEY})
 
 /**
  * Classe AWSSNS
@@ -46,7 +38,7 @@ module.exports = class AWSSNS {
      */
     static async notificar(sId, sIdentificadorCliente, sTipoNotificacao) {
         // Retorna true se for ambiente de desenvolvimento
-        if(process.env.APP_ENV == 'development'){
+        if(process.env.environment == 'development'){
             return true
         }
 
@@ -56,8 +48,8 @@ module.exports = class AWSSNS {
          * @var object oTopicArn
          */
         const oTopicArn = {
-            status: process.env.TOPIC_ARN_NOTIFICACAO_STATUS,
-            recebimento: process.env.TOPIC_ARN_NOTIFICACAO
+            status: process.env.topicArnNotificacaoStatus,
+            recebimento: process.env.topicArnNotificacao
         }
 
         try {
@@ -79,14 +71,64 @@ module.exports = class AWSSNS {
              * 
              * @var object oMensagemSNS
              */
-            const oMensagemSNS = new SNS({apiVersion: '2010-03-31'})
+            const oMensagemSNS = new SNSClient({ region: process.env.regionAws })
 
             /**
              * Envia uma mensagem com o SNS para realizar o processamento
              * 
              * @var object oEnviarSNS
              */
-            const oEnviarSNS = await oMensagemSNS.publish(oDadosSNS)
+            const oEnviarSNS = await oMensagemSNS.send(new PublishCommand(oDadosSNS))
+
+            return oEnviarSNS
+        } catch (erro) {
+            console.error(erro)
+            return null
+        }
+    }
+
+    /**
+     * Função para enviar o arquivo para download
+     * 
+     * @async
+     * @function downloadArquivo
+     * 
+     * @param string sId
+     * 
+     * @return object Retorna os dados
+     */
+    static async downloadArquivo(sId) {
+        // Retorna true se for ambiente de desenvolvimento
+        if(process.env.environment == 'development'){
+            return true
+        }
+
+        try {
+            /**
+             * Monta o JSON para o SNS para realizar a notificação
+             *
+             * @var object oDadosSNS
+             */
+            const oDadosSNS = {
+                Message: `{
+                    "idArquivo": "${sId}"
+                }`,
+                TopicArn: process.env.topicArnDownload
+            }
+
+            /**
+             * Instancia o SNS
+             * 
+             * @var object oMensagemSNS
+             */
+            const oMensagemSNS = new SNSClient({ region: process.env.regionAws })
+
+            /**
+             * Envia uma mensagem com o SNS para realizar o processamento
+             * 
+             * @var object oEnviarSNS
+             */
+            const oEnviarSNS = await oMensagemSNS.send(new PublishCommand(oDadosSNS))
 
             return oEnviarSNS
         } catch (erro) {

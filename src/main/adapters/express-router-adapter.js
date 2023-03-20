@@ -76,11 +76,14 @@ module.exports = class ExpressRouterAdapter {
                 res.get('chaveAplicativo'),
                 req.params,
                 sToken,
-                req.query
+                req.query, 
+                req.file
             )
-            
+
             if(oHttpResponse.body && oHttpResponse.body.retorno){
                 res.status(oHttpResponse.statusCode).send(oHttpResponse.body.retorno)
+            }else if(oHttpResponse.body && oHttpResponse.body.download){
+                res.download(oHttpResponse.body.download, oHttpResponse.body.download)
             }else{
                 res.status(oHttpResponse.statusCode).json(oHttpResponse.body)
             }

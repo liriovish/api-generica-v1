@@ -199,7 +199,7 @@ module.exports = class WhatsappUseCase {
      *
      * @returns {object}
      */
-    async enviarMensagemV3(oDados, oDadosCliente) {
+    async enviarMensagemV3(oDados, oDadosCliente, oArquivo) {
         /**
          * Insere o contato
          *
@@ -212,7 +212,6 @@ module.exports = class WhatsappUseCase {
             return HttpResponse.serverError()
         }
 
-        
         /**
          * Define o template vazio
          *
@@ -233,6 +232,29 @@ module.exports = class WhatsappUseCase {
                     new CustomError('Template não localizado', 3)
                 )
             }
+        }
+
+        if(oDados.tipo == 'arquivo'){
+            oDados.parametros = {
+                conteudo: ''
+            }
+
+            /**
+             * Salva o arquivo
+             *
+             * @var {object} sUrlArquivo
+             */
+            const sUrlArquivo = await helpers.AWSS3.enviarArquivo(oArquivo, oDadosCliente._id)
+
+            // Verifica se não houve download
+            if(sUrlArquivo == null){
+                return HttpResponse.badRequest(
+                    new CustomError('Erro ao salvar o arquivo', 1)
+                )
+            }
+
+            oDados.url = sUrlArquivo
+            oDados.nomeArquivo = oArquivo.originalname
         }
 
         /**
@@ -329,6 +351,15 @@ module.exports = class WhatsappUseCase {
         // Verifica se não houve cadastro
         if(oDadosMensagemEnviada == null){
             return HttpResponse.serverError()
+        }
+
+        if(oDados.tipo == 'arquivo'){
+            /**
+             * Insere o arquivo
+             *
+             * @var {object} oInsereArquivo
+             */
+            const oInsereArquivo = await this.whatsappRepository.insereArquivo(oDadosCliente._id, oDadosMensagemEnviada._id, { urlArquivo: oDados.url, url: oDados.url, filename: oDados.nomeArquivo })
         }
 
         /**
@@ -534,41 +565,6 @@ module.exports = class WhatsappUseCase {
      */
     async webhookRecebimento(oBody, sToken, sTokenJwt, sIdentificadorCliente) {
         /**
-         * Status da mensagem e id da mensagem
-         *
-         * @var {object} sStatus
-         */
-        let oDados = null
-
-        // Verifica se o corpo do webhook foi enviado pela ZENVIA
-        if(oBody.message){
-            oDados = oBody.message
-
-            oDados.conteudo = oBody.message.contents[0].text
-        }
-
-        // Verifica se o corpo do webhook foi enviado pela META
-        if(oBody.object && oBody.entry[0].changes[0].value.messages){
-            oDados = oBody.entry[0].changes[0].value.messages[0]
-
-            // Atualiza o objeto para deixar no padrão
-            oDados.id = oBody.entry[0].changes[0].value.messages[0].id
-            oDados.to = oBody.entry[0].changes[0].value.metadata.phone_number_id
-            // Atualiza o numero do remetente pois a meta envia sem o digito 9
-
-            if(oDados.from.slice(0,2) == '55' && oDados.from.length == 12){
-                oDados.from = `${oDados.from.slice(0,4)}9${oDados.from.slice(4)}`
-            }
-
-            oDados.conteudo = oBody.message.contents[0].text
-        }
-
-        // Verifica se encontrou algum integrador, senão, gera erro
-        if(oDados == null){
-            return HttpResponse.serverError()
-        }
-
-        /**
          * Busca os dados do cliente
          *
          * @var {obejct} oCliente
@@ -582,6 +578,75 @@ module.exports = class WhatsappUseCase {
             return HttpResponse.badRequest(
                 new CustomError('Cliente não localizado', 2)
             )
+        }
+
+        /**
+         * Status da mensagem e id da mensagem
+         *
+         * @var {object} sStatus
+         */
+        let oDados = null
+
+        // Verifica se o corpo do webhook foi enviado pela ZENVIA
+        if(oBody.message){
+            oDados = oBody.message
+
+            oDados.conteudo = oBody.message?.contents[0]?.text ?? ''
+
+            if(oBody.message?.contents[0]?.type == 'file'){
+                /**
+                 * Insere o arquivo
+                 *
+                 * @var {object} oInsereArquivo
+                 */
+                const oInsereArquivo = await this.whatsappRepository.insereArquivo(oCliente.body._id, oDados.id, oBody.message?.contents[0])
+            }
+        }
+
+        // Verifica se o corpo do webhook foi enviado pela META
+        if(oBody.object && oBody.entry[0]?.changes[0]?.value?.messages){
+            oDados = oBody.entry[0].changes[0].value.messages[0]
+
+            // Atualiza o objeto para deixar no padrão
+            oDados.id = oBody.entry[0].changes[0].value.messages[0].id
+            oDados.to = oBody.entry[0].changes[0].value.metadata.phone_number_id
+            // Atualiza o numero do remetente pois a meta envia sem o digito 9
+
+            if(oDados.from.slice(0,2) == '55' && oDados.from.length == 12){
+                oDados.from = `${oDados.from.slice(0,4)}9${oDados.from.slice(4)}`
+            }
+
+            oDados.conteudo = oBody.message?.contents[0]?.text ?? ''
+
+            if(oBody.entry[0]?.changes[0]?.value?.messages[0]?.document){
+                /**
+                 * Busca os dados do arquivo
+                 *
+                 * @var {obejct} oArquivo
+                 *
+                 * @UsaFuncao buscaArquivo
+                 */
+                const oArquivo = await helpers.MetaClient.buscaArquivo(oBody.entry[0]?.changes[0]?.value?.messages[0]?.document.id, oCliente.body)
+
+                /**
+                 * Insere o arquivo
+                 *
+                 * @var {object} oInsereArquivo
+                 */
+                const oInsereArquivo = await this.whatsappRepository.insereArquivo(oCliente.body._id, oDados.id, {...oArquivo, ...oBody.entry[0]?.changes[0]?.value?.messages[0]?.document})
+
+                /**
+                 * Notifica via SNS
+                 *
+                 * @var {object} oSNS
+                 */
+                const oSNS = await helpers.AWSSNS.downloadArquivo(oInsereArquivo._id)
+            }
+        }
+
+        // Verifica se encontrou algum integrador, senão, gera erro
+        if(oDados == null){
+            return HttpResponse.serverError()
         }
 
         /**
@@ -613,6 +678,46 @@ module.exports = class WhatsappUseCase {
         // Verifica se não houve cadastro
         if(oInsereMensagem == null){
             return HttpResponse.serverError()
+        }
+
+        // Verifica se o corpo do webhook foi enviado pela ZENVIA
+        if(oBody.message){
+            if(oBody.message?.contents[0]?.type == 'file'){
+                /**
+                 * Insere o arquivo
+                 *
+                 * @var {object} oInsereArquivo
+                 */
+                const oInsereArquivo = await this.whatsappRepository.insereArquivo(oCliente.body._id, oInsereMensagem._id, oBody.message?.contents[0])
+            }
+        }
+
+        // Verifica se o corpo do webhook foi enviado pela META
+        if(oBody.object && oBody.entry[0]?.changes[0]?.value?.messages){
+            if(oBody.entry[0]?.changes[0]?.value?.messages[0]?.document){
+                /**
+                 * Busca os dados do arquivo
+                 *
+                 * @var {obejct} oArquivo
+                 *
+                 * @UsaFuncao buscaArquivo
+                 */
+                const oArquivo = await helpers.MetaClient.buscaArquivo(oBody.entry[0]?.changes[0]?.value?.messages[0]?.document.id, oCliente.body)
+
+                /**
+                 * Insere o arquivo
+                 *
+                 * @var {object} oInsereArquivo
+                 */
+                const oInsereArquivo = await this.whatsappRepository.insereArquivo(oCliente.body._id, oInsereMensagem._id, {...oArquivo, ...oBody.entry[0]?.changes[0]?.value?.messages[0]?.document})
+
+                /**
+                 * Notifica via SNS
+                 *
+                 * @var {object} oSNS
+                 */
+                const oSNS = await helpers.AWSSNS.downloadArquivo(oInsereArquivo._id)
+            }
         }
 
         /**
@@ -881,6 +986,17 @@ module.exports = class WhatsappUseCase {
              */
             const iNaoLidas = await this.whatsappRepository.contagemMensagensNaoLidas(oContato.id)
 
+            if(oMensagem?.conteudo != undefined && (oMensagem.conteudo == '' || oMensagem?.conteudo.length == 0)){
+                /**
+                 * Busca o arquivo
+                 *
+                 * @var {object} oArquivo
+                 */
+                const oArquivo = await this.whatsappRepository.buscaArquivo({ idMensagem: oMensagem._id })
+
+                oMensagem.conteudo = oArquivo?.nomeArquivo ?? ''
+            }
+
             /**
              * Adiciona no objeto de retorno
              */
@@ -932,18 +1048,40 @@ module.exports = class WhatsappUseCase {
         /**
          * Itera os dados
          */
-        oMensagens.map(async (oMensagem) => {
+        await Promise.allSettled(oMensagens.map(async (oMensagem) => {
+            /**
+             * Define os dados do arquivo
+             *
+             * @var {string} sIdArquivo
+             * @var {string} sNomeArquivo
+             */
+            let sIdArquivo = ''
+            let sNomeArquivo = ''
+
+            if(!oMensagem.conteudo || oMensagem.conteudo == ''){
+                /**
+                 * Busca o arquivo
+                 *
+                 * @var {object} oArquivo
+                 */
+                const oArquivo = await this.whatsappRepository.buscaArquivo({ idMensagem: oMensagem._id })
+
+                sIdArquivo = oArquivo?._id ?? ''
+                sNomeArquivo = oArquivo?.nomeArquivo ?? ''
+            }
+
             /**
              * Adiciona no objeto de retorno
              */
             oRetorno.data.push({
                 tipo: oMensagem.tipo,
-                numero: oMensagem.numero,
                 status: oMensagem.status ?? oMensagem.statusEntregaCliente ?? '',
                 dataMensagem: moment(oMensagem.dataEnvio ?? oMensagem.dataCadastro).format('YYYY-MM-DD HH:mm:ss'),
-                mensagem: oMensagem.conteudo ?? ''
+                mensagem: oMensagem.conteudo ?? '',
+                idArquivo: sIdArquivo,
+                nomeArquivo: sNomeArquivo
             })
-        })
+        }))
 
         /**
          * Marcar as mensagens como lida
@@ -989,5 +1127,54 @@ module.exports = class WhatsappUseCase {
         }
 
         return HttpResponse.ok(oRetorno)
+    }
+
+    /**
+     * Função responsável pela atualização do contato
+     *
+     * @param {string} sId
+     * @param {object} oDadosCliente
+     * 
+     * @returns {object}
+     */
+    async baixarArquivo(sId, oDadosCliente) {
+        /**
+         * Busca o arquivo
+         *
+         * @var {object} oDados
+         */
+        const oDados = await this.whatsappRepository.buscaArquivo({ _id: sId })
+        
+        // Verifica se não houve cadastro
+        if(oDados == null){
+            return HttpResponse.badRequest(
+                new CustomError('Erro ao buscar o arquivo', 1)
+            )
+        }
+
+        /**
+         * Baixa o arquivo
+         *
+         * @var {object} oArquivo
+         */
+        const oArquivo = await helpers.Download.baixarArquivo(oDados, oDadosCliente.body)
+
+        // Verifica se não houve download
+        if(oArquivo == null){
+            return HttpResponse.badRequest(
+                new CustomError('Erro ao baixar o arquivo', 1)
+            )
+        }
+
+        if(oArquivo.urlArquivo){
+            /**
+             * Edita o arquivo
+             *
+             * @var {object} oEditaArquivo
+             */
+            const oEditaArquivo = await this.whatsappRepository.editarArquivo(sId, oArquivo.urlArquivo)
+        }
+
+        return HttpResponse.ok(oArquivo)
     }
 }

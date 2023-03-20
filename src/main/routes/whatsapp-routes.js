@@ -17,6 +17,10 @@
  */
 const { adapt } = require('../adapters/express-router-adapter')
 const WhatsappRouteComposer = require('../composers/whatsapp-composer')
+const multer = require('multer')
+const upload = multer({
+    dest: "./",
+})
 
 /**
  * Realiza o export das rotas dos whatsapp
@@ -92,7 +96,7 @@ module.exports = router => {
      * @UsaFuncao WhatsappRouteComposer.enviarMensagemV3
      * @return {object}
      */
-    router.post('/v3/whatsapp/enviarMensagem', adapt(WhatsappRouteComposer.enviarMensagemV3()))
+    router.post('/v3/whatsapp/enviarMensagem', upload.single("arquivo"), adapt(WhatsappRouteComposer.enviarMensagemV3()))
 
     /**
      * Rota POST para criação do template
@@ -147,4 +151,22 @@ module.exports = router => {
      * @return {object}
      */
     router.put('/v1/whatsapp/contatos/:numero', adapt(WhatsappRouteComposer.atualizarContato()))
+
+    /**
+     * Rota V1 GET para baixar o arquivo
+     *
+     * @UsaFuncao adapt
+     * @UsaFuncao WhatsappRouteComposer.atualizarContato
+     * @return {object}
+     */
+    router.get('/v1/whatsapp/download/:id', adapt(WhatsappRouteComposer.baixarArquivo()))
+
+    /**
+     * Rota V3 POST para o envio de arquivo
+     *
+     * @UsaFuncao adapt
+     * @UsaFuncao WhatsappRouteComposer.enviarArquivo
+     * @return {object}
+     */
+    router.post('/v3/whatsapp/enviarArquivo', upload.single("arquivo"), adapt(WhatsappRouteComposer.enviarArquivo()))
 }
