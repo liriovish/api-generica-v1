@@ -54,7 +54,9 @@ module.exports = class EnviarMensagemRouter {
              *
              * @UsaFuncao dadosCliente
              */
+            console.log(sToken)
             const oCliente = await this.clienteFilter.dadosCliente(sToken, '', sTokenJwt)
+            console.log(JSON.stringify(oCliente))
 
             // Verifica se existe o cliente
             if(oCliente.statusCode != 200){
