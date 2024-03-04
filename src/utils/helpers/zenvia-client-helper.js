@@ -45,7 +45,6 @@ module.exports = class ZenviaClient {
              */
             // const sTokenDecrypted = await Crypto.decrypt(oCliente.whatsapp.tokenIntegracao, oCliente._id)
             const sTokenDecrypted = oCliente.whatsapp.tokenIntegracao
-            console.log(sTokenDecrypted)
 
             /**
              * Busca os dados do cliente
@@ -62,7 +61,6 @@ module.exports = class ZenviaClient {
                 '', 
                 sTokenDecrypted
             )
-            console.log(oDadosCliente)
 
             /**
              * Retorna dados
