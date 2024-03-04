@@ -107,15 +107,15 @@ module.exports = class AxiosClient {
             return response.data
         })
         .catch((error) => {
-            console.log(error.response)
+            console.error(error)
             /**
              * Monta o objeto de retorno para erro
              * 
              * @var object oError
              */
             const oError = {
-                statusCode: error.response.status,
-                error: error.response.data
+                statusCode: error?.response?.status,
+                error: error?.response?.data
             }
             
             /**
