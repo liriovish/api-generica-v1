@@ -63,6 +63,7 @@ module.exports = class WhatsappUseCase {
          * @var {object} oEnviaMensagem
          */
         const oEnviaMensagem = await helpers.ZenviaClient.enviarMensagem(oDados, oDadosCliente)
+        consoe.log(oEnviaMensagem)
 
         // Verifica se não houve cadastro
         if(oEnviaMensagem.statusCode != null && oEnviaMensagem.statusCode != 200){
