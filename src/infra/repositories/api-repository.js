@@ -4,12 +4,12 @@
  * NodeJS version 16.x
  *
  * @category  JavaScript
- * @package   WhatsApp
+ * @package   Api GenÃ©rica
  * @author    Equipe WebcartÃ³rios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/api-whatsapp
- * @CriadoEm  20/10/2022
+ * @CriadoEm  14/11/2024
  */
 
 /**
@@ -25,25 +25,33 @@ const sequelize = require('sequelize')
  */
 module.exports = class ExportacaoRepository {
     /**
-     * FunÃ§Ã£o para inserir o contato no banco de dados
-     * 
-     * @async
-     * @function listarTabelas
-     * 
-     * @return object Retorna tabelas com campos
-     */
+    * FunÃ§Ã£o para inserir o contato no banco de dados
+    * 
+    * @async
+    * @function listarTabelas
+    * 
+    * @return object Retorna tabelas com campos
+    */
     async listarTabelas() {
         try {
             if (process.env.DATABASE === 'mongodb') {
-                // Conexão com MongoDB: Listar as coleções e seus campos
-                const collections = await mongoose.connection.db.listCollections().toArray();
+
+                /**
+                * busca tabelas e campos no mongo
+                * 
+                * @var array aTabelas
+                */
+                const aTabelas = await mongoose.connection.db.listCollections().toArray();
                 
-                return collections;
+                return aTabelas;
                 
             } else {
-                // Conexão com MySQL: Listar tabelas e campos
-
-                const [aTabelas] = await sequelize.query('SHOW TABLES');
+                /**
+                * busca coleÃ§Ãµes e campos no mongo
+                * 
+                * @var array aTabelas
+                */
+                const aTabelas = await sequelize.query('SHOW TABLES');
                 
     
                 return aTabelas;
@@ -71,9 +79,8 @@ module.exports = class ExportacaoRepository {
         try {
             if (process.env.DATABASE === 'mongodb') {
                 
-
                 /**
-                 * Busca na base de dados os campos da tabela
+                 * Busca os colunas da tabela pelo nome
                  * 
                  * @var array aColunas
                  */
@@ -98,7 +105,7 @@ module.exports = class ExportacaoRepository {
 
     }
      /**
-     * Função para listar dados da tabela a partir do nome e filtros
+     * FunÃ§Ã£o para listar dados da tabela a partir do nome e filtros
      * 
      * @async
      * @function listarDados
@@ -110,28 +117,42 @@ module.exports = class ExportacaoRepository {
      */
     async listarDados(oDados, oBusca) {
         try {
+            /**
+            * @var array aDados
+            * @var int iTotalRegistros
+            */
             let aDados = []
             let iTotalRegistros = 0
 
             if (process.env.DATABASE === 'mongodb') {
-                // Conectar ao MongoDB e acessar a coleção com o nome fornecido
-                const collection = mongoose.connection.db.collection(oDados.nomeTabela);
+                /**
+                * Busca tabela no mongo pelo nome 
+                * @var object oTabela
+                */
+                const oTabela = mongoose.connection.db.oTabela(oDados.nomeTabela);
 
-                if (!collection) {
+                if (!oTabela) {
                     return false;
                 }
 
-                // Realiza a consulta no MongoDB com paginação
-                aDados = await collection.find(oBusca)
+                /**
+                * Busca dados da tabela com filtros 
+                * @var array aDados
+                */
+                aDados = await oTabela.find(oBusca)
                     .limit(Number(oDados.numeroRegistros ?? 100))
                     .skip((oDados.pagina - 1) * (oDados.numeroRegistros ?? 100))
                     .toArray();
 
-                iTotalRegistros = await collection.countDocuments(oBusca);
+
+                /**
+                * Calcula o total de registros
+                * @var int iTotalRegistros
+                */
+                iTotalRegistros = await oTabela.countDocuments(oBusca);
             } else {    
                 const sequelize = await db.authenticate();
-                const model = sequelize.models[oDados.nomeTabela];  // Acessa o modelo da tabela no Sequelize
-    
+                const model = sequelize.models[oDados.nomeTabela]; 
                 if (!model) {
                     return false
                 }
@@ -152,7 +173,7 @@ module.exports = class ExportacaoRepository {
 
     }
      /**
-     * Função para exportar dados 
+     * FunÃ§Ã£o para exportar dados 
      * 
      * @async
      * @function exportarDados
@@ -174,7 +195,6 @@ module.exports = class ExportacaoRepository {
                 const dbExportacao = await db.ExportacaoMongo();
                 
                 oExportacao = await dbExportacao.create(oDados);
-                // console.log(oExportacao)
             } else {
                 // /**
                 //  * instancia banco de dados sql
@@ -191,24 +211,28 @@ module.exports = class ExportacaoRepository {
                 // await ExportacaoSQL.create(oDados);
             } 
     
-            // Retorna o hash da exportação para o cliente
+            // Retorna o hash da exportaï¿½ï¿½o para o cliente
             return { hash: oExportacao.hash };
     
         } catch (error) {
-            console.error('Erro ao solicitar exportação:', error);
+            console.error('Erro ao solicitar exportaÃ§Ã£o:', error);
             return false
         }
 
     }
     
     /**
-     * Função para listar exportacoes
-     * 
-     * @async
-     * @function exportarDados
-     */
-    async listarExportacoes(oDados, oBusca) {
+    * FunÃ§Ã£o para listar exportacoes
+    * 
+    * @async
+    * @function exportarDados
+    */
+    async listarExportacoes(oBusca) {
         try {
+             /**
+            * @var array aDados
+            * @var int iTotalRegistros
+            */
             let aDados = []
             let iTotalRegistros = 0
             
@@ -220,7 +244,7 @@ module.exports = class ExportacaoRepository {
                 */ 
                const dbExportacoes = await db.ExportacaoMongo(); 
                 /**
-                * busca exportaçõoes
+                * busca exportaÃ§Ãµes
                 * 
                 * @var {array} aDados 
                 */ 
@@ -233,6 +257,7 @@ module.exports = class ExportacaoRepository {
                 */ 
                 iTotalRegistros = await dbExportacoes.countDocuments(oBusca);
             } else {
+
                 // criar logica para sql
             }
 
@@ -248,24 +273,24 @@ module.exports = class ExportacaoRepository {
 
     }
     /**
-     * Função para listar exportacoes
-     * 
-     * @async
-     * @function exportarDados
-     */
+    * FunÃ§Ã£o para listar exportaÃ§Ãµes
+    * 
+    * @async
+    * @function exportarDados
+    */
     async obterExportacao(sHash) {
         try {
             if (process.env.DATABASE === 'mongodb') {
                /**
-                 * Instancia o model
-                 * 
-                 * @var {mongoose} dbExportacoes
-                */ 
+               * Instancia o model
+               * 
+               * @var {mongoose} dbExportacoes
+               */ 
                const dbExportacoes = await db.ExportacaoMongo(); 
-                 /**
-                 * Retorna exportação pelo hash
-                 * 
-                 * @var {object} oExportacao
+                /**
+                * Retorna exportaÃ§Ã£o pelo hash
+                * 
+                * @var {object} oExportacao
                 */
                oExportacao = await dbExportacoes.findOne({ hash: sHash });
             } else {
@@ -279,13 +304,13 @@ module.exports = class ExportacaoRepository {
 
 
         } catch (error) {
-            console.error('Erro ao obter exportação:', error);
+            console.error('Erro ao obter exportaÃ§Ã£o:', error);
             return false;
         }
 
     }
     /**
-     * Função para fazer dowmload
+     * FunÃ§Ã£o para fazer download
      * 
      * @async
      * @function exportarDados
@@ -301,7 +326,7 @@ module.exports = class ExportacaoRepository {
                 */ 
                const dbExportacoes = await db.ExportacaoMongo(); 
                  /**
-                 * Busca exportação pra baixar
+                 * Busca exportaÃ§Ã£o pra baixar
                  * 
                  * @var {object} oExportacao
                 */
@@ -322,7 +347,7 @@ module.exports = class ExportacaoRepository {
     }
 
     /**
-     * Função para excluir exportação
+     * FunÃ§Ã£o para excluir exportaÃ§Ã£o
      * 
      * @async
      * @function exportarDados
@@ -339,7 +364,7 @@ module.exports = class ExportacaoRepository {
                 */ 
                 const dbExportacoes = await db.ExportacaoMongo(); 
                  /**
-                 * Busca exportação pra baixar
+                 * Busca exportaÃ§Ã£o pra baixar
                  * 
                  * @var {object} oExportacao
                 */
@@ -364,8 +389,8 @@ module.exports = class ExportacaoRepository {
 
 
             return oExportacao;
-        }catch (error) {
-            console.error('Erro ao excluir exportação', error);
+        } catch (error) {
+            console.error('Erro ao excluir exportaÃ§Ã£o', error);
             return false;
         }   
 
