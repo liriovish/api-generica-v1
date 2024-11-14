@@ -290,7 +290,7 @@ module.exports = class ExportacaoRepository {
      * @async
      * @function exportarDados
      */
-    async baixarArquivo(sHash) {
+    async buscaArquivo(sHash) {
         try {
             let oExportacao = {};
             if (process.env.DATABASE === 'mongodb') {
@@ -327,7 +327,7 @@ module.exports = class ExportacaoRepository {
      * @async
      * @function exportarDados
      */
-    async excluirExportacao(sHash, iSituacao, dDataExclusao ) {
+    async excluirExportacao(sHash ) {
         try {
             let oExportacao = {};
 
@@ -349,17 +349,21 @@ module.exports = class ExportacaoRepository {
                     },
                     {
                         $set: {
-                            situacao: iSituacao,
-                            dataExclusao: dDataExclusao
+                            situacao: 4,
+                            dataExclusao: new Date()
                         }
                     }
 
                 );
+
             } else {
                 const sequelize = getDatabase();
                 const ExportacaoSQL = defineExportacaoSQL(sequelize);
                 exportacao = await ExportacaoSQL.findOne({ where: { hash: hashExportacao } });
             }
+
+
+            return oExportacao;
         }catch (error) {
             console.error('Erro ao excluir exportação', error);
             return false;

@@ -22,6 +22,7 @@ const { CustomError } = require('../../utils/errors')
 const MensageriaHelper = require('../../utils/helpers/mensageria-helper')
 const { v4: uuidv4 } = require('uuid')
 const fs = require('fs')
+const path = require('path')
 /**
  * Classe ApiUseCase
  * @package  src\domain\usecases
@@ -315,7 +316,7 @@ module.exports = class ApiUseCase {
          */
         let oExportacao;
 
-        oExportacao = await this.apiRepository.baixarArquivo(oDados.hashExportacao);
+        oExportacao = await this.apiRepository.buscaArquivo(oDados.hashExportacao);
         if(oExportacao) {
              /**
              * caminho do arquivo
@@ -351,28 +352,28 @@ module.exports = class ApiUseCase {
     */
      async excluirExportacao(oDados) {
        try {
+
             /**
-             * soft delete da exportação
-             * 
-             * @var {object} oExportacao
+             * Busca exportação no banco
+             *  
+             * @var {object} oDadosExportacao
              */
-            let oExportacao;
+            const oDadosExportacao = await this.apiRepository.buscaArquivo(oDados.hashExportacao);
 
-            oExportacao = await this.apiRepository.excluirExportacao(oDados.hashExportacao);
-
-            if (oExportacao) {
-                const sCaminhoArquivo = path.join(process.env.DIRETORIO_ARQUIVOS, oExportacao.caminhoArquivo);
-                if (fs.existsSync(sCaminhoArquivo)) {
-                    fs.unlinkSync(sCaminhoArquivo); 
-                }
-        
-                oExportacao.situacao = 4;
-                oExportacao.dataExclusao = new Date();
-                await oExportacao.save();
-                return ("Exportação excluída com sucesso")
+           if (oDadosExportacao) {
+           
+            if (fs.existsSync(oDadosExportacao.caminhoArquivo)) {
+                fs.unlinkSync(oDadosExportacao.caminhoArquivo); 
+            }
+    
             } else {
                 return HttpResponse.badRequest({ message: 'Exportação não encontrada' });
             }
+            
+            
+            await this.apiRepository.excluirExportacao(oDados.hashExportacao);
+
+            return { descricao: 'Exportação excluida com sucesso' };
 
        } catch (error) {
         console.error('Erro ao excluir exportação:', error);
