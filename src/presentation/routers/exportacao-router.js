@@ -1,13 +1,13 @@
 /**
- * Classe para criaÃ§Ã£o da rota de retorno para o usuÃ¡rio
+ * Classe para criação da rota de retorno para o usuário
  * 
- * Esse arquivo Ã© responsÃ¡vel pelas validaÃ§Ãµes bÃ¡sicas dos dados recebidos
+ * Esse arquivo é responsável pelas validações básicas dos dados recebidos
  *
  * NodeJS version 16.x
  *
  * @category  JavaScript
- * @package   Api GenÃ©rica
- * @author    Equipe WebcartÃ³rios <contato@webcartorios.com.br>
+ * @package   Api Genérica
+ * @author    Equipe Webcartórios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-generica/licence.txt BSD Licence
  * @link      https://github.com/dynamic-system-vish/api-generica
@@ -15,16 +15,15 @@
  */
 
 /**
- * ConfiguraÃ§Ãµes globais
+ * Configurações globais
  */
-const { CustomError } = require('../../utils/errors')
 const HttpResponse = require('../helpers/http-response')
 
 /**
- * Classe TabelasRouter
+ * Classe ListagemRouter
  * @package  src\presentation\routers
  */
-module.exports = class BaixarArquivoRouter {
+module.exports = class ExportacaomRouter {
     /**
      * Construtor
      * @param {apiUseCase}
@@ -32,12 +31,11 @@ module.exports = class BaixarArquivoRouter {
      */
     constructor({ apiUseCase, apiValidator } = {}) {
         this.apiUseCase = apiUseCase
-        this.apiValidator = apiValidator
-       
+        this.apiValidator = apiValidator       
     }
 
     /**
-     * FunÃ§Ã£o para criaÃ§Ã£o da rota
+     * Função para criação da rota
      *
      * @param {object} oBody
      * @param {string} sChave
@@ -47,22 +45,29 @@ module.exports = class BaixarArquivoRouter {
     async route(oHttp) {
         try {
             /**
-             * Baixar arquivo
+             * Valida os dados da reuqisição
              *
-             * @var {object} oDados
-             *
-             * @UsaFuncao baixar arquivo
+             * @var {mixed} mValida
              */
-            const oDados = await this.apiUseCase.baixarArquivo(oHttp.params)
+            const mValida = await this.apiValidator.exportacao(oHttp.body)
 
-            if(oDados.statusCode == 400){
-                return oDados
+            if(mValida != null){
+                return mValida
             }
+
+            /**
+             * Envia a mensagem
+             *
+             * @var {object} oDadosExportacao
+             *
+             * @UsaFuncao Exportacao
+             */
+            const oDadosExportacao = await this.apiUseCase.exportacao(oHttp.body)
 
             /**
              * Retorna dados
              */
-            return HttpResponse.ok(oDados)
+            return HttpResponse.created(oDadosExportacao)
         } catch (error) {
             console.log(error)
             /**

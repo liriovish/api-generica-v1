@@ -20,7 +20,7 @@ const cors = require('../middlewares/cors')
 const auth = require('../middlewares/auth')
 const jsonParser = require('../middlewares/json-parser')
 const contentType = require('../middlewares/content-type')
-const MongoDB = require('../../infra/helpers/mongodb-helper')
+const database = require('../../infra/helpers/db-helper')
 require('dotenv').config()
 
 /**
@@ -41,7 +41,6 @@ module.exports = async (app) => {
     /**
      * Realiza conexão com o banco de dados
      */
-    env().then((env) => {
-        MongoDB.connect(env.database_uri).then(() => {}).catch(console.error);
-    })
+    await database.initDatabase();
+
 }

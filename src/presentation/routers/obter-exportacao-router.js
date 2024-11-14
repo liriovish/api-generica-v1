@@ -24,7 +24,7 @@ const HttpResponse = require('../helpers/http-response')
  * Classe TabelasRouter
  * @package  src\presentation\routers
  */
-module.exports = class BaixarArquivoRouter {
+module.exports = class ObterExportacaoRouter {
     /**
      * Construtor
      * @param {apiUseCase}
@@ -47,22 +47,22 @@ module.exports = class BaixarArquivoRouter {
     async route(oHttp) {
         try {
             /**
-             * Baixar arquivo
+             * Obtem exportação
              *
-             * @var {object} oDados
+             * @var {object} oDadosExportacoes
              *
-             * @UsaFuncao baixar arquivo
+             * @UsaFuncao obterExportacao
              */
-            const oDados = await this.apiUseCase.baixarArquivo(oHttp.params)
+            const oDadosExportacao = await this.apiUseCase.obterExportacao(oHttp.params)
 
-            if(oDados.statusCode == 400){
-                return oDados
+            if(oDadosExportacao.statusCode == 400){
+                return oDadosExportacao
             }
 
             /**
              * Retorna dados
              */
-            return HttpResponse.ok(oDados)
+            return HttpResponse.ok(oDadosExportacao)
         } catch (error) {
             console.log(error)
             /**

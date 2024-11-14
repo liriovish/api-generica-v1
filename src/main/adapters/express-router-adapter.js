@@ -14,11 +14,6 @@
  */
 
 /**
- * Configurações globais
- */
-const { LogAWSCloudWatch } = require('../../utils/helpers')
-
-/**
  * Classe ExpressRouterAdapter
  * @package  src\main\adapters
  */
@@ -35,27 +30,6 @@ module.exports = class ExpressRouterAdapter {
     static adapt(rRouter) {
         return async(req, res) => {
             /**
-             * Define o token enviado na requisição
-             * 
-             * @param string sToken
-             */
-            const sToken = req.headers['authorization'] || ''
-
-            /**
-             * Define a rota da requisição
-             * 
-             * @param string sRota
-             */
-            const sRota = req.route.path
-
-            /**
-             * Define os parametros da requisição
-             * 
-             * @param string sRota
-             */
-            const sParametros = JSON.stringify(req.query)+JSON.stringify(req.body)+JSON.stringify(req.params)
-
-            /**
              * Pega o IP do usuario pela requisição
              * 
              * @param string sIp
@@ -71,13 +45,12 @@ module.exports = class ExpressRouterAdapter {
              * @var object oHttpResponse Realiza as operações da rota e retorna
              */
             const oHttpResponse = await rRouter.route(
-                req.body,
-                sIp,
-                res.get('chaveAplicativo'),
-                req.params,
-                sToken,
-                req.query, 
-                req.file
+               { 
+                body: req.body,
+                ip: sIp,
+                params: req.params,
+                query: req.query,
+               } 
             )
 
             if(oHttpResponse.body && oHttpResponse.body.retorno){
@@ -87,19 +60,6 @@ module.exports = class ExpressRouterAdapter {
             }else{
                 res.status(oHttpResponse.statusCode).json(oHttpResponse.body)
             }
-
-            /**
-             * Grava o log na AWS CloudWatch
-             *
-             * @var {bool} bLog
-             */
-            const bLog = await LogAWSCloudWatch.gravarLog(
-                sToken.replace('Bearer ', ''), 
-                sRota, 
-                sParametros, 
-                oHttpResponse.body, 
-                sIp
-            )
         }
     }
 }

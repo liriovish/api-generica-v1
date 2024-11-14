@@ -1,0 +1,6 @@
+- criar a rota no arquivo de routes -/main/routes/api-routes
+- criar a função no composer- main/composer/api-composer
+- criar o router - presentation/routers - criar arquivos
+- criar a validação se necessario - utils/validators/api-validator
+- criar o usecase - domain /usecases/api-usecase
+- criar o repository infra/repositories/api-repository

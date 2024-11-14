@@ -21,11 +21,10 @@ const serverless = require('serverless-http')
 require('dotenv').config()
 
 if (process.env.APP_ENV === 'development') {
-    env().then((env) => {
-        app.listen(env.port, function () {
-            console.log("Servidor: http://localhost:" + env.port);
-        });
-    })
+    app.listen(process.env.API_PORT, function () {
+        console.log("Servidor: http://localhost:" + process.env.API_PORT);
+    });
+   
 } else {
     module.exports.handler = serverless(app)
 }
