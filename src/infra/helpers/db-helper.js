@@ -4,7 +4,7 @@
  * NodeJS version 16.x
  *
  * @category  JavaScript
- * @package   Api Genérica
+ * @package   Api Genï¿½rica
  * @author    Equipe WebcartÃ³rios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
@@ -15,56 +15,63 @@
 /**
  * ConfiguraÃ§Ãµes globais
  */
-const  dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const  { Sequelize } = require('sequelize');
 
-// Carregar as variáveis de ambiente
-dotenv.config();
 
-let dbInstance;
-
+/**
+ * FunÃ§Ã£o para a conexÃ£o no banco de dados
+ * @returns object 
+*/
 const initDatabase = async () => {
+    /**
+    * Instancia banco de dados
+    * @var  object dbInstance
+    */
+    let dbInstance;
     if (process.env.DATABASE === 'mongodb') {
-        // Conectar com MongoDB usando Mongoose
         try {
-            const mongoURI = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOSTNAME}/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+            /**
+             * Dados de conexÃ£o mongodb
+             * @var string sMongoURI
+             */
+            const sMongoURI = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOSTNAME}/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
-            await mongoose.connect(mongoURI, {
+            await mongoose.connect(sMongoURI, {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
             });
 
-            console.log('Conexão com MongoDB Atlas realizada com sucesso!');
+            console.log('ConexÃ£o com MongoDB Atlas realizada com sucesso!');
             dbInstance = mongoose;
         } catch (error) {
             console.error('Erro ao conectar ao MongoDB:', error);
-            throw error;  // Lançar erro para interromper a execução
+            throw error;  
         }
     } else {
-        // Conectar com MySQL usando Sequelize
         try {
+             /**
+             * ConexÃ£o Sql
+             * 
+             */
             dbInstance = new Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
                 host: process.env.DB_HOSTNAME,
                 port: process.env.DB_PORT,
                 dialect: process.env.DATABASE,
-                logging: false,  // Desabilita logs do Sequelize
+                logging: false,  
             });
-
-            // Testa a conexão com o banco de dados MySQL
             await dbInstance.authenticate();
-            console.log('Conexão com MySQL realizada com sucesso!');
+            console.log('ConexÃ£o com MySQL realizada com sucesso!');
         } catch (error) {
             console.error('Erro ao conectar ao MySQL:', error);
-            throw error;  // Lançar erro para interromper a execução
+            throw error;  
         }
     }
 
     return dbInstance;
 };
 
-// Função para obter a instância do banco de dados
+
 const getDatabase = () => dbInstance;
 module.exports = {initDatabase, getDatabase};
-// export default { initDatabase, getDatabase };
 
