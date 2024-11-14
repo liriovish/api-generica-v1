@@ -19,9 +19,9 @@
 const HttpResponse = require('../../presentation/helpers/http-response')
 const { ServerError } = require('../../presentation/helpers/http-response')
 const { CustomError } = require('../../utils/errors')
-const {MensageriaHelper} = require('../../utils/helpers/mensageria-helper')
+const MensageriaHelper = require('../../utils/helpers/mensageria-helper')
 const { v4: uuidv4 } = require('uuid')
-
+const fs = require('fs')
 /**
  * Classe ApiUseCase
  * @package  src\domain\usecases
@@ -160,7 +160,6 @@ module.exports = class ApiUseCase {
      */
      async exportacao(oDados) {
         try {
-
              /**
              * Salva os dados da exportação
              * 
@@ -175,7 +174,7 @@ module.exports = class ApiUseCase {
                 dataExclusao: null,
                 tentativasProcessamento: 0,
             });
-            
+            console.log(oExportacao);
              /**
              * Envia uma mensagem para o RabbitMQ com os dados da exportação solicitada
              * 
@@ -184,7 +183,7 @@ module.exports = class ApiUseCase {
             const bEnvioProcessamento = await MensageriaHelper.enviarProcessamento({
                 hash: oExportacao.hash,
                 nomeTabela: oDados.nomeTabela,
-                filtros: oExportacao.filtros,
+                filtros: oDados,
                 dataSolicitacao: new Date()
             });
             
@@ -196,8 +195,8 @@ module.exports = class ApiUseCase {
 
 
         } catch (error) {
-            console.error("Erro ao gerar exportação")
-            return HttpResponse.badRequest("Erro ao gerar exportação")
+            console.error(error)
+            return HttpResponse.badRequest("Erro ao gerar exportação ")
         }
 
     }
@@ -230,7 +229,7 @@ module.exports = class ApiUseCase {
             let oBusca = {};
             
 
-            // if (sHash) oBusca.sHash = sHash;
+            if (sHash) oBusca.sHash = sHash;
             if (iSituacao) oBusca.iSituacao = parseInt(iSituacao);
     
             if (DdataInicialCadastro || DdataFinalCadastro) {
@@ -303,11 +302,11 @@ module.exports = class ApiUseCase {
     /**
      * Função responsável por fazer download
     *
-    * @param {string} sHash
+    * @param {object} oDados
     *
     * @returns {object}
     */
-    async baixarArquivo(sHash) {
+    async baixarArquivo(oDados) {
        try {
          /**
          * Salva os dados da exportação
@@ -316,8 +315,7 @@ module.exports = class ApiUseCase {
          */
         let oExportacao;
 
-        oExportacao = await this.apiRepository.baixarArquivo(sHash);
-        
+        oExportacao = await this.apiRepository.baixarArquivo(oDados.hashExportacao);
         if(oExportacao) {
              /**
              * caminho do arquivo
@@ -328,29 +326,30 @@ module.exports = class ApiUseCase {
              // Verifica se o arquivo existe no diretório especificado
              console.log(sCaminhoArquivo);
              if (fs.existsSync(sCaminhoArquivo)) {
-                 return res.download(sCaminhoArquivo);
+                 return {download:sCaminhoArquivo}
                  
              } else {
-                 return res.status(404).json({ error: 'Arquivo não encontrado no diretório especificado' });
+                 
+                 return HttpResponse.badRequest({ message: 'Arquivo não encontrado no diretório especificado' });
              } 
         } else {
-            return res.status(404).json({ error: 'Exportação não encontrada ou caminho do arquivo ausente' });
+            return HttpResponse.badRequest({ message: 'Exportação não encontrada ou caminho do arquivo ausente' });
         }
 
        } catch (error) {
         console.error('Erro ao baixar arquivo:', error);
-        return res.status(500).json({ error: 'Erro ao processar a solicitação de download' });
+        return HttpResponse.badRequest({ message: 'Erro ao processar a solicitação de download' });
         }
     }
     
     /**
      * Função responsável excluir exportação
     *
-    * @param {string} sHash
+    * @param {object} oDados
     *
     * @returns {object}
     */
-     async excluirExportacao(sHash) {
+     async excluirExportacao(oDados) {
        try {
             /**
              * soft delete da exportação
@@ -359,27 +358,25 @@ module.exports = class ApiUseCase {
              */
             let oExportacao;
 
-            oExportacao = await this.apiRepository.excluirExportacao(sHash);
+            oExportacao = await this.apiRepository.excluirExportacao(oDados.hashExportacao);
 
             if (oExportacao) {
-                const filePath = path.join(process.env.DIRETORIO_ARQUIVOS, oExportacao.caminhoArquivo);
-                if (fs.existsSync(filePath)) {
-                    fs.unlinkSync(filePath); 
+                const sCaminhoArquivo = path.join(process.env.DIRETORIO_ARQUIVOS, oExportacao.caminhoArquivo);
+                if (fs.existsSync(sCaminhoArquivo)) {
+                    fs.unlinkSync(sCaminhoArquivo); 
                 }
         
                 oExportacao.situacao = 4;
                 oExportacao.dataExclusao = new Date();
                 await oExportacao.save();
-                res.json({ message: 'Exportação excluída com sucesso' });
+                return ("Exportação excluída com sucesso")
             } else {
-                res.status(404).json({ error: 'Exportação não encontrada' });
+                return HttpResponse.badRequest({ message: 'Exportação não encontrada' });
             }
-
-
 
        } catch (error) {
         console.error('Erro ao excluir exportação:', error);
-        return res.status(500).json({ error: 'Erro ao excluir exportação' });
+        return HttpResponse.badRequest({ message: 'Erro ao excluir exportação' });
        }
     }
 

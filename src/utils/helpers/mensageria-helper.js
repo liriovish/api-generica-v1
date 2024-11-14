@@ -16,7 +16,6 @@
  * Configurações globais
  */
 const amqp = require('amqplib')
-const envFile = require('../../main/config/env')
 
 /**
  * Classe RabbitMQ
@@ -40,13 +39,13 @@ module.exports = class RabbitMQ {
              * 
              * @var {string} sPassRabbitMq
              */
-            const sPassRabbitMq = encodeURIComponent(env.passRabbitMq)
+            const sPassRabbitMq = encodeURIComponent(process.env.PASS_RABBITMQ)
 
             /**
              * Define a conexão do RabbitMQ
              */
             const oConexaoRabbitMQ = await amqp.connect(
-                `amqp://${env.userRabbitMq}:${sPassRabbitMq}@${env.hostRabbitMq}:${env.portRabbitMq}`
+                `amqp://${process.env.USER_RABBITMQ}:${sPassRabbitMq}@${process.env.HOST_RABBITMQ}:${process.env.PORT_RABBITMQ}`
             )
             
             /**
@@ -59,7 +58,7 @@ module.exports = class RabbitMQ {
              * 
              * @var {string} sFila
              */
-            const sFila = env.processamentoWebhook
+            const sFila = process.env.NOME_FILA_RABBITMQ
 
             /**
              * Declara uma fila

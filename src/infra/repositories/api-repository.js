@@ -42,13 +42,7 @@ module.exports = class ExportacaoRepository {
                 
             } else {
                 // Conexão com MySQL: Listar tabelas e campos
-                
-                // const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
-                //     host: process.env.DB_HOSTNAME,
-                //     port: process.env.DB_PORT,
-                //     dialect: process.env.DATABASE,
-                // });
-    
+
                 const [aTabelas] = await sequelize.query('SHOW TABLES');
                 
     
@@ -169,15 +163,18 @@ module.exports = class ExportacaoRepository {
      */
     async salvarExportacao(oDados) {
         try {
-            if (process.env.SIGLA_DB === 'mongodb') {
+            let oExportacao;
+            if (process.env.DATABASE === 'mongodb') {
                 
                 /**
                  * Cria um novo registro no MongoDB
                  * 
                  * @var {object} oExportacao
                  */
-                oExportacao = new db.Exportacao(oDados);
-                await oExportacao.save();
+                const dbExportacao = await db.ExportacaoMongo();
+                
+                oExportacao = await dbExportacao.create(oDados);
+                // console.log(oExportacao)
             } else {
                 // /**
                 //  * instancia banco de dados sql
@@ -221,7 +218,7 @@ module.exports = class ExportacaoRepository {
                 * 
                 * @var {mongoose} dbExportacoes
                 */ 
-               const dbExportacoes = await db.Exportacao(); 
+               const dbExportacoes = await db.ExportacaoMongo(); 
                 /**
                 * busca exportaçõoes
                 * 
@@ -264,7 +261,7 @@ module.exports = class ExportacaoRepository {
                  * 
                  * @var {mongoose} dbExportacoes
                 */ 
-               const dbExportacoes = await db.Exportacao(); 
+               const dbExportacoes = await db.ExportacaoMongo(); 
                  /**
                  * Retorna exportação pelo hash
                  * 
@@ -295,13 +292,14 @@ module.exports = class ExportacaoRepository {
      */
     async baixarArquivo(sHash) {
         try {
-            if (process.env.SIGLA_DB === 'mongodb') {
+            let oExportacao = {};
+            if (process.env.DATABASE === 'mongodb') {
                 /**
                  * Instancia o model
                  * 
                  * @var {mongoose} dbExportacoes
                 */ 
-               const dbExportacoes = await db.Exportacao(); 
+               const dbExportacoes = await db.ExportacaoMongo(); 
                  /**
                  * Busca exportação pra baixar
                  * 
@@ -314,6 +312,8 @@ module.exports = class ExportacaoRepository {
                 const ExportacaoSQL = defineExportacaoSQL(sequelize);
                 oExportacao = await ExportacaoSQL.findOne({ where: { hash: sHash } });
             }
+
+            return oExportacao;
 
         }catch (error) {
             console.error('Erro ao baixar arquivo:', error);
@@ -329,13 +329,15 @@ module.exports = class ExportacaoRepository {
      */
     async excluirExportacao(sHash, iSituacao, dDataExclusao ) {
         try {
-            if (process.env.SIGLA_DB === 'mongodb') {
+            let oExportacao = {};
+
+            if (process.env.DATABASE === 'mongodb') {
                 /**
                  * Instancia o model
                  * 
                  * @var {mongoose} dbExportacoes
                 */ 
-                const dbExportacoes = await db.Exportacao(); 
+                const dbExportacoes = await db.ExportacaoMongo(); 
                  /**
                  * Busca exportação pra baixar
                  * 

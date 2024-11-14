@@ -15,12 +15,13 @@
 /**
  * Configurações globais
  */
-const Exportacao = require('./exportacoes')
-
+const ExportacaoMongo = require('./exportacoes-mongo')
+const ExportacaoSql = require('./exportacoes-sql')
 
 /**
  * Realiza o export das classes de geração dos erros
  */
 module.exports = {
-   Exportacao
+   ExportacaoMongo,
+   ExportacaoSql
 }

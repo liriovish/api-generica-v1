@@ -58,9 +58,9 @@ const schema = new mongoose.Schema({
 })
 
 
-let exportacoes = null
+let exportacoesMongo = null
 
 module.exports = async () => {
-    exportacoes = mongoose.model('exportacoes', schema)
-    return exportacoes
+    exportacoesMongo = mongoose.model('exportacoes', schema)
+    return exportacoesMongo
 }

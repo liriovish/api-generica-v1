@@ -349,7 +349,7 @@ module.exports = class ApiComposer {
          *    *
          * @return {object}
          */
-        return new ApiRouter.ListarExportacoes({
+        return new ApiRouter.BaixarArquivo({
             apiUseCase,
             apiValidator
         })
@@ -405,7 +405,7 @@ module.exports = class ApiComposer {
          *    *
          * @return {object}
          */
-        return new ApiRouter.ListarExportacoes({
+        return new ApiRouter.ExcluirExportacao({
             apiUseCase,
             apiValidator
         })
