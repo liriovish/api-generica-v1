@@ -93,7 +93,7 @@ module.exports = class ApiUseCase {
                     const [oColunas] = await this.apiRepository.listarColunas(sNomeTabela)
                     const oCampos = oColunas.map(col => col.Field);
 
-                    oTabelas[sNomeTabela] = { oCampos };
+                    oTabelas[sNomeTabela] = oCampos ;
                 }   
             } 
             

@@ -4,7 +4,7 @@
  * NodeJS version 16.x
  *
  * @category  JavaScript
- * @package   Api Gen�rica
+ * @package   Api Genérica
  * @author    Equipe Webcartórios <contato@webcartorios.com.br>
  * @copyright 2022 (c) DYNAMIC SYSTEM e Vish! Internet e Sistemas Ltda. - ME
  * @license   https://github.com/dynamic-system-vish/api-whatsapp/licence.txt BSD Licence
@@ -20,15 +20,17 @@ const  { Sequelize } = require('sequelize');
 
 
 /**
+* Instancia banco de dados
+* @var  object dbInstance
+*/
+let dbInstance;
+
+/**
  * Função para a conexão no banco de dados
  * @returns object 
 */
 const initDatabase = async () => {
-    /**
-    * Instancia banco de dados
-    * @var  object dbInstance
-    */
-    let dbInstance;
+  
     if (process.env.DATABASE === 'mongodb') {
         try {
             /**

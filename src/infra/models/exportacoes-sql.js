@@ -12,6 +12,8 @@ module.exports = (sequelize) => {
       caminhoArquivo: DataTypes.STRING,
       dataGeracao: DataTypes.DATE,
       dataExclusao: DataTypes.DATE,
+      dataCadastro: DataTypes.DATE,
+      dataAtualizacao: DataTypes.DATE
     },
     {
       sequelize,

@@ -17,7 +17,7 @@
  */
 const db = require('../models')
 const mongoose = require('mongoose')
-const sequelize = require('sequelize')
+const {getDatabase} = require('../helpers/db-helper')
 /**
  * Classe ExportacaoRepository
  * 
@@ -47,13 +47,16 @@ module.exports = class ExportacaoRepository {
                 
             } else {
                 /**
+                 * Instancia banco de dados
+                 */
+                const db = getDatabase();
+                /**
                 * busca coleções e campos no mongo
                 * 
                 * @var array aTabelas
                 */
-                const aTabelas = await sequelize.query('SHOW TABLES');
+                const aTabelas = await db.query('SHOW TABLES');
                 
-    
                 return aTabelas;
             }
         } catch (error) {
@@ -90,11 +93,15 @@ module.exports = class ExportacaoRepository {
                 
             } else {
                 /**
+                 * Instancia banco de dados
+                 */
+                const db = getDatabase();
+                /**
                  * Busca na base de dados os campos da tabela
                  * 
                  * @var array aColunas
                  */
-                const aColunas = await sequelize.query(`SHOW COLUMNS FROM ${sNomeTabela}`);
+                const aColunas = await db.query(`SHOW COLUMNS FROM ${sNomeTabela}`);
 
                 return aColunas;
             }
@@ -151,14 +158,12 @@ module.exports = class ExportacaoRepository {
                 */
                 iTotalRegistros = await oTabela.countDocuments(oBusca);
             } else {    
-                const sequelize = await db.authenticate();
-                const model = sequelize.models[oDados.nomeTabela]; 
-                if (!model) {
+                const sequelize = getDatabase();
+                const aDados = await sequelize.query(`SELECT * FROM ${oDados.nomeTabela}`); 
+                if (!aDados) {
                     return false
                 }
-    
-                // Busca os dados da tabela sem filtros
-                aDados = await model.findAll();
+                console.log(aDados);
                 iTotalRegistros = aDados.length;
             }
 
