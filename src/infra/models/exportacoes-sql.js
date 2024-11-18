@@ -1,13 +1,14 @@
 const { Model, DataTypes } = require('sequelize');
 
-module.exports = (sequelize) => {
+module.exports = async (sequelize) => {
   class ExportacaoSql extends Model {}
 
   ExportacaoSql.init(
     {
       hash: DataTypes.STRING,
-      filtros: DataTypes.ARRAY(DataTypes.STRING),
-      situacao: DataTypes.INTEGER,
+      filtros: {
+        type: DataTypes.JSON
+      },      situacao: DataTypes.INTEGER,
       tentativasProcessamento: DataTypes.INTEGER,
       caminhoArquivo: DataTypes.STRING,
       dataGeracao: DataTypes.DATE,
@@ -22,6 +23,8 @@ module.exports = (sequelize) => {
       timestamps: true, 
     }
   );
+  
+  await ExportacaoSql.sync();
 
   return ExportacaoSql;
 };

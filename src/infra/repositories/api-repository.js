@@ -157,14 +157,88 @@ module.exports = class ExportacaoRepository {
                 * @var int iTotalRegistros
                 */
                 iTotalRegistros = await oTabela.countDocuments(oBusca);
-            } else {    
-                const sequelize = getDatabase();
-                const aDados = await sequelize.query(`SELECT * FROM ${oDados.nomeTabela}`); 
-                if (!aDados) {
-                    return false
+            } else {   
+            /**
+             * Instancia banco de dados sql
+             */
+            const db = getDatabase();
+
+            /**
+             * Constrói a cláusula WHERE dinamicamente
+             */
+            let whereClauses = [];
+            if (oDados.filtros && oDados.operadores && oDados.valores) {
+                for (let i = 0; i < oDados.filtros.length; i++) {
+                    const filtro = oDados.filtros[i];
+                    const operador = oDados.operadores[i];
+                    const valor = oDados.valores[i];
+
+                    if (filtro && operador && valor !== undefined) {
+                        switch (operador.toLowerCase()) {
+                            case '=': // Igual
+                                whereClauses.push(`\`${filtro}\` = '${valor}'`);
+                                break;
+                            case '!=': // Diferente de
+                                whereClauses.push(`\`${filtro}\` != '${valor}'`);
+                                break;
+                            case 'in': // Iguais
+                                whereClauses.push(`\`${filtro}\` IN (${valor.split(',').map(v => `'${v.trim()}'`).join(',')})`);
+                                break;
+                            case 'notin': // Não contido
+                                whereClauses.push(`\`${filtro}\` NOT IN (${valor.split(',').map(v => `'${v.trim()}'`).join(',')})`);
+                                break;
+                            case '&&': // Entre
+                                const [min, max] = valor.split(',');
+                                whereClauses.push(`\`${filtro}\` BETWEEN '${min.trim()}' AND '${max.trim()}'`);
+                                break;
+                            case '>': // Maior que
+                                whereClauses.push(`\`${filtro}\` > '${valor}'`);
+                                break;
+                            case '<': // Menor que
+                                whereClauses.push(`\`${filtro}\` < '${valor}'`);
+                                break;
+                            case '>=': // Maior ou igual a
+                                whereClauses.push(`\`${filtro}\` >= '${valor}'`);
+                                break;
+                            case '<=': // Menor ou igual a
+                                whereClauses.push(`\`${filtro}\` <= '${valor}'`);
+                                break;
+                            case 'like': // Correspondência parcial
+                                whereClauses.push(`\`${filtro}\` LIKE '%${valor}%'`);
+                                break;
+                            case 'or': // Ou
+                                const orConditions = valor.split('|').map(v => `\`${filtro}\` = '${v.trim()}'`).join(' OR ');
+                                whereClauses.push(`(${orConditions})`);
+                                break;
+                            default:
+                                throw new Error(`Operador desconhecido: ${operador}`);
+                        }
+                    }
                 }
-                console.log(aDados);
-                iTotalRegistros = aDados.length;
+            }
+
+            // Combina as cláusulas WHERE
+            const where = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+
+            /**
+             * Executa a query
+             */
+            const query = `SELECT * FROM \`${oDados.nomeTabela}\` ${where}`;
+            console.log('Query gerada:', query);
+
+            [aDados] = await db.query(query);
+            if (!aDados) {
+                return false;
+            }
+
+            /**
+             * Calcula o total de registros sem paginação
+             */
+            const countQuery = `SELECT COUNT(*) AS total FROM \`${oDados.nomeTabela}\` ${where}`;
+            const [countResult] = await db.query(countQuery);
+            iTotalRegistros = countResult[0]?.total ?? 0;
+
             }
 
             return {
@@ -201,22 +275,21 @@ module.exports = class ExportacaoRepository {
                 
                 oExportacao = await dbExportacao.create(oDados);
             } else {
-                // /**
-                //  * instancia banco de dados sql
-                //  *  @var {object} sequelize
-                //  */
-                // const sequelize = getDatabase();
-                // const ExportacaoSQL = defineExportacaoSQL(sequelize);
+                 /**
+                 * Instancia banco de dados sql
+                 */ 
+                const sequelize = getDatabase();
+                /**
+                 * Cria um novo registro no SQL
+                 * 
+                 * @var {object} oExportacao
+                 */
+                const dbExportacao = await db.ExportacaoSql(sequelize);
                 
-                // /**
-                //  * Cria um novo registro no SQL
-                //  * 
-                //  * @var {object} oExportacao
-                //  */
-                // await ExportacaoSQL.create(oDados);
+                oExportacao = await dbExportacao.create(oDados);
             } 
     
-            // Retorna o hash da exporta��o para o cliente
+            // Retorna o hash da exportação para o cliente
             return { hash: oExportacao.hash };
     
         } catch (error) {
@@ -263,7 +336,26 @@ module.exports = class ExportacaoRepository {
                 iTotalRegistros = await dbExportacoes.countDocuments(oBusca);
             } else {
 
-                // criar logica para sql
+                 /**
+                 * Instancia banco de dados sql
+                 */ 
+                 const sequelize = getDatabase();
+                 
+                  /**
+                  * busca exportações
+                  * 
+                  * @var {array} aDados 
+                  */ 
+                 const dbExportacao = await db.ExportacaoSql(sequelize);
+                 aDados = await dbExportacao.findAll(oBusca);
+
+                  /**
+                * total de registros
+                * 
+                * @var {int} iTotalRegistros 
+                */ 
+                iTotalRegistros = aDados.length;
+
             }
 
             return {
@@ -285,6 +377,8 @@ module.exports = class ExportacaoRepository {
     */
     async obterExportacao(sHash) {
         try {
+            let oExportacao;
+
             if (process.env.DATABASE === 'mongodb') {
                /**
                * Instancia o model
@@ -299,8 +393,18 @@ module.exports = class ExportacaoRepository {
                 */
                oExportacao = await dbExportacoes.findOne({ hash: sHash });
             } else {
+                 /**
+                 * Instancia banco de dados sql
+                 */ 
+                 const sequelize = getDatabase();
+                /**
+                * Retorna exportação pelo hash
+                * 
+                * @var {object} oExportacao
+                */
+                const dbExportacao = await db.ExportacaoSql(sequelize);
+                oExportacao = await dbExportacao.findOne({ hash: sHash });
 
-                // criar regra sql
             }
 
             return {
@@ -337,10 +441,12 @@ module.exports = class ExportacaoRepository {
                 */
                  oExportacao = await dbExportacoes.findOne({ hash: sHash });
             } else {
-                // Busca no MySQL (usando Sequelize)
-                const sequelize = getDatabase();
-                const ExportacaoSQL = defineExportacaoSQL(sequelize);
-                oExportacao = await ExportacaoSQL.findOne({ where: { hash: sHash } });
+                 /**
+                 * Instancia banco de dados sql
+                 */ 
+                 const sequelize = getDatabase();
+                const dbExportacoes = await db.ExportacaoSql(sequelize);
+                oExportacao = await dbExportacoes.findOne({ where: { hash: sHash } });
             }
 
             return oExportacao;
@@ -387,9 +493,27 @@ module.exports = class ExportacaoRepository {
                 );
 
             } else {
-                const sequelize = getDatabase();
-                const ExportacaoSQL = defineExportacaoSQL(sequelize);
-                exportacao = await ExportacaoSQL.findOne({ where: { hash: hashExportacao } });
+                 /**
+                 * Instancia banco de dados sql
+                 */ 
+                 const sequelize = getDatabase();
+                 /**
+                  * Cria um novo registro no SQL
+                  * 
+                  * @var {object} oExportacao
+                  */
+                 const dbExportacao = await db.ExportacaoSql(sequelize);
+                 oExportacao = await dbExportacao.update(
+                    {
+                        situacao: 4,
+                        dataExclusao: new Date()
+                    },
+                    {
+                        where :{
+                            hash: sHash
+                        }
+                    }
+                );
             }
 
 

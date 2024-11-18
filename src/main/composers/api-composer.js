@@ -293,7 +293,7 @@ module.exports = class ApiComposer {
          *    *
          * @return {object}
          */
-        return new ApiRouter.ListarExportacoes({
+        return new ApiRouter.ObterExportacao({
             apiUseCase,
             apiValidator
         })
