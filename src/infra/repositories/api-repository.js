@@ -164,7 +164,7 @@ module.exports = class ExportacaoRepository {
             const db = getDatabase();
 
             /**
-             * Constrói a cláusula WHERE dinamicamente
+             * Constrói a cláusula WHERE 
              */
             let whereClauses = [];
             if (oDados.filtros && oDados.operadores && oDados.valores) {
