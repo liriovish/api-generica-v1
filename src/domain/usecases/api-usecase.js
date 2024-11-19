@@ -17,12 +17,10 @@
  * Configurações globais
  */
 const HttpResponse = require('../../presentation/helpers/http-response')
-const { ServerError } = require('../../presentation/helpers/http-response')
-const { CustomError } = require('../../utils/errors')
 const MensageriaHelper = require('../../utils/helpers/mensageria-helper')
 const { v4: uuidv4 } = require('uuid')
 const fs = require('fs')
-const path = require('path')
+
 /**
  * Classe ApiUseCase
  * @package  src\domain\usecases
