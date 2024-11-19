@@ -168,10 +168,15 @@ module.exports = class ExportacaoRepository {
              */
             let whereClauses = [];
             if (oDados.filtros && oDados.operadores && oDados.valores) {
-                for (let i = 0; i < oDados.filtros.length; i++) {
-                    const filtro = oDados.filtros[i];
-                    const operador = oDados.operadores[i];
-                    const valor = oDados.valores[i];
+                // Garantir que filtros, operadores e valores sejam arrays
+                const filtros = oDados.filtros.split(','); // Transformando em array
+                const operadores = oDados.operadores.split(',');
+                const valores = oDados.valores.split(',');
+
+                for (let i = 0; i < filtros.length; i++) {
+                    const filtro = filtros[i]?.trim(); // Nome do campo
+                    const operador = operadores[i]?.trim(); // Operador
+                    const valor = valores[i]?.trim(); // Valor do filtro
 
                     if (filtro && operador && valor !== undefined) {
                         switch (operador.toLowerCase()) {
@@ -181,10 +186,10 @@ module.exports = class ExportacaoRepository {
                             case '!=': // Diferente de
                                 whereClauses.push(`\`${filtro}\` != '${valor}'`);
                                 break;
-                            case 'in': // Iguais
+                            case 'in': // Valores em uma lista
                                 whereClauses.push(`\`${filtro}\` IN (${valor.split(',').map(v => `'${v.trim()}'`).join(',')})`);
                                 break;
-                            case 'notin': // Não contido
+                            case 'notin': // Valores fora de uma lista
                                 whereClauses.push(`\`${filtro}\` NOT IN (${valor.split(',').map(v => `'${v.trim()}'`).join(',')})`);
                                 break;
                             case '&&': // Entre
@@ -203,10 +208,10 @@ module.exports = class ExportacaoRepository {
                             case '<=': // Menor ou igual a
                                 whereClauses.push(`\`${filtro}\` <= '${valor}'`);
                                 break;
-                            case 'like': // Correspondência parcial
+                            case 'like': // Busca parcial
                                 whereClauses.push(`\`${filtro}\` LIKE '%${valor}%'`);
                                 break;
-                            case 'or': // Ou
+                            case 'or': // Condições alternadas
                                 const orConditions = valor.split('|').map(v => `\`${filtro}\` = '${v.trim()}'`).join(' OR ');
                                 whereClauses.push(`(${orConditions})`);
                                 break;
