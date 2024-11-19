@@ -64,25 +64,25 @@ module.exports = class ApiValidator {
             )
         }
 
-        // if(oDados.campo){
-        //     if (oDados.campo.length < 1) {
-        //         return HttpResponse.badRequest(
-        //             new CustomError('Campo é obrigatório', 4)
-        //         )
-        //     }
+        if(oDados.campo){
+            if (oDados.campo.length < 1) {
+                return HttpResponse.badRequest(
+                    new CustomError('Campo é obrigatório', 4)
+                )
+            }
 
-        //     if (!oDados.tipoFiltro || oDados.tipoFiltro.length < 1) {
-        //         return HttpResponse.badRequest(
-        //             new CustomError('Tipo filtro é obrigatório', 4)
-        //         )
-        //     }
+            if (!oDados.tipoFiltro || oDados.tipoFiltro.length < 1) {
+                return HttpResponse.badRequest(
+                    new CustomError('Tipo filtro é obrigatório', 4)
+                )
+            }
 
-        //     if (!oDados.valor || oDados.valor.length < 1) {
-        //         return HttpResponse.badRequest(
-        //             new CustomError('Valor é obrigatório', 4)
-        //         )
-        //     }
-        // }
+            if (!oDados.valor || oDados.valor.length < 1) {
+                return HttpResponse.badRequest(
+                    new CustomError('Valor é obrigatório', 4)
+                )
+            }
+        }
 
         return null
     }
@@ -102,6 +102,27 @@ module.exports = class ApiValidator {
                 new CustomError('Nome da tabela é obrigatório', 4)
             )
         }
+
+        if(oDados.campo){
+            if (oDados.campo.length < 1) {
+                return HttpResponse.badRequest(
+                    new CustomError('Campo é obrigatório', 4)
+                )
+            }
+
+            if (!oDados.tipoFiltro || oDados.tipoFiltro.length < 1) {
+                return HttpResponse.badRequest(
+                    new CustomError('Tipo filtro é obrigatório', 4)
+                )
+            }
+
+            if (!oDados.valor || oDados.valor.length < 1) {
+                return HttpResponse.badRequest(
+                    new CustomError('Valor é obrigatório', 4)
+                )
+            }
+        }
+        
         return null
     }
 }
