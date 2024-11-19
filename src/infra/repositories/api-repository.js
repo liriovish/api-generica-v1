@@ -627,10 +627,10 @@ module.exports = class ExportacaoRepository {
                 */
                  oExportacao = await dbExportacoes.findOne({ hash: sHash });
             } else {
-                 /**
-                 * Instancia banco de dados sql
-                 */ 
-                 const sequelize = getDatabase();
+                /**
+                * Instancia banco de dados sql
+                */ 
+                const sequelize = getDatabase();
                 const dbExportacoes = await db.ExportacaoSql(sequelize);
                 oExportacao = await dbExportacoes.findOne({ where: { hash: sHash } });
             }
@@ -644,11 +644,11 @@ module.exports = class ExportacaoRepository {
     }
 
     /**
-     * Função para excluir exportação
-     * 
-     * @async
-     * @function excluirExportacao
-     */
+    * Função para excluir exportação
+    * 
+    * @async
+    * @function excluirExportacao
+    */
     async excluirExportacao(sHash ) {
         try {
             let oExportacao = {};
