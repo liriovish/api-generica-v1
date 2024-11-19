@@ -137,7 +137,7 @@ module.exports = class ExportacaoRepository {
                 * Busca tabela no mongo pelo nome 
                 * @var object oTabela
                 */
-                const oTabela = mongoose.connection.db.oTabela(oDados.nomeTabela);
+                const oTabela = mongoose.connection.db.collection(oDados.nomeTabela);
 
                 if (!oTabela) {
                     return false;
@@ -261,7 +261,7 @@ module.exports = class ExportacaoRepository {
      * Função para exportar dados 
      * 
      * @async
-     * @function exportarDados
+     * @function salvarExportacao
      *
      * @param object oDados
      * 
@@ -309,7 +309,7 @@ module.exports = class ExportacaoRepository {
     * Função para listar exportacoes
     * 
     * @async
-    * @function exportarDados
+    * @function listarExportacoes
     */
     async listarExportacoes(oBusca) {
         try {
@@ -442,7 +442,7 @@ module.exports = class ExportacaoRepository {
     * Função para listar exportações
     * 
     * @async
-    * @function exportarDados
+    * @function obterExportacao
     */
     async obterExportacao(sHash) {
         try {
@@ -491,7 +491,7 @@ module.exports = class ExportacaoRepository {
      * Função para fazer download
      * 
      * @async
-     * @function exportarDados
+     * @function buscaArquivo
      */
     async buscaArquivo(sHash) {
         try {
@@ -530,7 +530,7 @@ module.exports = class ExportacaoRepository {
      * Função para excluir exportação
      * 
      * @async
-     * @function exportarDados
+     * @function excluirExportacao
      */
     async excluirExportacao(sHash ) {
         try {
