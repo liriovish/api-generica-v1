@@ -133,10 +133,10 @@ module.exports = class ExportacaoRepository {
             let iTotalRegistros = 0
 
             if (process.env.DATABASE === 'mongodb') {
-                /**
-                * Busca tabela no mongo pelo nome 
-                * @var object oTabela
-                */
+                 /**
+                 * Busca a coleção pelo nome
+                 * @var object oTabela
+                 */
                 const oTabela = mongoose.connection.db.collection(oDados.nomeTabela);
 
                 if (!oTabela) {
@@ -144,108 +144,167 @@ module.exports = class ExportacaoRepository {
                 }
 
                 /**
-                * Busca dados da tabela com filtros 
-                * @var array aDados
-                */
-                aDados = await oTabela.find(oBusca)
+                 * Constrói a cláusula WHERE 
+                 */
+                let whereClauses = {};
+
+                if (oDados.filtros && oDados.operadores && oDados.valores) {
+                   
+                    const filtros = oDados.filtros.split(','); 
+                    const operadores = oDados.operadores.split(',');
+                    const valores = oDados.valores.split(',');
+
+                    for (let i = 0; i < filtros.length; i++) {
+                        const filtro = filtros[i]?.trim(); 
+                        const operador = operadores[i]?.trim();
+                        const valor = valores[i]?.trim(); 
+
+                        if (filtro && operador && valor !== undefined) {
+                            switch (operador.toLowerCase()) {
+                                case '=': // Igual
+                                    whereClauses[filtro] = valor;
+                                    break;
+                                case '!=': // Diferente de
+                                    whereClauses[filtro] = { $ne: valor };
+                                    break;
+                                case 'in': // Valores em uma lista
+                                    whereClauses[filtro] = { $in: valor.split(',').map(v => v.trim()) };
+                                    break;
+                                case 'notin': // Valores fora de uma lista
+                                    whereClauses[filtro] = { $nin: valor.split(',').map(v => v.trim()) };
+                                    break;
+                                case '&&': // Entre
+                                    const [min, max] = valor.split(',');
+                                    whereClauses[filtro] = { $gte: min.trim(), $lte: max.trim() };
+                                    break;
+                                case '>': // Maior que
+                                    whereClauses[filtro] = { $gt: valor };
+                                    break;
+                                case '<': // Menor que
+                                    whereClauses[filtro] = { $lt: valor };
+                                    break;
+                                case '>=': // Maior ou igual a
+                                    whereClauses[filtro] = { $gte: valor };
+                                    break;
+                                case '<=': // Menor ou igual a
+                                    whereClauses[filtro] = { $lte: valor };
+                                    break;
+                                case 'like': // Busca parcial (similar ao LIKE)
+                                    whereClauses[filtro] = { $regex: valor, $options: 'i' }; // 'i' é para case-insensitive
+                                    break;
+                                case 'or': // Condições alternadas
+                                    const orConditions = valor.split('|').map(v => ({ [filtro]: v.trim() }));
+                                    whereClauses[filtro] = { $or: orConditions };
+                                    break;
+                                default:
+                                    throw new Error(`Operador desconhecido: ${operador}`);
+                            }
+                        }
+                    }
+                }
+
+                /**
+                 * Busca dados da coleção com filtros
+                 * @var array aDados
+                 */
+                aDados = await oTabela.find(whereClauses) 
                     .limit(Number(oDados.numeroRegistros ?? 100))
                     .skip((oDados.pagina - 1) * (oDados.numeroRegistros ?? 100))
                     .toArray();
 
+                /**
+                 * Calcula o total de registros
+                 * @var int iTotalRegistros
+                 */
+                iTotalRegistros = await oTabela.countDocuments(whereClauses);
+            } else {   
+                /**
+                 * Instancia banco de dados sql
+                 */
+                const db = getDatabase();
 
                 /**
-                * Calcula o total de registros
-                * @var int iTotalRegistros
-                */
-                iTotalRegistros = await oTabela.countDocuments(oBusca);
-            } else {   
-            /**
-             * Instancia banco de dados sql
-             */
-            const db = getDatabase();
+                 * Constrói a cláusula WHERE 
+                 */
+                let whereClauses = [];
+                if (oDados.filtros && oDados.operadores && oDados.valores) {
+                    // Garantir que filtros, operadores e valores sejam arrays
+                    const filtros = oDados.filtros.split(','); // Transformando em array
+                    const operadores = oDados.operadores.split(',');
+                    const valores = oDados.valores.split(',');
 
-            /**
-             * Constrói a cláusula WHERE 
-             */
-            let whereClauses = [];
-            if (oDados.filtros && oDados.operadores && oDados.valores) {
-                // Garantir que filtros, operadores e valores sejam arrays
-                const filtros = oDados.filtros.split(','); // Transformando em array
-                const operadores = oDados.operadores.split(',');
-                const valores = oDados.valores.split(',');
+                    for (let i = 0; i < filtros.length; i++) {
+                        const filtro = filtros[i]?.trim(); // Nome do campo
+                        const operador = operadores[i]?.trim(); // Operador
+                        const valor = valores[i]?.trim(); // Valor do filtro
 
-                for (let i = 0; i < filtros.length; i++) {
-                    const filtro = filtros[i]?.trim(); // Nome do campo
-                    const operador = operadores[i]?.trim(); // Operador
-                    const valor = valores[i]?.trim(); // Valor do filtro
-
-                    if (filtro && operador && valor !== undefined) {
-                        switch (operador.toLowerCase()) {
-                            case '=': // Igual
-                                whereClauses.push(`\`${filtro}\` = '${valor}'`);
-                                break;
-                            case '!=': // Diferente de
-                                whereClauses.push(`\`${filtro}\` != '${valor}'`);
-                                break;
-                            case 'in': // Valores em uma lista
-                                whereClauses.push(`\`${filtro}\` IN (${valor.split(',').map(v => `'${v.trim()}'`).join(',')})`);
-                                break;
-                            case 'notin': // Valores fora de uma lista
-                                whereClauses.push(`\`${filtro}\` NOT IN (${valor.split(',').map(v => `'${v.trim()}'`).join(',')})`);
-                                break;
-                            case '&&': // Entre
-                                const [min, max] = valor.split(',');
-                                whereClauses.push(`\`${filtro}\` BETWEEN '${min.trim()}' AND '${max.trim()}'`);
-                                break;
-                            case '>': // Maior que
-                                whereClauses.push(`\`${filtro}\` > '${valor}'`);
-                                break;
-                            case '<': // Menor que
-                                whereClauses.push(`\`${filtro}\` < '${valor}'`);
-                                break;
-                            case '>=': // Maior ou igual a
-                                whereClauses.push(`\`${filtro}\` >= '${valor}'`);
-                                break;
-                            case '<=': // Menor ou igual a
-                                whereClauses.push(`\`${filtro}\` <= '${valor}'`);
-                                break;
-                            case 'like': // Busca parcial
-                                whereClauses.push(`\`${filtro}\` LIKE '%${valor}%'`);
-                                break;
-                            case 'or': // Condições alternadas
-                                const orConditions = valor.split('|').map(v => `\`${filtro}\` = '${v.trim()}'`).join(' OR ');
-                                whereClauses.push(`(${orConditions})`);
-                                break;
-                            default:
-                                throw new Error(`Operador desconhecido: ${operador}`);
+                        if (filtro && operador && valor !== undefined) {
+                            switch (operador.toLowerCase()) {
+                                case '=': // Igual
+                                    whereClauses.push(`\`${filtro}\` = '${valor}'`);
+                                    break;
+                                case '!=': // Diferente de
+                                    whereClauses.push(`\`${filtro}\` != '${valor}'`);
+                                    break;
+                                case 'in': // Valores em uma lista
+                                    whereClauses.push(`\`${filtro}\` IN (${valor.split(',').map(v => `'${v.trim()}'`).join(',')})`);
+                                    break;
+                                case 'notin': // Valores fora de uma lista
+                                    whereClauses.push(`\`${filtro}\` NOT IN (${valor.split(',').map(v => `'${v.trim()}'`).join(',')})`);
+                                    break;
+                                case '&&': // Entre
+                                    const [min, max] = valor.split(',');
+                                    whereClauses.push(`\`${filtro}\` BETWEEN '${min.trim()}' AND '${max.trim()}'`);
+                                    break;
+                                case '>': // Maior que
+                                    whereClauses.push(`\`${filtro}\` > '${valor}'`);
+                                    break;
+                                case '<': // Menor que
+                                    whereClauses.push(`\`${filtro}\` < '${valor}'`);
+                                    break;
+                                case '>=': // Maior ou igual a
+                                    whereClauses.push(`\`${filtro}\` >= '${valor}'`);
+                                    break;
+                                case '<=': // Menor ou igual a
+                                    whereClauses.push(`\`${filtro}\` <= '${valor}'`);
+                                    break;
+                                case 'like': // Busca parcial
+                                    whereClauses.push(`\`${filtro}\` LIKE '%${valor}%'`);
+                                    break;
+                                case 'or': // Condições alternadas
+                                    const orConditions = valor.split('|').map(v => `\`${filtro}\` = '${v.trim()}'`).join(' OR ');
+                                    whereClauses.push(`(${orConditions})`);
+                                    break;
+                                default:
+                                    throw new Error(`Operador desconhecido: ${operador}`);
+                            }
                         }
                     }
                 }
-            }
 
-            // Combina as cláusulas WHERE
-            const where = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+                // Combina as cláusulas WHERE
+                const where = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
 
-            /**
-             * Executa a query
-             */
-            const query = `SELECT * FROM \`${oDados.nomeTabela}\` ${where}`;
-            console.log('Query gerada:', query);
+                /**
+                 * Executa a query
+                 */
+                const query = `SELECT * FROM \`${oDados.nomeTabela}\` ${where}`;
+                console.log('Query gerada:', query);
 
-            [aDados] = await db.query(query);
-            if (!aDados) {
-                return false;
-            }
+                [aDados] = await db.query(query);
+                if (!aDados) {
+                    return false;
+                }
 
-            /**
-             * Calcula o total de registros sem paginação
-             */
-            const countQuery = `SELECT COUNT(*) AS total FROM \`${oDados.nomeTabela}\` ${where}`;
-            const [countResult] = await db.query(countQuery);
-            iTotalRegistros = countResult[0]?.total ?? 0;
+                /**
+                 * Calcula o total de registros sem paginação
+                 */
+                const countQuery = `SELECT COUNT(*) AS total FROM \`${oDados.nomeTabela}\` ${where}`;
+                const [countResult] = await db.query(countQuery);
+                iTotalRegistros = countResult[0]?.total ?? 0;
 
-            }
+                }
 
             return {
                 dados: aDados,
@@ -327,7 +386,8 @@ module.exports = class ExportacaoRepository {
                 * @var {mongoose} dbExportacoes
                 */ 
                const dbExportacoes = await db.ExportacaoMongo(); 
-                /**
+               
+               /**
                 * busca exportações
                 * 
                 * @var {array} aDados 
