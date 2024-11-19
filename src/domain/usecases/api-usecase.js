@@ -114,27 +114,20 @@ module.exports = class ApiUseCase {
     * @returns {object}
     */
     async listagem(oDados) {
-        const { campo, tipoFiltro, valor, numeroRegistros = 100 } = oDados;
     
         try {
              /**
-             * Define os dados da busca
+             * Define numero de registros
              * 
-             * @var object oBusca
+             * @var {int} iNumeroRegistros
              */
-            let oBusca = {};
-    
-            if (campo && tipoFiltro && valor) {
-                campo.forEach((field, index) => {
-                    oBusca[field] = { [`$${tipoFiltro[index]}`]: valor[index] };
-                });
-            }
+            const iNumeroRegistros = 100
              /**
              * Realiza a consulta na base de dados
              * 
              * @var object oRetorno
              */
-            const oRetorno = await this.apiRepository.listarDados(oDados, oBusca);
+            const oRetorno = await this.apiRepository.listarDados(oDados);
     
             if (!oRetorno) {
                 return HttpResponse.badRequest('Erro ao consultar os dados');
@@ -145,7 +138,7 @@ module.exports = class ApiUseCase {
              * 
              * @var int iTotalPaginas
              */
-            const iTotalPaginas = Math.ceil(oRetorno.totalRegistros / numeroRegistros);
+            const iTotalPaginas = Math.ceil(oRetorno.totalRegistros / iNumeroRegistros);
     
             return {
                 totalRegistros: oRetorno.totalRegistros,
@@ -219,12 +212,11 @@ module.exports = class ApiUseCase {
          
          try {
                 /**
-                 * Define os dados da busca
+                 * Define numero de registros
                  * 
-                 * @var {object} oBusca
                  * @var {int} iNumeroRegistros
                  */
-                let oBusca ;
+               
                 const iNumeroRegistros = 100;
                 
                 /**
@@ -232,7 +224,7 @@ module.exports = class ApiUseCase {
                 * 
                 * @var {object} oRetorno
                 */
-                const oRetorno = await this.apiRepository.listarExportacoes(oDados, oBusca);
+                const oRetorno = await this.apiRepository.listarExportacoes(oDados);
 
                 if (!oRetorno) {
                     return HttpResponse.badRequest('Erro ao consultar exportações');
