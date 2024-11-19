@@ -293,16 +293,16 @@ module.exports = class ApiUseCase {
      *
      * @returns {object}
      */
-     async obterExportacao(sHash) {
+     async obterExportacao(oDados) {
         try {
            /**
            * Retorna exportação pelo hash
            * 
            * @var {object} oExportacao
            */
-           const oExportacao = await this.apiRepository.obterExportacao(sHash);
+           const oExportacao = await this.apiRepository.obterExportacao(oDados.hashExportacao);
            
-           return {oExportacao}
+           return oExportacao
            
        } catch (error) {
             console.error('Erro ao listar exportações:', error);

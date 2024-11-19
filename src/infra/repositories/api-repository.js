@@ -594,9 +594,8 @@ module.exports = class ExportacaoRepository {
 
             }
 
-            return {
-                oExportacao
-            }
+            return oExportacao
+            
 
 
         } catch (error) {
