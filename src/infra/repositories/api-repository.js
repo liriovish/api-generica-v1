@@ -387,19 +387,77 @@ module.exports = class ExportacaoRepository {
                 */ 
                const dbExportacoes = await db.ExportacaoMongo(); 
                
+               let whereClauses = {};
+
+               if (oBusca.filtros && oBusca.operadores && oBusca.valores) {
+                  
+                   const filtros = oBusca.filtros.split(','); 
+                   const operadores = oBusca.operadores.split(',');
+                   const valores = oBusca.valores.split(',');
+
+                   for (let i = 0; i < filtros.length; i++) {
+                       const filtro = filtros[i]?.trim(); 
+                       const operador = operadores[i]?.trim();
+                       const valor = valores[i]?.trim(); 
+
+                       if (filtro && operador && valor !== undefined) {
+                           switch (operador.toLowerCase()) {
+                               case '=': // Igual
+                                   whereClauses[filtro] = valor;
+                                   break;
+                               case '!=': // Diferente de
+                                   whereClauses[filtro] = { $ne: valor };
+                                   break;
+                               case 'in': // Valores em uma lista
+                                   whereClauses[filtro] = { $in: valor.split(',').map(v => v.trim()) };
+                                   break;
+                               case 'notin': // Valores fora de uma lista
+                                   whereClauses[filtro] = { $nin: valor.split(',').map(v => v.trim()) };
+                                   break;
+                               case '&&': // Entre
+                                   const [min, max] = valor.split(',');
+                                   whereClauses[filtro] = { $gte: min.trim(), $lte: max.trim() };
+                                   break;
+                               case '>': // Maior que
+                                   whereClauses[filtro] = { $gt: valor };
+                                   break;
+                               case '<': // Menor que
+                                   whereClauses[filtro] = { $lt: valor };
+                                   break;
+                               case '>=': // Maior ou igual a
+                                   whereClauses[filtro] = { $gte: valor };
+                                   break;
+                               case '<=': // Menor ou igual a
+                                   whereClauses[filtro] = { $lte: valor };
+                                   break;
+                               case 'like': // Busca parcial (similar ao LIKE)
+                                   whereClauses[filtro] = { $regex: valor, $options: 'i' }; // 'i' é para case-insensitive
+                                   break;
+                               case 'or': // Condições alternadas
+                                   const orConditions = valor.split('|').map(v => ({ [filtro]: v.trim() }));
+                                   whereClauses[filtro] = { $or: orConditions };
+                                   break;
+                               default:
+                                   throw new Error(`Operador desconhecido: ${operador}`);
+                           }
+                       }
+                   }
+               }
+
+
                /**
                 * busca exportações
                 * 
                 * @var {array} aDados 
                 */ 
-                aDados = await dbExportacoes.find(oBusca);
+                aDados = await dbExportacoes.find(whereClauses);
 
                 /**
                 * total de registros
                 * 
                 * @var {int} iTotalRegistros 
                 */ 
-                iTotalRegistros = await dbExportacoes.countDocuments(oBusca);
+                iTotalRegistros = await dbExportacoes.countDocuments(whereClauses);
             } else {
 
                 /**
@@ -485,12 +543,12 @@ module.exports = class ExportacaoRepository {
                  */
                 iTotalRegistros = aDados.length;
 
-                return {
-                    dados: aDados,
-                    totalRegistros: iTotalRegistros,
-                };
-
+                
             }
+            return {
+                dados: aDados,
+                totalRegistros: iTotalRegistros,
+            };
 
         } catch (error) {
             console.error('Erro ao listar dados:', error);
