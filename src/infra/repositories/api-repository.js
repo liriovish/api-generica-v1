@@ -18,6 +18,7 @@
 const db = require('../models')
 const mongoose = require('mongoose')
 const {getDatabase} = require('../helpers/db-helper')
+const { Op } = require('sequelize')
 /**
  * Classe ExportacaoRepository
  * 
@@ -341,31 +342,94 @@ module.exports = class ExportacaoRepository {
                 iTotalRegistros = await dbExportacoes.countDocuments(oBusca);
             } else {
 
-                 /**
+                /**
                  * Instancia banco de dados sql
-                 */ 
-                 const sequelize = getDatabase();
-                 
-                  /**
-                  * busca exportações
-                  * 
-                  * @var {array} aDados 
-                  */ 
-                 const dbExportacao = await db.ExportacaoSql(sequelize);
-                 aDados = await dbExportacao.findAll(oBusca);
+                 */
+                const sequelize = getDatabase();
 
-                  /**
-                * total de registros
-                * 
-                * @var {int} iTotalRegistros 
-                */ 
+                /**
+                 * Constrói a cláusula WHERE
+                 */
+                let whereClauses = [];
+                if (oBusca.filtros && oBusca.operadores && oBusca.valores) {
+                    // Garantir que filtros, operadores e valores sejam arrays
+                    const filtros = oBusca.filtros.split(','); // Transformando em array
+                    const operadores = oBusca.operadores.split(',');
+                    const valores = oBusca.valores.split(',');
+
+                    for (let i = 0; i < filtros.length; i++) {
+                        const filtro = filtros[i]?.trim(); // Nome do campo
+                        const operador = operadores[i]?.trim(); // Operador
+                        const valor = valores[i]?.trim(); // Valor do filtro
+
+                        if (filtro && operador && valor !== undefined) {
+                            switch (operador.toLowerCase()) {
+                                case '=': // Igual
+                                    whereClauses.push({ [filtro]: valor });
+                                    break;
+                                case '!=': // Diferente de
+                                    whereClauses.push({ [filtro]: { [Op.ne]: valor } });
+                                    break;
+                                case 'in': // Valores em uma lista
+                                    whereClauses.push({ [filtro]: { [Op.in]: valor.split(',').map(v => v.trim()) } });
+                                    break;
+                                case 'notin': // Valores fora de uma lista
+                                    whereClauses.push({ [filtro]: { [Op.notIn]: valor.split(',').map(v => v.trim()) } });
+                                    break;
+                                case '&&': // Entre
+                                    const [min, max] = valor.split(',');
+                                    whereClauses.push({ [filtro]: { [Op.between]: [min.trim(), max.trim()] } });
+                                    break;
+                                case '>': // Maior que
+                                    whereClauses.push({ [filtro]: { [Op.gt]: valor } });
+                                    break;
+                                case '<': // Menor que
+                                    whereClauses.push({ [filtro]: { [Op.lt]: valor } });
+                                    break;
+                                case '>=': // Maior ou igual a
+                                    whereClauses.push({ [filtro]: { [Op.gte]: valor } });
+                                    break;
+                                case '<=': // Menor ou igual a
+                                    whereClauses.push({ [filtro]: { [Op.lte]: valor } });
+                                    break;
+                                case 'like': // Busca parcial
+                                    whereClauses.push({ [filtro]: { [Op.like]: `%${valor}%` } });
+                                    break;
+                                case 'or': // Condições alternadas
+                                    const orConditions = valor.split('|').map(v => ({ [filtro]: v.trim() }));
+                                    whereClauses.push({ [Op.or]: orConditions });
+                                    break;
+                                default:
+                                    throw new Error(`Operador desconhecido: ${operador}`);
+                            }
+                        }
+                    }
+                }
+
+                // Cria a condição WHERE para o Sequelize
+                const where = whereClauses.length > 0 ? { [Op.and]: whereClauses } : {};
+
+                // Busca no banco de dados utilizando o Sequelize
+                const dbExportacao = await db.ExportacaoSql(sequelize);
+
+                // Integrar a cláusula WHERE ao oBusca para o Sequelize
+                oBusca.where = where;
+
+                // Realiza a consulta no banco de dados
+                aDados = await dbExportacao.findAll(oBusca);
+
+                /**
+                 * Total de registros
+                 * 
+                 * @var {int} iTotalRegistros
+                 */
                 iTotalRegistros = aDados.length;
 
-            }
+                return {
+                    dados: aDados,
+                    totalRegistros: iTotalRegistros,
+                };
 
-            return {
-                dados: aDados,
-                totalRegistros: iTotalRegistros,
             }
 
         } catch (error) {
