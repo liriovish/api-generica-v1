@@ -23,7 +23,7 @@ const HttpResponse = require('../helpers/http-response')
  * Classe ListagemRouter
  * @package  src\presentation\routers
  */
-module.exports = class ExportacaomRouter {
+module.exports = class ExportacaoRouter {
     /**
      * Construtor
      * @param {apiUseCase}
