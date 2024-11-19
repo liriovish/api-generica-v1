@@ -123,7 +123,7 @@ module.exports = class ExportacaoRepository {
      * 
      * @return object Retorna os dados da tabela
      */
-    async listarDados(oDados, oBusca) {
+    async listarDados(oDados) {
         try {
             /**
             * @var array aDados
