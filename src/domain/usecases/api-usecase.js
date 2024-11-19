@@ -216,44 +216,17 @@ module.exports = class ApiUseCase {
     * @returns {object}
     */
      async listarExportacoes(oDados) {
-            const {
-                sHash,
-                iSituacao,
-                DdataInicialCadastro,
-                DdataFinalCadastro,
-                DdataInicialGeracao,
-                DdataFinalGeracao,
-                DdataInicialExclusao,
-                DdataFinalExclusao,
-                iNumeroRegistros = 100} = oDados;
-            
-            try {
+         
+         try {
                 /**
-                * Define os dados da busca
-                * 
-                * @var {object} oBusca
-                */
-                let oBusca = {};
+                 * Define os dados da busca
+                 * 
+                 * @var {object} oBusca
+                 * @var {int} iNumeroRegistros
+                 */
+                let oBusca ;
+                const iNumeroRegistros = 100;
                 
-
-                if (sHash) oBusca.sHash = sHash;
-                if (iSituacao) oBusca.iSituacao = parseInt(iSituacao);
-        
-                if (DdataInicialCadastro || DdataFinalCadastro) {
-                    oBusca.dataCadastro = {};
-                    if (DdataInicialCadastro) oBusca.dataCadastro.$gte = new Date(DdataInicialCadastro);
-                    if (DdataFinalCadastro) oBusca.dataCadastro.$lte = new Date(DdataFinalCadastro);
-                }
-                if (DdataInicialGeracao || DdataFinalGeracao) {
-                    oBusca.dataGeracao = {};
-                    if (DdataInicialGeracao) oBusca.dataGeracao.$gte = new Date(DdataInicialGeracao);
-                    if (DdataFinalGeracao) oBusca.dataGeracao.$lte = new Date(DdataFinalGeracao);
-                }
-                if (DdataInicialExclusao || DdataFinalExclusao) {
-                    oBusca.dataExclusao = {};
-                    if (DdataInicialExclusao) oBusca.dataExclusao.$gte = new Date(DdataInicialExclusao);
-                    if (DdataFinalExclusao) oBusca.dataExclusao.$lte = new Date(DdataFinalExclusao);
-                }
                 /**
                 * Realiza a consulta na base de dados
                 * 
